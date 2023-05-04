@@ -1,19 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using YangCode.ServiceStorage.InMemory;
+﻿using YangCode.ServiceStorage.Abstractions;
 
-namespace YangCode.ServiceStorage.Abstractions.InMemoryExtension
+namespace YangCode.ServiceStorage.InMemory;
+
+public static class InMemoryExtension
 {
-    public static class InMemoryExtension
+    public static StorageOptionsBuilder AddInMemory(this StorageOptionsBuilder builder)
     {
-        public static StorageOptionsBuilder AddInMemory(this StorageOptionsBuilder builder)
-        {
-            builder.WithExtension(new InMemoryStorageOptionsExtension());
-            return builder;
-        }
+        builder.WithExtension(new InMemoryStorageOptionsExtension());
+        return builder;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace YangCode.ServiceStorage.Abstractions;
 
-public interface IStoreService
+public interface IStoreManager
 {
     /// <summary>
     /// 获取服务注册信息
