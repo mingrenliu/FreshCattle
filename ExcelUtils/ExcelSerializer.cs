@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace ExcelUtils
+﻿namespace ExcelUtils
 {
     public static class ExcelSerializer
     {
-        public static IEnumerable<T> Deserialize<T>(IFormFile file) => file.CreateWorkBooke().Deserialize<T>();
-
-        public static Dictionary<string, IEnumerable<T>> DeserializeAll<T>(IFormFile file) => file.CreateWorkBooke().DeserializeAll<T>();
         public static IEnumerable<T> Deserialize<T>(Stream stream) => Deserialize<T>(stream.CreateWorkBooke());
 
         public static Dictionary<string, IEnumerable<T>> DeserializeAll<T>(Stream stream) => stream.CreateWorkBooke().DeserializeAll<T>();
