@@ -1,5 +1,6 @@
 ﻿using ExcelUtils.Formats;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace ExcelUtils.ExcelCore;
@@ -49,6 +50,7 @@ internal class DefaultComparer : IComparer<PropertyTypeInfo>
         return (x?.Order??0) -(y?.Order??0);
     }
 }
+
 public class InfoWrapper<T> : IEnumerable<T> where T : PropertyTypeInfo
 {
     private readonly Dictionary<string, T> _dictionary = new();
