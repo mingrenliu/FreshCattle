@@ -35,6 +35,9 @@ internal class ExcelImportHandler<T> where T : class, new()
 
     private static void SetValue(ICell cell, object entity, PropertyInfos info)
     {
+        var str=cell.ToString();
+        var min = cell.Row.FirstCellNum;
+        var max = cell.Row.LastCellNum;
         double height = cell.Row.Sheet.GetColumnWidth(cell.ColumnIndex)/256;
         if (cell.CellType == CellType.Unknown || cell.CellType == CellType.Blank || cell.CellType == CellType.Error)
         {

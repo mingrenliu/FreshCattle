@@ -1,4 +1,6 @@
-﻿namespace ExcelUtils.Formats;
+﻿using ExcelUtils.ExcelCore;
+
+namespace ExcelUtils.Formats;
 
 public abstract class ExcelConverter
 {
@@ -7,8 +9,13 @@ public abstract class ExcelConverter
     {
         _type=type;
     }
-    protected object? ReadCoreAsObject()
+    public virtual bool CanConvert(Type type)
     {
-        return null;
+        return _type==type;
+    }
+    public virtual string?  ReadAsString(ICell cell)
+    {
+        var str= cell.ToString()?.Trim();
+        return string.IsNullOrWhiteSpace(str)?null:str; 
     }
 }

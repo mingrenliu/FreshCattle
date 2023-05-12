@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
+﻿using NPOI.XSSF.UserModel;
 using static ExcelUtils.ExcelFactory;
 
 namespace ExcelUtils.OldVersion;
 
-public class ExcelHelper<T> where T : class,new()
+public class ExcelHelper<T> where T : class, new()
 {
     public static byte[] Export(IEnumerable<T> datas)
     {
@@ -31,7 +29,7 @@ public class ExcelHelper<T> where T : class,new()
         return workbook;
     }
 
-    public static Dictionary<string, IEnumerable<T>> ImportMulti(IFormFile file)
+    public static Dictionary<string, IEnumerable<T>> ImportMulti(Stream file)
     {
         var results = new Dictionary<string, IEnumerable<T>>();
         var workbook = file.CreateWorkBooke();
@@ -44,11 +42,12 @@ public class ExcelHelper<T> where T : class,new()
         return results;
     }
 
-    public static IEnumerable<T> Import(IFormFile file)
+    public static IEnumerable<T> Import(Stream file)
     {
         var workbook = file.CreateWorkBooke();
         return new ExcelImportHandler<T>().GetDatas(workbook.GetSheetAt(0));
     }
+
     internal static IEnumerable<T> Import(XSSFWorkbook workBook)
     {
         return new ExcelImportHandler<T>().GetDatas(workBook.GetSheetAt(0));

@@ -29,6 +29,7 @@ internal class ExcelExportHandler<T> where T : class, new()
 
     private static void SetCell(ICell cell, PropertyInfos info, object entity)
     {
+        
         cell.SetCellValue(info.Info.GetValue(entity)?.ToString());
     }
 

@@ -1,4 +1,6 @@
-﻿namespace ExcelUtils.Formats;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ExcelUtils.Formats;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class DataFormatAttribute : Attribute
