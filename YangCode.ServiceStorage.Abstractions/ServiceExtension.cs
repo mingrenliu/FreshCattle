@@ -12,7 +12,7 @@ public static class ServiceExtension
         var extension = builder.Build().Extension ?? new InMemoryStorageOptionsExtension();
         extension.ApplyServices(services);
         services.AddSingleton(builder);
-        services.AddSingleton<StorageOptions>(builder.Build());
+        services.AddSingleton(builder.Build());
         return builder;
     }
 }

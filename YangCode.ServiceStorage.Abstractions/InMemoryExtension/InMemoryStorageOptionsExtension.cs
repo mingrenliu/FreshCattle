@@ -7,12 +7,12 @@ public class InMemoryStorageOptionsExtension : IStorageOptionsExtension
 {
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddStore();
+        services.AddCoreService();
     }
 }
-public static class StorageExtension
+internal static class InMemoryStorageExtension
 {
-    public static IServiceCollection AddStore(this IServiceCollection services)
+    public static IServiceCollection AddCoreService(this IServiceCollection services)
     {
         services.AddSingleton<IStoreManager,InMemoryStoreManager>();
         return services;

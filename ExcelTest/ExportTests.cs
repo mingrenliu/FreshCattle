@@ -1,4 +1,5 @@
-﻿using ExcelUtils.OldVersion;
+﻿using ExcelTest.Mocks;
+using ExcelUtile.OldVersion;
 using NPOI.Util.ArrayExtensions;
 
 namespace ExcelTest
@@ -19,7 +20,15 @@ namespace ExcelTest
             Console.WriteLine("导出数据量为:" + values.Count);
             Assume.That(bytes.Length, Is.AtLeast(10));
         }
-
+        [Test]
+        public void New_Export_Return_List_Test()
+        {
+            var bytes = ExcelSerializer<Person>.Serialize(PersonMock.Persons());
+            var direction = LocationHelper.GetExportResourcesPath();
+            var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
+            File.WriteAllBytes(path, bytes);
+            Assume.That(bytes.Length, Is.AtLeast(10));
+        }
         private static IEnumerable<IEnumerable<Person>> Persons()
         {
             var lst = new List<Person>();

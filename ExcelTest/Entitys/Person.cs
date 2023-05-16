@@ -41,7 +41,7 @@ internal class Person
     /// <summary>
     /// 父亲名字
     /// </summary>
-    [Display("父亲名字", Order = 6, IsRequird = false)]
+    [Display("父亲名字", Order = 6, IsRequired = false)]
     public string? FatharName { get; set; }
 
     /// <summary>

@@ -21,14 +21,14 @@ internal class CommonTest : TestBase
     [Order(1)]
     public void CreateWorkBooke_Blank_Test()
     {
-        var book = ExcelFactory.CreateWorkBooke();
+        var book = ExcelFactory.CreateWorkBook();
         Assert.That(book, Is.Not.Null);
     }
 
     [Test]
     public void CreateSheet_Test()
     {
-        var book = ExcelFactory.CreateWorkBooke();
+        var book = ExcelFactory.CreateWorkBook();
         var sheet = book.WithSheet("customsheet");
         Assert.That(sheet.SheetName, Is.EqualTo("customsheet"));
     }

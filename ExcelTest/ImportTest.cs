@@ -1,5 +1,6 @@
 ﻿using ExcelTest.Entitys;
-using ExcelUtils.OldVersion;
+using ExcelUtile.OldVersion;
+using NPOI.HSSF.Record;
 using NPOI.XSSF.UserModel;
 
 namespace ExcelTest;
@@ -23,12 +24,19 @@ internal class ImportTest
         var workBook = GetWorkBook(filename);
         _ = Assert.Catch<Exception>(() => ExcelHelper<Person>.Import(workBook).ToList());
     }
+    [TestCase("person")]
+    public void Excel_Import_Person_Test(string filename)
+    {
+        var workBook = GetWorkBook(filename);
+        var lst=ExcelSerializer<Person>.Deserialize(workBook);
+        Assert.That(lst.Count(), Is.EqualTo(40));
+    }
 
     static XSSFWorkbook GetWorkBook(string filename)
     {
         var location = LocationHelper.GetImportResourcesPath();
-        var filestream = new FileStream(Path.Combine(location, filename + ".xlsx"), FileMode.Open);
-        return new XSSFWorkbook(filestream);
+        var fileStream = new FileStream(Path.Combine(location, filename + ".xlsx"), FileMode.Open);
+        return new XSSFWorkbook(fileStream);
     }
 }
 internal class ImportSourceCases

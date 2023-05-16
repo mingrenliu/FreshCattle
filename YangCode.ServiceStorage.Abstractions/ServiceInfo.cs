@@ -1,11 +1,13 @@
-﻿namespace YangCode.ServiceStorage.Abstractions;
+﻿using System.Text.Json.Serialization;
+
+namespace YangCode.ServiceStorage.Abstractions;
 
 public class ServiceInfo
 {
     /// <summary>
     /// 服务名称
     /// </summary>
-    public required string ServiceName { get; set; }
+    public string ServiceName { get; set; }
 
     /// <summary>
     /// 描述
@@ -15,12 +17,13 @@ public class ServiceInfo
     /// <summary>
     /// 登记时间
     /// </summary>
-    public DateTime? RegisterTime { get; set; } = DateTime.Now;
+    [JsonIgnore]
+    public DateTime RegisterTime { get; set; } = DateTime.Now;
 
     /// <summary>
     /// ip地址
     /// </summary>
-    public required string IPAddress { get; set; }
+    public string IPAddress { get; set; }
 
     /// <summary>
     /// 端口号
@@ -30,5 +33,15 @@ public class ServiceInfo
     /// <summary>
     /// 请求协议
     /// </summary>
-    public string Schemal { get; set; } = "https";
+    public string Schema { get; set; } = "https";
+
+    public ServiceInfo(string serviceName, string ip)
+    {
+        ServiceName = serviceName;
+        IPAddress = ip;
+    }
+
+    public ServiceInfo()
+    {
+    }
 }

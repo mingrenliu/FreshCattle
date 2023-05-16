@@ -35,6 +35,6 @@ internal class Record
     /// <summary>
     /// 标签
     /// </summary>
-    [Display("标签", Order = 6, IsRequird = false)]
+    [Display("标签", Order = 6, IsRequired = false)]
     public string? Tags { get; set; }
 }

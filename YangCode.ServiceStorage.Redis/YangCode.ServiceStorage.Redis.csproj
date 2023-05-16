@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="YangCode.ServiceStorage.Abstractions" Version="1.0.4" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
+    <PackageReference Include="YangCode.ServiceStorage.Abstractions" Version="1.0.8" />
   </ItemGroup>
 </Project>

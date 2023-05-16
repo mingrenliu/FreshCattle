@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExcelUtils\ExcelUtils.csproj" />
+    <ProjectReference Include="..\ExcelUtils\ExcelUtile.csproj" />
   </ItemGroup>
 
   <ItemGroup>

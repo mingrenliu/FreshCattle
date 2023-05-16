@@ -8,7 +8,7 @@
     <PackageTags>ServiceStorage;StandartStorage</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.0.8</PackageVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
