@@ -1,4 +1,4 @@
-﻿namespace ExcelUtils.OldVersion;
+﻿namespace ExcelUtile.OldVersion;
 
 internal class ExcelImportHandler<T> where T : class, new()
 {
@@ -39,6 +39,12 @@ internal class ExcelImportHandler<T> where T : class, new()
         var min = cell.Row.FirstCellNum;
         var max = cell.Row.LastCellNum;
         double height = cell.Row.Sheet.GetColumnWidth(cell.ColumnIndex)/256;
+        if (cell.IsMergedCell)
+        {
+            var range=cell.Row.Sheet.MergedRegions.FirstOrDefault(x=>x.FirstColumn==cell.ColumnIndex&&x.FirstRow==cell.RowIndex);
+            
+        }
+        //
         if (cell.CellType == CellType.Unknown || cell.CellType == CellType.Blank || cell.CellType == CellType.Error)
         {
             return;
@@ -127,7 +133,7 @@ internal class ExcelImportHandler<T> where T : class, new()
     private void Validate(Dictionary<int, string> headers)
     {
         var values = headers.Values;
-        foreach (var info in infos.Values.Where(x => x.AttributeInfo.IsRequird))
+        foreach (var info in infos.Values.Where(x => x.AttributeInfo.IsRequired))
         {
             if (values.Any(x => x == info.Name))
             {

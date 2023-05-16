@@ -1,4 +1,4 @@
-﻿namespace ExcelUtils;
+﻿namespace ExcelUtile;
 
 internal static class SupportMimeType
 {

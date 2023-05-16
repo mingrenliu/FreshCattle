@@ -1,22 +1,31 @@
-﻿using ExcelUtils.ExcelCore;
-
-namespace ExcelUtils.Formats
+﻿namespace ExcelUtile.Formats
 {
     public abstract class ExcelConverter<T> : ExcelConverter where T : struct
     {
         protected ExcelConverter() : base(typeof(T))
         {
         }
-        
-        private T? Read(ICell cell,Type type)
+
+        public abstract T? Read(ICell cell, Type type);
+
+        public override object? ReadAsObject(ICell cell)
         {
-            return default(T?);
+            return Read(cell,_type);
         }
 
         //todo：修改参数和逻辑
-        private void Write(ICell cell,T? value)
-        {
+        public abstract void Write(ICell cell, T? value);
 
+        public override void WriteAsObject(ICell cell, object? obj)
+        {
+            if (obj is T value)
+            {
+                Write(cell, value);
+            }
+            else
+            {
+                base.WriteAsObject(cell, obj);
+            }
         }
     }
 }

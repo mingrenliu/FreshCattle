@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace ExcelUtils.ExcelCore;
+namespace ExcelUtile.ExcelCore;
 
-internal class ExcelSerializerOptions
+internal class ExcelSerializeOptions
 {
     /// <summary>
     /// header row index (0-based)
@@ -18,11 +18,11 @@ internal class ExcelSerializerOptions
     /// 字段筛选
     /// </summary>
 
-    private Func<Type, InfoWrapper<PropertyTypeInfo>>? _propertySelector;
+    private Func<Type, IEnumerable<PropertyTypeInfo>>? _propertySelector;
 
-    public Func<Type, InfoWrapper<PropertyTypeInfo>> PropertySelector => _propertySelector ?? DefaultPropertySelector.GetTypeInfo;
+    public Func<Type, IEnumerable<PropertyTypeInfo>> PropertySelector => _propertySelector ?? DefaultPropertySelector.GetTypeInfo;
 
-    public void SetProperty(Func<Type, InfoWrapper<PropertyTypeInfo>> selector)
+    public void SetProperty(Func<Type, IEnumerable<PropertyTypeInfo>> selector)
     {
         _propertySelector = selector;
     }
@@ -30,17 +30,15 @@ internal class ExcelSerializerOptions
 
 internal static class DefaultPropertySelector
 {
-    internal static InfoWrapper<PropertyTypeInfo> GetTypeInfo(Type type)
+    internal static IEnumerable<PropertyTypeInfo> GetTypeInfo(Type type)
     {
-        var result = new InfoWrapper<PropertyTypeInfo>();
         foreach (var property in type.GetProperties())
         {
             var attribute = property.GetCustomAttribute<DisplayAttribute>();
             if (attribute != null)
             {
-                result.Add(new DefaultPropertyInfo(property, attribute));
+                yield return new DefaultPropertyInfo(property, attribute);
             }
         }
-        return result;
     }
 }

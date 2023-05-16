@@ -1,4 +1,4 @@
-﻿namespace ExcelUtils;
+﻿namespace ExcelUtile;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 public class DisplayAttribute : Attribute
@@ -18,16 +18,16 @@ public class DisplayAttribute : Attribute
     /// <summary>
     /// 字段是必须的(导入时没有该字段,会报错)
     /// </summary>
-    public bool IsRequird { get; set; } = true;
+    public bool IsRequired { get; set; } = true;
 
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="name"></param>
-    public DisplayAttribute(string name, int order = 0, bool isRequird = true)
+    public DisplayAttribute(string name, int order = 0, bool isRequired = true)
     {
         _name = name;
-        IsRequird = isRequird;
+        IsRequired = isRequired;
         Order = order;
     }
 }

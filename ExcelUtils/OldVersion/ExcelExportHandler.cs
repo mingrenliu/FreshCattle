@@ -1,6 +1,6 @@
 ﻿global using NPOI.SS.UserModel;
 
-namespace ExcelUtils.OldVersion;
+namespace ExcelUtile.OldVersion;
 
 internal class ExcelExportHandler<T> where T : class, new()
 {

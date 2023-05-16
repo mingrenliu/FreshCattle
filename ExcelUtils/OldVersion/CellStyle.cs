@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExcelUtils.OldVersion
+namespace ExcelUtile.OldVersion
 {
     internal static class CellStyleHelper
     {

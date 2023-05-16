@@ -1,6 +1,6 @@
 ﻿using NPOI.XSSF.UserModel;
 
-namespace ExcelUtils;
+namespace ExcelUtile;
 
 internal static class ExcelFactory
 {
@@ -9,13 +9,19 @@ internal static class ExcelFactory
         return workbook.CreateSheet(sheetName);
     }
 
-    public static XSSFWorkbook CreateWorkBooke()
+    public static XSSFWorkbook CreateWorkBook()
     {
         return new XSSFWorkbook();
     }
 
-    public static XSSFWorkbook CreateWorkBooke(this Stream stream)
+    public static XSSFWorkbook CreateWorkBook(this Stream stream)
     {
         return new XSSFWorkbook(stream);
+    }
+    public static byte[] ToArray(this IWorkbook workbook)
+    {
+        using var stream = new MemoryStream();
+        workbook.Write(stream, true);
+        return stream.ToArray();
     }
 }

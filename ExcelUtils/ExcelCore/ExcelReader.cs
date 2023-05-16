@@ -1,26 +1,26 @@
-﻿using NPOI.SS.Formula.Functions;
+﻿using ExcelUtile.Formats;
 
-namespace ExcelUtils.ExcelCore
+namespace ExcelUtile.ExcelCore
 {
     internal class ExcelReader<T> where T : class
     {
         private readonly IWorkbook _workbook;
-        private ExcelSerializerOptions _option;
-        private InfoWrapper<PropertyTypeInfo> _infos;
+        private ExcelSerializeOptions _option;
+        private readonly KeyValueWrapper<PropertyTypeInfo> _info;
         private readonly Type _type;
-        private int _currentSheetIndex=-1;
+        private int _currentSheetIndex = -1;
         private ISheet? _currentSheet;
         private IRow? _currentRow;
-        private Dictionary<int, string>? _headers;
+        private SortedWrapper<HeaderInfo>? _headers;
         private int NumberOfSheets => _workbook.NumberOfSheets;
 
-        public ExcelReader(IWorkbook? workbook, ExcelSerializerOptions? option = null)
+        public ExcelReader(IWorkbook? workbook, ExcelSerializeOptions? option = null)
         {
             if (workbook == null) throw new ArgumentNullException("导入的不存在");
             _workbook = workbook!;
             _type = typeof(T);
-            _option = option ?? new ExcelSerializerOptions();
-            _infos = _option.PropertySelector.Invoke(_type);
+            _option = option ?? new ExcelSerializeOptions();
+            _info = new KeyValueWrapper<PropertyTypeInfo>(_option.PropertySelector.Invoke(_type), x => x.Name);
         }
 
         /// <summary>
@@ -36,18 +36,19 @@ namespace ExcelUtils.ExcelCore
             if (_currentSheet.LastRowNum < _option.HeaderLineIndex) return false;
             if (_option.StartLineIndex > _currentSheet.LastRowNum) return false;
             var row = _currentSheet.GetRow(_option.HeaderLineIndex);
-            var header = new Dictionary<int, string>();
+            var header = new SortedWrapper<HeaderInfo>();
             foreach (var cell in row.Cells)
             {
                 var str = cell.StringCellValue;
                 if (string.IsNullOrWhiteSpace(str)) continue;
-                header[cell.ColumnIndex] = str.Trim();
+                header.Add(cell.ColumnIndex,new HeaderInfo(str.Trim(), cell.ColumnIndex));
             }
             if (!header.Any()) return false;
             _headers = header;
             _currentRow = _currentSheet.GetRow(_option.StartLineIndex);
             return true;
         }
+
         /// <summary>
         /// 后续合并行时,多行推进
         /// </summary>
@@ -55,18 +56,20 @@ namespace ExcelUtils.ExcelCore
         private bool SwitchRow()
         {
             if (_currentSheet!.LastRowNum == _currentRow!.RowNum) return false;
-            _currentRow=_currentSheet.GetRow(_currentRow.RowNum+1);
-            return default;
+            _currentRow = _currentSheet.GetRow(_currentRow.RowNum + 1);
+            return true;
         }
+
         public Dictionary<string, IEnumerable<T>> ReadMultiSheet()
         {
-            var result= new Dictionary<string, IEnumerable<T>>();
+            var result = new Dictionary<string, IEnumerable<T>>();
             while (SwitchSheet())
             {
                 result[_currentSheet!.SheetName] = ReadSheet();
             }
             return result;
         }
+
         public IEnumerable<T> ReadOneSheet()
         {
             if (SwitchSheet())
@@ -75,45 +78,46 @@ namespace ExcelUtils.ExcelCore
             }
             return Enumerable.Empty<T>();
         }
-        public IEnumerable<T> ReadSheet()
+
+        private IEnumerable<T> ReadSheet()
         {
-            var result=new List<T>();
+            var result = new List<T>();
             do
             {
                 var obj = ReadLine();
-                if (obj!=null) result.Add(obj);
+                if (obj != null) result.Add(obj);
             } while (SwitchRow());
             return result;
         }
 
-        public T? ReadLine()
+        private T? ReadLine()
         {
-           var obj=Activator.CreateInstance(typeof(T));
-           var enumerator= _infos.GetEnumerator();
-            if (enumerator.MoveNext())
+            if (_headers == null) return null;
+            var obj = Activator.CreateInstance(typeof(T));
+            foreach (var item in _headers)
             {
-                var current= enumerator.Current;
-                //current.Info.SetValue(obj,)
-
+                var cell = _currentRow!.GetCell(item.Order);
+                var prop = _info[item.Name];
+                if (prop != null)
+                {
+                    var value= prop.GetConverter()?.ReadAsObject(cell);
+                    if (value != null)
+                    {
+                        prop.Info.SetValue(obj, value);
+                    }
+                    else//一般用不到
+                    {
+                        try
+                        {
+                            prop.Info.SetValue(obj,Convert.ChangeType(cell.StringCellValue, prop.BaseType));
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                }
             }
-            return default(T?);
+            return (T?)obj;
         }
-
-        public enum SupportTypeName
-        {
-            Boolean,
-            Double,
-            Decimal,
-            Int32,
-            Int64,
-            Single,
-            String,
-            DateTime,
-            TimeSpan,
-            DateOnly,
-            DateTimeOffset,
-            TimeOnly
-        }
-        
     }
 }

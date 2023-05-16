@@ -1,37 +1,42 @@
-﻿namespace ExcelUtils
+﻿using ExcelUtile.ExcelCore;
+using NPOI.SS.UserModel;
+
+namespace ExcelUtile
 {
-    public static class ExcelSerializer
+    public static class ExcelSerializer<T> where T : class
     {
-        public static IEnumerable<T> Deserialize<T>(Stream stream) => Deserialize<T>(stream.CreateWorkBooke());
+        public static IEnumerable<T> Deserialize(Stream stream) => Deserialize(stream.CreateWorkBook());
 
-        public static Dictionary<string, IEnumerable<T>> DeserializeAll<T>(Stream stream) => stream.CreateWorkBooke().DeserializeAll<T>();
+        public static Dictionary<string, IEnumerable<T>> DeserializeAll(Stream stream) => DeserializeAll(stream.CreateWorkBook());
 
-        public static IEnumerable<T> Deserialize<T>(this IWorkbook workbook)
+        public static IEnumerable<T> Deserialize(IWorkbook workbook)
         {
-            return default;
+            return new ExcelReader<T>(workbook).ReadOneSheet();
         }
-        public static Dictionary<string, IEnumerable<T>> DeserializeAll<T>(this IWorkbook workbook)
+        public static Dictionary<string, IEnumerable<T>> DeserializeAll(IWorkbook workbook)
         {
-            return default;
-        }
-
-        public static void Serialize<T>(Stream stream, IEnumerable<T> datas)
-        {
-
+            return new ExcelReader<T>(workbook).ReadMultiSheet();
         }
 
-        public static void Serialize<T>(Stream stream, Dictionary<string, IEnumerable<T>> datas)
+        public static void Serialize(Stream stream, IEnumerable<T> data)
         {
+            new ExcelWriter<T>(data).Write().Write(stream, true);
         }
 
-        public static byte[] Serialize<T>(IEnumerable<T> datas)
+        public static void Serialize(Stream stream, Dictionary<string, IEnumerable<T>> data)
         {
-            return default;
+            new ExcelWriter<T>(data).Write().Write(stream,true);
         }
 
-        public static byte[] Serialize<T>(Dictionary<string, IEnumerable<T>> datas)
+        public static byte[] Serialize(IEnumerable<T> data)
         {
-            return default;
+            return new ExcelWriter<T>(data).Write().ToArray();
         }
+
+        public static byte[] Serialize(Dictionary<string, IEnumerable<T>> data)
+        {
+            return new ExcelWriter<T>(data).Write().ToArray();
+        }
+
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("ExcelUtilsTest")]
+[assembly: InternalsVisibleTo("ExcelUtileTest")]
 
-namespace ExcelUtils;
+namespace ExcelUtile;
 
 internal static class PropertyUtil
 {

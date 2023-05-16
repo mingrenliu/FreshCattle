@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ExcelUtils
+namespace ExcelUtile
 {
     internal class PropertyInfos
     {

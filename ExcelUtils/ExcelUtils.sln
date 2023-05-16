@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelUtils", "ExcelUtils.csproj", "{A98F5D5A-5A07-4DB3-809C-7998EA601099}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelUtile", "ExcelUtile.csproj", "{A98F5D5A-5A07-4DB3-809C-7998EA601099}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelUtilsTest", "..\ExcelTest\ExcelUtilsTest.csproj", "{03CE418B-8FAA-4EF7-AD13-4FBAC4C470D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelUtileTest", "..\ExcelTest\ExcelUtileTest.csproj", "{03CE418B-8FAA-4EF7-AD13-4FBAC4C470D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

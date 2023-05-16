@@ -1,7 +1,7 @@
 ﻿using NPOI.XSSF.UserModel;
-using static ExcelUtils.ExcelFactory;
+using static ExcelUtile.ExcelFactory;
 
-namespace ExcelUtils.OldVersion;
+namespace ExcelUtile.OldVersion;
 
 public class ExcelHelper<T> where T : class, new()
 {
@@ -20,7 +20,7 @@ public class ExcelHelper<T> where T : class, new()
 
     private static XSSFWorkbook ExportData(Dictionary<string, IEnumerable<T>> datas)
     {
-        var workbook = CreateWorkBooke();
+        var workbook = CreateWorkBook();
         var exportHandler = new ExcelExportHandler<T>();
         foreach (var data in datas)
         {
@@ -32,7 +32,7 @@ public class ExcelHelper<T> where T : class, new()
     public static Dictionary<string, IEnumerable<T>> ImportMulti(Stream file)
     {
         var results = new Dictionary<string, IEnumerable<T>>();
-        var workbook = file.CreateWorkBooke();
+        var workbook = file.CreateWorkBook();
         var handler = new ExcelImportHandler<T>();
         for (int i = 0; i < workbook.NumberOfSheets; i++)
         {
@@ -44,7 +44,7 @@ public class ExcelHelper<T> where T : class, new()
 
     public static IEnumerable<T> Import(Stream file)
     {
-        var workbook = file.CreateWorkBooke();
+        var workbook = file.CreateWorkBook();
         return new ExcelImportHandler<T>().GetDatas(workbook.GetSheetAt(0));
     }
 

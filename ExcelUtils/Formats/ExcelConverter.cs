@@ -1,10 +1,10 @@
-﻿using ExcelUtils.ExcelCore;
+﻿using ExcelUtile.ExcelCore;
 
-namespace ExcelUtils.Formats;
+namespace ExcelUtile.Formats;
 
 public abstract class ExcelConverter
 {
-    private readonly Type _type;
+    protected readonly Type _type;
     public ExcelConverter(Type type)
     {
         _type=type;
@@ -17,5 +17,10 @@ public abstract class ExcelConverter
     {
         var str= cell.ToString()?.Trim();
         return string.IsNullOrWhiteSpace(str)?null:str; 
+    }
+    public abstract object? ReadAsObject(ICell cell);
+    public virtual void WriteAsObject(ICell cell, object? obj)
+    {
+        cell.SetCellValue(obj?.ToString());
     }
 }
