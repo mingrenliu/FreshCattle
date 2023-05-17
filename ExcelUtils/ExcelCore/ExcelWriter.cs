@@ -1,4 +1,6 @@
-﻿namespace ExcelUtile.ExcelCore
+﻿using System.Text;
+
+namespace ExcelUtile.ExcelCore
 {
     internal class ExcelWriter<T> where T : class
     {
@@ -10,6 +12,7 @@
         private int _columnIndex = 0;
         private ExcelSerializeOptions _option;
         private readonly IEnumerable<PropertyTypeInfo> _info;
+        private readonly DefaultConverterFactory _factory = new();
 
         public ExcelWriter(IEnumerable<T> data, ExcelSerializeOptions? option = null)
         {
@@ -70,6 +73,7 @@
             {
                 var cell = CreateCell();
                 cell.SetCellValue(item.Name);
+                cell.Sheet.SetColumnWidth(cell.ColumnIndex,12*256);
             }
         }
 
@@ -80,10 +84,10 @@
             {
                 var cell = CreateCell();
                 var value = item.Info.GetValue(data);
-                var converter = item.GetConverter();
+                var converter = item.GetConverter(_factory);
                 if (converter != null)
                 {
-                    converter?.WriteAsObject(cell, value);
+                    converter?.WriteToCell(cell, value);
                 }
                 else
                 {

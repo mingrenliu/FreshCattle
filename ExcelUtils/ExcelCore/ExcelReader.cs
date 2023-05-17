@@ -12,11 +12,15 @@ namespace ExcelUtile.ExcelCore
         private ISheet? _currentSheet;
         private IRow? _currentRow;
         private SortedWrapper<HeaderInfo>? _headers;
+        private DefaultConverterFactory _factory=new();
         private int NumberOfSheets => _workbook.NumberOfSheets;
 
         public ExcelReader(IWorkbook? workbook, ExcelSerializeOptions? option = null)
         {
-            if (workbook == null) throw new ArgumentNullException("导入的不存在");
+            if (workbook == null)
+            {
+                throw new Exception("导入的不存在");
+            }
             _workbook = workbook!;
             _type = typeof(T);
             _option = option ?? new ExcelSerializeOptions();
@@ -100,7 +104,7 @@ namespace ExcelUtile.ExcelCore
                 var prop = _info[item.Name];
                 if (prop != null)
                 {
-                    var value= prop.GetConverter()?.ReadAsObject(cell);
+                    var value= prop.GetConverter(_factory)?.ReadFromCell(cell);
                     if (value != null)
                     {
                         prop.Info.SetValue(obj, value);

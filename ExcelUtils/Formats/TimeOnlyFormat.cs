@@ -20,4 +20,12 @@ internal class TimeOnlyFormat : ExcelConverter<TimeOnly>
             cell.SetCellValue(value.Value.ToLongTimeString());//待定
         }
     }
+    public override ICellStyle? CreateCellType(ICell cell)
+    {
+        var style = cell.Sheet.Workbook.CreateCellStyle();
+        var format = cell.Sheet.Workbook.CreateDataFormat();
+        var formatIndex = format.GetFormat("hh:mm:ss");
+        style.DataFormat = formatIndex;
+        return style;
+    }
 }

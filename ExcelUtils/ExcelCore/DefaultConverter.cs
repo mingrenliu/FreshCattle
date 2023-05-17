@@ -3,16 +3,16 @@ using System.Linq;
 
 namespace ExcelUtile.ExcelCore;
 
-internal class DefaultConverter
+internal class DefaultConverterFactory
 {
-    private static readonly object _lock=new();
-    private static readonly Dictionary<string, ExcelConverter> _defaultConverters = new();
-    internal static ExcelConverter? GetDefaultConverter(Type type)
+    private  readonly object _lock=new();
+    private  readonly Dictionary<string, ExcelConverter> _defaultConverters = new();
+    internal ExcelConverter? GetDefaultConverter(Type type)
     {
-        if (_defaultConverters.ContainsKey(type.Name)) return _defaultConverters[type.Name];
+        if (_defaultConverters.TryGetValue(type.Name, out ExcelConverter? value)) return value;
         return Add(type);
     }
-    internal static ExcelConverter? Add(Type type)
+    internal ExcelConverter? Add(Type type)
     {
         if (defaultConverterMap.ContainsKey(type.Name))
         {

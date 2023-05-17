@@ -8,7 +8,7 @@ internal class StringFormat : ExcelConverter
     {
     }
 
-    public override object? ReadAsObject(ICell cell)
+    public override object? ReadFromCell(ICell cell)
     {
         return cell.GetString();
     }

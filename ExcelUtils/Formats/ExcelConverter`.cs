@@ -2,13 +2,14 @@
 {
     public abstract class ExcelConverter<T> : ExcelConverter where T : struct
     {
+
         protected ExcelConverter() : base(typeof(T))
         {
         }
 
         public abstract T? Read(ICell cell, Type type);
 
-        public override object? ReadAsObject(ICell cell)
+        public override object? ReadFromCell(ICell cell)
         {
             return Read(cell,_type);
         }

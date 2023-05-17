@@ -12,4 +12,12 @@ internal abstract class DateTimeFormat : ExcelConverter<DateTime>
         }
         return null ;
     }
+    public override ICellStyle? CreateCellType(ICell cell)
+    {
+        var style = cell.Sheet.Workbook.CreateCellStyle();
+        var format = cell.Sheet.Workbook.CreateDataFormat();
+        var formatIndex = format.GetFormat("yyyy-mm-dd");
+        style.DataFormat = formatIndex;
+        return style;
+    }
 }

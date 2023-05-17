@@ -24,9 +24,9 @@ public abstract class PropertyTypeInfo
         BaseType = Nullable.GetUnderlyingType(_info.PropertyType) ?? info.PropertyType;
         DataFormat=Info.GetCustomAttribute<DataFormatAttribute>();
     }
-    public ExcelConverter? GetConverter()
+    internal ExcelConverter? GetConverter(DefaultConverterFactory _factory)
     {
         if (DataFormat != null) return DataFormat.Converter;
-        return DefaultConverter.GetDefaultConverter(BaseType);
+        return _factory.GetDefaultConverter(BaseType);
     }
 }

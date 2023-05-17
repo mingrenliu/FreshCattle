@@ -1,4 +1,6 @@
-﻿namespace ExcelUtile.Formats;
+﻿using NPOI.HSSF.UserModel;
+
+namespace ExcelUtile.Formats;
 
 internal class ShortTimeFormat : DateTimeFormat
 {
