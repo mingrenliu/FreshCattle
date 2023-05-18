@@ -5,45 +5,45 @@ namespace ExcelUtile
 {
     public static class ExcelHelper
     {
-        public static IEnumerable<T> Import<T>(Stream stream) where T : class => Import<T>(stream.CreateWorkBook());
+        public static IEnumerable<T> Import<T>(Stream stream,ExcelSerializeOptions? option=null) where T : class => Import<T>(stream.CreateWorkBook(), option);
 
-        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(Stream stream) where T : class => ImportAll<T>(stream.CreateWorkBook());
+        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(Stream stream, ExcelSerializeOptions? option = null) where T : class => ImportAll<T>(stream.CreateWorkBook(), option);
 
-        public static IEnumerable<T> Import<T>(IWorkbook workbook) where T : class
+        public static IEnumerable<T> Import<T>(IWorkbook workbook, ExcelSerializeOptions? option = null) where T : class
         {
-            return new ExcelReader<T>(workbook).ReadOneSheet();
+            return new ExcelReader<T>(workbook, option).ReadOneSheet();
         }
-        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(IWorkbook workbook) where T : class
+        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(IWorkbook workbook, ExcelSerializeOptions? option = null) where T : class
         {
-            return new ExcelReader<T>(workbook).ReadMultiSheet();
-        }
-
-        public static void Export<T>(Stream stream, IEnumerable<T> data) where T : class
-        {
-            new ExcelWriter<T>(data).Write().Write(stream, true);
+            return new ExcelReader<T>(workbook, option).ReadMultiSheet();
         }
 
-        public static void Export<T>(Stream stream, Dictionary<string, IEnumerable<T>> data) where T : class
+        public static void Export<T>(Stream stream, IEnumerable<T> data, ExcelSerializeOptions? option = null) where T : class
         {
-            new ExcelWriter<T>(data).Write().Write(stream,true);
+            new ExcelWriter<T>(data, option).Write().Write(stream, true);
         }
 
-        public static byte[] Export<T>(IEnumerable<T> data) where T : class
+        public static void Export<T>(Stream stream, Dictionary<string, IEnumerable<T>> data, ExcelSerializeOptions? option = null) where T : class
         {
-            return new ExcelWriter<T>(data).Write().ToArray();
+            new ExcelWriter<T>(data, option).Write().Write(stream,true);
         }
 
-        public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data) where T : class
+        public static byte[] Export<T>(IEnumerable<T> data, ExcelSerializeOptions? option = null) where T : class
         {
-            return new ExcelWriter<T>(data).Write().ToArray();
+            return new ExcelWriter<T>(data, option).Write().ToArray();
         }
-        public static byte[] ExportTemplate<T>() where T : class
+
+        public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data, ExcelSerializeOptions? option = null) where T : class
         {
-            return new ExcelWriter<T>(Enumerable.Empty<T>()).Write().ToArray();
+            return new ExcelWriter<T>(data, option).Write().ToArray();
         }
-        public static void Export<T>(Stream stream) where T : class
+        public static byte[] ExportTemplate<T>(ExcelSerializeOptions? option = null) where T : class
         {
-            new ExcelWriter<T>(Enumerable.Empty<T>()).Write().Write(stream, true);
+            return new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().ToArray();
+        }
+        public static void Export<T>(Stream stream, ExcelSerializeOptions? option = null) where T : class
+        {
+            new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().Write(stream, true);
         }
     }
 }

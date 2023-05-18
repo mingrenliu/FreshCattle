@@ -6,7 +6,7 @@ internal class DefaultPropertyInfo : PropertyTypeInfo
 {
     private readonly DisplayAttribute _display;
 
-    public DefaultPropertyInfo(PropertyInfo info, DisplayAttribute attribute) : base(info, attribute.Name)
+    public DefaultPropertyInfo(PropertyInfo info, DisplayAttribute attribute,string? name=null) : base(info, name??attribute.Name)
     {
         _display = attribute;
     }

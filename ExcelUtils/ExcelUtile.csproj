@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>YangCode.ExcelUtile</PackageId>
     <PackageTags>ExcelUtile</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.0.1</PackageVersion>
+    <PackageVersion>1.0.7</PackageVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>

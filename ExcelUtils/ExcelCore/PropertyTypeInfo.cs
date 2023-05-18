@@ -3,14 +3,14 @@ using System.Reflection;
 
 namespace ExcelUtile.ExcelCore;
 
-public abstract class PropertyTypeInfo
+public class PropertyTypeInfo
 {
     public virtual bool IsRequired { get; }
 
     private readonly string _name;
     public string Name => _name;
-    public abstract int Order { get; }
-    public abstract int? Width { get;}
+    public virtual int Order { get; set; }
+    public virtual int? Width { get; set; }
     public PropertyInfo Info => _info;
     public Type BaseType { get; private set; }
 

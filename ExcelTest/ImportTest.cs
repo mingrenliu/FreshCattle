@@ -7,6 +7,8 @@ internal class ImportTest
     [TestCase("person")]
     public void Excel_Import_Person_Test(string filename)
     {
+        var str = "234234";
+        var wfef=str.Substring(0,1521);
         var timer = StartTimer();
         var workBook = GetWorkBook(filename);
         var lst = ExcelHelper.Import<Person>(workBook);
