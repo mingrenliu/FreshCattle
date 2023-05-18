@@ -10,7 +10,14 @@ internal class ExcelSerializeOptions
     public int HeaderLineIndex { get; set; } = 0;
 
     private int startLine = 1;
+    /// <summary>
+    /// 默认列宽
+    /// </summary>
     public int DefaultColumnWidth { get; set; } = 15;
+    /// <summary>
+    /// 校验导入字段
+    /// </summary>
+    public bool ValidImportField { get; set; } = true;
     /// <summary>
     /// data start row index (0-based)
     /// </summary>

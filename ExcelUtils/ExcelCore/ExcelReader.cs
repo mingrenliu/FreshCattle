@@ -42,15 +42,29 @@
             foreach (var cell in row.Cells)
             {
                 var str = cell.StringCellValue;
-                if (string.IsNullOrWhiteSpace(str)) continue;
+                if (string.IsNullOrWhiteSpace(str)||!_info.ContainKey(str)) continue;
                 header.Add(cell.ColumnIndex, new HeaderInfo(str.Trim(), cell.ColumnIndex));
             }
             if (!header.Any()) return false;
             _headers = header;
             _currentRow = _currentSheet.GetRow(_option.StartLineIndex);
+            if (_option.ValidImportField)
+            {
+                Validate();
+            }
             return true;
         }
-
+        private void Validate()
+        {
+            foreach (var info in _info.Values.Where(x => x.IsRequired))
+            {
+                if (_headers!.Any(x => x.Name == info.Name))
+                {
+                    continue;
+                }
+                throw new Exception($"导入失败,必须导入字段缺失:{info.Name}");
+            }
+        }
         /// <summary>
         /// 后续合并行时,多行推进
         /// </summary>

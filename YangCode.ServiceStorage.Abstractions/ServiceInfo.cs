@@ -1,7 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace YangCode.ServiceStorage.Abstractions;
+public class ServiceInstanceInfo
+{
 
+}
 public class ServiceInfo
 {
     /// <summary>
@@ -39,9 +42,5 @@ public class ServiceInfo
     {
         ServiceName = serviceName;
         IPAddress = ip;
-    }
-
-    public ServiceInfo()
-    {
     }
 }

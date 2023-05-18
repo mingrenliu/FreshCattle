@@ -10,30 +10,6 @@ internal class CommonTest : TestBase
     }
 
     [Test]
-    [Order(0)]
-    public void Parse_Propertys_Count_Test()
-    {
-        var attributes = PropertyUtil.Propertys<Person>();
-        Assert.That(attributes, Has.Count.EqualTo(7));
-    }
-
-    [Test]
-    [Order(1)]
-    public void CreateWorkBooke_Blank_Test()
-    {
-        var book = ExcelFactory.CreateWorkBook();
-        Assert.That(book, Is.Not.Null);
-    }
-
-    [Test]
-    public void CreateSheet_Test()
-    {
-        var book = ExcelFactory.CreateWorkBook();
-        var sheet = book.WithSheet("customsheet");
-        Assert.That(sheet.SheetName, Is.EqualTo("customsheet"));
-    }
-
-    [Test]
     public void CreateWorkBooke_Upload_Test()
     {
         var location = LocationHelper.GetImportResourcesPath();

@@ -1,10 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>YangCode.ExcelUtile</PackageId>
+    <PackageTags>ExcelUtile</PackageTags>
+    <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
+    <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
+    <PackageVersion>1.0.1</PackageVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Company>YangCode</Company>
+    <Authors>LiuYang</Authors>
+    <Description>package is used to excel import or export </Description>
+    <PackageIcon>L.png</PackageIcon>
+    <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\L.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NPOI" Version="2.6.0" />

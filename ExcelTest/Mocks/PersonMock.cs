@@ -15,7 +15,7 @@ namespace ExcelTest.Mocks
                 .RuleFor(x => x.Remark, faker => faker.Lorem.Letter(25))
                 .RuleFor(x => x.FatharName, faker => faker.Name.FullName())
                 .RuleFor(x => x.Money, faker => faker.Random.Double(10, 25642));
-            return faker.GenerateBetween(30, 50);
+            return faker.GenerateBetween(1000, 2000);
         }
     }
 }

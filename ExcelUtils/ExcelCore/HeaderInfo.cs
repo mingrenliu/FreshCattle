@@ -31,9 +31,18 @@ public class KeyValueWrapper<T> where T : class
             _dic[selector.Invoke(item)] = item;
         }
     }
+    public IEnumerable<T> Values => _dic.Values;
     public void Add(string key, T value)
     {
         _dic[key] = value;
+    }
+    public void Remove(string key)
+    {
+        _dic.Remove(key);
+    }
+    public bool ContainKey(string key)
+    {
+        return _dic.ContainsKey(key);
     }
     public T? this[string name]
     {
@@ -59,7 +68,10 @@ public class SortedWrapper<T> :IEnumerable<T> where T : class
     {
         _list.TryAdd(order,item);
     }
-
+    public void Remove(int order)
+    {
+        _list.Remove(order);
+    }
     public IEnumerator<T> GetEnumerator()
     {
         foreach (var item in _list)

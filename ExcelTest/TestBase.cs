@@ -16,6 +16,5 @@ namespace ExcelTest
         {
             Trace.Flush();
         }
-
     }
 }
