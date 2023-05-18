@@ -4,6 +4,8 @@ namespace ExcelUtile.ExcelCore
 {
     internal class ExcelWriter<T> where T : class
     {
+        private const int WidthFactor = 256;
+        private const int HeightFactor = 20;
         private readonly Dictionary<string, IEnumerable<T>> _data;
         private readonly IWorkbook workbook;
         private ISheet? _currentSheet;
@@ -48,7 +50,6 @@ namespace ExcelUtile.ExcelCore
                 WriteOneLine(item);
             }
         }
-
         private void CreateSheet(string name)
         {
             _rowIndex = 0;
@@ -72,8 +73,8 @@ namespace ExcelUtile.ExcelCore
             foreach (var item in _info)
             {
                 var cell = CreateCell();
-                cell.SetCellValue(item.Name);
-                cell.Sheet.SetColumnWidth(cell.ColumnIndex,12*256);
+                _factory.GetDefaultConverter(nameof(String))!.WriteToCell(cell, item.Name);
+                _currentSheet!.SetColumnWidth(_columnIndex - 1, (item.Width ?? _option.DefaultColumnWidth)* WidthFactor);
             }
         }
 

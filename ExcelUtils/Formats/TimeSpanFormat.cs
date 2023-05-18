@@ -26,6 +26,7 @@ internal class TimeSpanFormat : ExcelConverter<TimeSpan>
         var format = cell.Sheet.Workbook.CreateDataFormat();
         var formatIndex = format.GetFormat("hh:mm:ss");
         style.DataFormat = formatIndex;
+        style.Alignment = HorizontalAlignment.CenterSelection;
         return style;
     }
 }

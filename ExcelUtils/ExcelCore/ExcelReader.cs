@@ -1,6 +1,4 @@
-﻿using ExcelUtile.Formats;
-
-namespace ExcelUtile.ExcelCore
+﻿namespace ExcelUtile.ExcelCore
 {
     internal class ExcelReader<T> where T : class
     {
@@ -12,7 +10,7 @@ namespace ExcelUtile.ExcelCore
         private ISheet? _currentSheet;
         private IRow? _currentRow;
         private SortedWrapper<HeaderInfo>? _headers;
-        private DefaultConverterFactory _factory=new();
+        private DefaultConverterFactory _factory = new();
         private int NumberOfSheets => _workbook.NumberOfSheets;
 
         public ExcelReader(IWorkbook? workbook, ExcelSerializeOptions? option = null)
@@ -45,7 +43,7 @@ namespace ExcelUtile.ExcelCore
             {
                 var str = cell.StringCellValue;
                 if (string.IsNullOrWhiteSpace(str)) continue;
-                header.Add(cell.ColumnIndex,new HeaderInfo(str.Trim(), cell.ColumnIndex));
+                header.Add(cell.ColumnIndex, new HeaderInfo(str.Trim(), cell.ColumnIndex));
             }
             if (!header.Any()) return false;
             _headers = header;
@@ -104,7 +102,7 @@ namespace ExcelUtile.ExcelCore
                 var prop = _info[item.Name];
                 if (prop != null)
                 {
-                    var value= prop.GetConverter(_factory)?.ReadFromCell(cell);
+                    var value = prop.GetConverter(_factory)?.ReadFromCell(cell);
                     if (value != null)
                     {
                         prop.Info.SetValue(obj, value);
@@ -113,7 +111,7 @@ namespace ExcelUtile.ExcelCore
                     {
                         try
                         {
-                            prop.Info.SetValue(obj,Convert.ChangeType(cell.StringCellValue, prop.BaseType));
+                            prop.Info.SetValue(obj, Convert.ChangeType(cell.StringCellValue, prop.BaseType));
                         }
                         catch (Exception)
                         {

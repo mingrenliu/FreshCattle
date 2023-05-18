@@ -10,7 +10,7 @@ public abstract class PropertyTypeInfo
     private readonly string _name;
     public string Name => _name;
     public abstract int Order { get; }
-
+    public abstract int? Width { get;}
     public PropertyInfo Info => _info;
     public Type BaseType { get; private set; }
 

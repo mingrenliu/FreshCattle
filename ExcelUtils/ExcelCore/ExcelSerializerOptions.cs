@@ -10,6 +10,7 @@ internal class ExcelSerializeOptions
     public int HeaderLineIndex { get; set; } = 0;
 
     private int startLine = 1;
+    public int DefaultColumnWidth { get; set; } = 15;
     /// <summary>
     /// data start row index (0-based)
     /// </summary>

@@ -25,6 +25,7 @@ internal class TimeOnlyFormat : ExcelConverter<TimeOnly>
         var style = cell.Sheet.Workbook.CreateCellStyle();
         var format = cell.Sheet.Workbook.CreateDataFormat();
         var formatIndex = format.GetFormat("hh:mm:ss");
+        style.Alignment = HorizontalAlignment.CenterSelection;
         style.DataFormat = formatIndex;
         return style;
     }

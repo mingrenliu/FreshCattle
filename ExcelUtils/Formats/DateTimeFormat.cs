@@ -18,6 +18,7 @@ internal abstract class DateTimeFormat : ExcelConverter<DateTime>
         var format = cell.Sheet.Workbook.CreateDataFormat();
         var formatIndex = format.GetFormat("yyyy-mm-dd");
         style.DataFormat = formatIndex;
+        style.Alignment = HorizontalAlignment.CenterSelection; 
         return style;
     }
 }

@@ -9,7 +9,10 @@ public class DisplayAttribute : Attribute
     /// 字段展示名称
     /// </summary>
     public string Name { get => _name; }
-
+    /// <summary>
+    /// 列宽
+    /// </summary>
+    public int? Width { get; set; }
     /// <summary>
     /// 导出字段顺序
     /// </summary>

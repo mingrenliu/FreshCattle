@@ -14,6 +14,7 @@ internal class LongTimeFormat : DateTimeFormat
         var style = cell.Sheet.Workbook.CreateCellStyle();
         var format = cell.Sheet.Workbook.CreateDataFormat();
         var formatIndex = format.GetFormat("yyyy-mm-dd hh:mm:ss");
+        style.Alignment = HorizontalAlignment.CenterSelection;
         style.DataFormat = formatIndex;
         return style;
     }
