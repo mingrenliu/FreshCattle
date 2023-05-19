@@ -2,8 +2,9 @@
 
 namespace ExcelUtile.Formats;
 
-internal class FloatFormat : ExcelConverter<float>
+public class FloatFormat : ExcelConverter<float>
 {
+    protected override string? _format => "0.00";
     public override float? Read(ICell cell, Type type)
     {
         if (CanConvert(type))
@@ -17,7 +18,7 @@ internal class FloatFormat : ExcelConverter<float>
     {
         if (value.HasValue)
         {
-            cell.SetCellValue(Math.Round(value.Value,3));//待定
+            cell.SetCellValue(value.Value);
         }
     }
 }

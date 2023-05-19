@@ -42,7 +42,7 @@
             foreach (var cell in row.Cells)
             {
                 var str = cell.StringCellValue;
-                if (string.IsNullOrWhiteSpace(str)||!_info.ContainKey(str)) continue;
+                if (string.IsNullOrWhiteSpace(str) || !_info.ContainKey(str)) continue;
                 header.Add(cell.ColumnIndex, new HeaderInfo(str.Trim(), cell.ColumnIndex));
             }
             if (!header.Any()) return false;
@@ -54,6 +54,7 @@
             }
             return true;
         }
+
         private void Validate()
         {
             foreach (var info in _info.Values.Where(x => x.IsRequired))
@@ -65,6 +66,7 @@
                 throw new Exception($"导入失败,必须导入字段缺失:{info.Name}");
             }
         }
+
         /// <summary>
         /// 后续合并行时,多行推进
         /// </summary>
@@ -116,16 +118,24 @@
                 var prop = _info[item.Name];
                 if (prop != null)
                 {
-                    var value = prop.GetConverter(_factory)?.ReadFromCell(cell);
-                    if (value != null)
+                    var converter = prop.GetConverter(_factory);
+                    if (converter != null)
                     {
-                        prop.Info.SetValue(obj, value);
+                        var value = converter.ReadFromCell(cell);
+                        if (value != null)
+                        {
+                            prop.Info.SetValue(obj, value);
+                        }
                     }
-                    else//一般用不到
+                    else
                     {
                         try
                         {
-                            prop.Info.SetValue(obj, Convert.ChangeType(cell.StringCellValue, prop.BaseType));
+                            var str = cell.ToString();
+                            if (str != null)
+                            {
+                                prop.Info.SetValue(obj, Convert.ChangeType(str, prop.BaseType));
+                            }
                         }
                         catch (Exception)
                         {

@@ -21,21 +21,19 @@ namespace ExcelUtile.ExcelCore
         {
             foreach (var property in type.GetProperties())
             {
-                var containName = _dic.TryGetValue(property.Name, out var name);
-                if (!containName && _strict)
+                if (_dic.TryGetValue(property.Name, out var name) || !_strict)
                 {
-                    continue;
-                }
-                var attribute = property.GetCustomAttribute<DisplayAttribute>();
-                if (attribute != null)
-                {
-                    yield return new DefaultPropertyInfo(property, attribute, name);
+                    var attribute = property.GetCustomAttribute<DisplayAttribute>();
+                    if (attribute != null)
+                    {
+                        yield return new DefaultPropertyInfo(property, attribute, name);
+                    }
                 }
             }
         }
     }
 
-    internal static class DefaultPropertySelector
+    public static class DefaultPropertySelector
     {
         internal static IEnumerable<PropertyTypeInfo> GetTypeInfo(Type type)
         {

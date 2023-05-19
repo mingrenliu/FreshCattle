@@ -4,7 +4,9 @@ namespace ExcelUtile.Formats;
 
 public abstract class ExcelConverter
 {
-    protected ICellStyle? _cellStype;
+    protected ICellStyle? _cellStyle;
+    protected virtual string? _format { get;}
+
     protected readonly Type _type;
 
     public ExcelConverter(Type type)
@@ -22,7 +24,7 @@ public abstract class ExcelConverter
     public void WriteToCell(ICell cell, object? obj)
     {
         WriteAsObject(cell, obj);
-        cell.CellStyle = _cellStype?? CreateCellType(cell);
+        cell.CellStyle = _cellStyle?? CreateCellType(cell);
     }
 
     public virtual void WriteAsObject(ICell cell, object? obj)
@@ -33,7 +35,13 @@ public abstract class ExcelConverter
     public virtual ICellStyle? CreateCellType(ICell cell)
     {
         var style = cell.Sheet.Workbook.CreateCellStyle();
-        style.Alignment = HorizontalAlignment.CenterSelection;
+        style.Alignment = HorizontalAlignment.Center;
+        if (!string.IsNullOrWhiteSpace(_format))
+        {
+            var format=cell.Sheet.Workbook.CreateDataFormat();
+            var formatIndex=format.GetFormat(_format);
+            style.DataFormat=formatIndex;
+        }
         return style;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ExcelUtile.ExcelCore;
 
-internal class DefaultPropertyInfo : PropertyTypeInfo
+public class DefaultPropertyInfo : PropertyTypeInfo
 {
     private readonly DisplayAttribute _display;
 
@@ -10,7 +10,7 @@ internal class DefaultPropertyInfo : PropertyTypeInfo
     {
         _display = attribute;
     }
-    public override int? Width => _display.Width;
+    public override int? Width => _display.Width<=0?null: _display.Width;
     public override bool IsRequired => _display.IsRequired;
 
     public override int Order => _display.Order;

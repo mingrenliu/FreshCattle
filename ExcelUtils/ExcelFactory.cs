@@ -2,7 +2,7 @@
 
 namespace ExcelUtile;
 
-internal static class ExcelFactory
+public static class ExcelFactory
 {
     public static ISheet WithSheet(this XSSFWorkbook workbook, string sheetName)
     {

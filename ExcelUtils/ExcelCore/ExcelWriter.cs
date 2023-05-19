@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace ExcelUtile.ExcelCore
+﻿namespace ExcelUtile.ExcelCore
 {
     internal class ExcelWriter<T> where T : class
     {
@@ -50,6 +48,7 @@ namespace ExcelUtile.ExcelCore
                 WriteOneLine(item);
             }
         }
+
         private void CreateSheet(string name)
         {
             _rowIndex = 0;
@@ -74,7 +73,7 @@ namespace ExcelUtile.ExcelCore
             {
                 var cell = CreateCell();
                 _factory.GetDefaultConverter(nameof(String))!.WriteToCell(cell, item.Name);
-                _currentSheet!.SetColumnWidth(_columnIndex - 1, (item.Width ?? _option.DefaultColumnWidth)* WidthFactor);
+                _currentSheet!.SetColumnWidth(_columnIndex - 1, (item.Width.HasValue && item.Width > 0 ? item.Width.Value : _option.DefaultColumnWidth) * WidthFactor);
             }
         }
 
@@ -88,7 +87,7 @@ namespace ExcelUtile.ExcelCore
                 var converter = item.GetConverter(_factory);
                 if (converter != null)
                 {
-                    converter?.WriteToCell(cell, value);
+                    converter.WriteToCell(cell, value);
                 }
                 else
                 {

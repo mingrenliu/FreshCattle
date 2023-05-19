@@ -2,19 +2,19 @@
 
 namespace ExcelUtile.Formats;
 
-public class LongFormat : ExcelConverter<long>
+public class ShortFormat : ExcelConverter<short>
 {
     protected override string? _format => "0";
-    public override long? Read(ICell cell, Type type)
+    public override short? Read(ICell cell, Type type)
     {
         if (CanConvert(type))
         {
-            return cell.GetLong();
+            return cell.GetShort();
         }
         return default;
     }
 
-    public override void Write(ICell cell, long? value)
+    public override void Write(ICell cell, short? value)
     {
         if (value.HasValue)
         {

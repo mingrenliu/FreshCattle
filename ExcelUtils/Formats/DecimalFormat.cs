@@ -2,8 +2,9 @@
 
 namespace ExcelUtile.Formats;
 
-internal class DecimalFormat : ExcelConverter<decimal>
+public class DecimalFormat : ExcelConverter<decimal>
 {
+    protected override string? _format => "0.00";
     public override decimal? Read(ICell cell, Type type)
     {
         if (CanConvert(type))
@@ -17,7 +18,7 @@ internal class DecimalFormat : ExcelConverter<decimal>
     {
         if (value.HasValue)
         {
-            cell.SetCellValue(Math.Round(value.Value, 3).ToString());//待定
+            cell.SetCellValue((double)value.Value);
         }
     }
 }

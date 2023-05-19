@@ -2,7 +2,7 @@
 
 namespace ExcelUtile.Formats;
 
-internal class StringFormat : ExcelConverter
+public class StringFormat : ExcelConverter
 {
     public StringFormat() : base(typeof(string))
     {

@@ -19,6 +19,7 @@
 
         public override void WriteAsObject(ICell cell, object? obj)
         {
+            if (obj == null) return;
             if (obj is T value)
             {
                 Write(cell, value);

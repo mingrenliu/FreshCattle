@@ -2,7 +2,7 @@
 
 namespace ExcelUtile.Formats;
 
-internal abstract class DateTimeFormat : ExcelConverter<DateTime>
+public abstract class DateTimeFormat : ExcelConverter<DateTime>
 {
     public override DateTime? Read(ICell cell, Type type)
     {
@@ -11,14 +11,5 @@ internal abstract class DateTimeFormat : ExcelConverter<DateTime>
             return cell.GetDateTime();
         }
         return null ;
-    }
-    public override ICellStyle? CreateCellType(ICell cell)
-    {
-        var style = cell.Sheet.Workbook.CreateCellStyle();
-        var format = cell.Sheet.Workbook.CreateDataFormat();
-        var formatIndex = format.GetFormat("yyyy-mm-dd");
-        style.DataFormat = formatIndex;
-        style.Alignment = HorizontalAlignment.CenterSelection; 
-        return style;
     }
 }

@@ -2,8 +2,10 @@
 
 namespace ExcelUtile.Formats;
 
-internal class DateTimeOffsetFormat : ExcelConverter<DateTimeOffset>
+public class DateTimeOffsetFormat : ExcelConverter<DateTimeOffset>
 {
+    protected override string? _format => "yyyy-mm-dd";
+
     public override DateTimeOffset? Read(ICell cell, Type type)
     {
         if (CanConvert(type))
@@ -17,16 +19,7 @@ internal class DateTimeOffsetFormat : ExcelConverter<DateTimeOffset>
     {
         if (value.HasValue)
         {
-            cell.SetCellValue(value.Value.Date.ToShortDateString());//待定
+            cell.SetCellValue(value.Value.Date);
         }
-    }
-    public override ICellStyle? CreateCellType(ICell cell)
-    {
-        var style = cell.Sheet.Workbook.CreateCellStyle();
-        var format = cell.Sheet.Workbook.CreateDataFormat();
-        var formatIndex = format.GetFormat("yyyy-mm-dd");
-        style.DataFormat = formatIndex;
-        style.Alignment = HorizontalAlignment.CenterSelection;
-        return style;
     }
 }

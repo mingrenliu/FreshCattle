@@ -2,8 +2,9 @@
 
 namespace ExcelUtile.Formats;
 
-internal class IntFormat : ExcelConverter<int>
+public class IntFormat : ExcelConverter<int>
 {
+    protected override string? _format => "0";
     public override int? Read(ICell cell, Type type)
     {
         if (CanConvert(type))

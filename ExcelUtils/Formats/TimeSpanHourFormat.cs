@@ -2,13 +2,14 @@
 
 namespace ExcelUtile.Formats;
 
-public class TimeSpanFormat : ExcelConverter<TimeSpan>
+public class TimeSpanHourFormat : ExcelConverter<TimeSpan>
 {
+    protected override string? _format => "0";
     public override TimeSpan? Read(ICell cell, Type type)
     {
         if (CanConvert(type))
         {
-            return cell.GetTimeSpan();
+            return cell.GetTimeSpanFromHours();
         }
         return default;
     }
@@ -17,7 +18,7 @@ public class TimeSpanFormat : ExcelConverter<TimeSpan>
     {
         if (value.HasValue)
         {
-            cell.SetCellValue(value.Value.ToString("d\\.hh\\:mm\\:ss"));
+            cell.SetCellValue(value.Value.TotalHours);
         }
     }
 }

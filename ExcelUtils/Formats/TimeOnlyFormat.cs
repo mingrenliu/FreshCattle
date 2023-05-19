@@ -2,8 +2,9 @@
 
 namespace ExcelUtile.Formats;
 
-internal class TimeOnlyFormat : ExcelConverter<TimeOnly>
+public class TimeOnlyFormat : ExcelConverter<TimeOnly>
 {
+    protected override string? _format => "hh:mm:ss";
     public override TimeOnly? Read(ICell cell, Type type)
     {
         if (CanConvert(type))
@@ -19,14 +20,5 @@ internal class TimeOnlyFormat : ExcelConverter<TimeOnly>
         {
             cell.SetCellValue(value.Value.ToLongTimeString());//待定
         }
-    }
-    public override ICellStyle? CreateCellType(ICell cell)
-    {
-        var style = cell.Sheet.Workbook.CreateCellStyle();
-        var format = cell.Sheet.Workbook.CreateDataFormat();
-        var formatIndex = format.GetFormat("hh:mm:ss");
-        style.Alignment = HorizontalAlignment.CenterSelection;
-        style.DataFormat = formatIndex;
-        return style;
     }
 }

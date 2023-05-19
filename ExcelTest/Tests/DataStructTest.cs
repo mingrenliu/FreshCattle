@@ -8,18 +8,7 @@ namespace ExcelUtileTest.Tests
         [Test]
         public void SortedWrapper_Count_list_Test()
         {
-            var fwefwe = typeof(string).Name;
-            var a = DateTime.Now.TimeOfDay.Add(new TimeSpan(35, 0, 0));
-            var fewfwe = DateTime.Now.ToLongDateString();
-            var fweefowe= DateTime.Now.ToLongTimeString();
-            var dateonly = DateOnly.FromDateTime(DateTime.Now);
-             var longstr=dateonly   .ToLongDateString();
-             var shortstr=dateonly   .ToShortDateString();
-            var timeonly=TimeOnly.FromDateTime(DateTime.Now);
-            var timestr=timeonly.ToLongTimeString();
-            var timeshortstr=timeonly.ToShortTimeString();
-            var timefewf = DateTimeOffset.Now.DateTime.ToLongDateString();
-            var str = a.ToString(@"hh\:mm\:ss");
+            var type = typeof(ushort).Name;
             var list = GetHeaders();
             Assert.That(list.Count(), Is.EqualTo(4));
         }

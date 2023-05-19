@@ -1,4 +1,6 @@
 ﻿using ExcelTest.Mocks;
+using ExcelUtileTest.Mocks;
+
 namespace ExcelTest
 {
     [TestFixture]
@@ -7,7 +9,7 @@ namespace ExcelTest
     {
 
         [Test]
-        public void New_Export_Return_List_Test()
+        public void New_Export_Person_Return_List_Test()
         {
             var persons = PersonMock.Persons();
             var timer = StartTimer();
@@ -16,6 +18,18 @@ namespace ExcelTest
             var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
             File.WriteAllBytes(path, bytes);
             Console.WriteLine("计算毫秒数："+timer.GetMilliseconds());
+            Assume.That(bytes.Length, Is.AtLeast(10));
+        }
+        [Test]
+        public void New_Export_Record_Return_List_Test()
+        {
+            var persons = RecordMock.Records();
+            var timer = StartTimer();
+            var bytes = ExcelHelper.Export(persons);
+            var direction = LocationHelper.GetExportResourcesPath();
+            var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
+            File.WriteAllBytes(path, bytes);
+            Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
             Assume.That(bytes.Length, Is.AtLeast(10));
         }
         [Test]

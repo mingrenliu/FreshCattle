@@ -2,7 +2,7 @@
 
 namespace ExcelUtile.Formats;
 
-internal class BooleanFormat : ExcelConverter<bool>
+public class BooleanFormat : ExcelConverter<bool>
 {
     public override bool? Read(ICell cell, Type type)
     {

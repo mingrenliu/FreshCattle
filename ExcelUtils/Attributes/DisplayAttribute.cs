@@ -12,7 +12,7 @@ public class DisplayAttribute : Attribute
     /// <summary>
     /// 列宽
     /// </summary>
-    public int? Width { get; set; }
+    public int Width { get; set; }
     /// <summary>
     /// 导出字段顺序
     /// </summary>
