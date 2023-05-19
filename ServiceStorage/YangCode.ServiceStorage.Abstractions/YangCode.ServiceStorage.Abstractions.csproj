@@ -1,32 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>YangCode.ExcelUtile</PackageId>
-    <PackageTags>ExcelUtile</PackageTags>
+    <PackageId>YangCode.ServiceStorage.Abstractions</PackageId>
+    <PackageTags>ServiceStorage;StandartStorage</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.1.0</PackageVersion>
+    <PackageVersion>1.0.8</PackageVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
-    <Description>package is used to excel import or export </Description>
+    <Description>package is used to standard service storage </Description>
     <PackageIcon>L.png</PackageIcon>
     <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\L.png">
+    <None Include="..\..\L.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NPOI" Version="2.6.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
 </Project>
+
