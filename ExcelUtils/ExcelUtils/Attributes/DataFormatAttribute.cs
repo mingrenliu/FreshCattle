@@ -26,13 +26,4 @@ public class DataFormatAttribute : Attribute
             _converter = result;
         }
     }
-
-    /// <summary>
-    /// ctor
-    /// </summary>
-    /// <param name="converter"></param>
-    public DataFormatAttribute(ExcelConverter converter)
-    {
-        _converter = converter;
-    }
 }

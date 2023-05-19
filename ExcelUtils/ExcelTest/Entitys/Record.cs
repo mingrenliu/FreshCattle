@@ -21,15 +21,17 @@ internal class Record
     /// </summary>
     [Display("重量", Order = 3)]
     public double Mass { get; set; }
+
     /// <summary>
     /// 重量
     /// </summary>
     [Display("体积", Order = 10)]
     public decimal? Volume { get; set; }
+
     /// <summary>
     /// 创建时间
     /// </summary>
-    [Display("创建时间",Order= 4,Width = 20)]
+    [Display("创建时间", Order = 4, Width = 20)]
     [DataFormat(typeof(LongTimeFormat))]
     public DateTime CreatedTime { get; set; }
 
@@ -45,16 +47,19 @@ internal class Record
     [Display("时间跨度", Order = 6, IsRequired = false)]
     [DataFormat(typeof(TimeSpanMinuteFormat))]
     public TimeSpan? Spans { get; set; }
+
     /// <summary>
     /// 标签
     /// </summary>
-    [Display("日期", Order =7)]
+    [Display("日期", Order = 7)]
     public DateOnly? Date { get; set; }
+
     /// <summary>
     /// 标签
     /// </summary>
     [Display("时间", Order = 8)]
     public TimeOnly? Time { get; set; }
+
     /// <summary>
     /// 标签
     /// </summary>
