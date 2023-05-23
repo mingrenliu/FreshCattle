@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AttributeApplyAnalyzer {
+namespace AttributeAnalyzer {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace AttributeApplyAnalyzer {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class DisplayResources {
+    internal class DataFormatTypeResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal DisplayResources() {
+        internal DataFormatTypeResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace AttributeApplyAnalyzer {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AttributeApplyAnalyzer.DisplayResources", typeof(DisplayResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AttributeAnalyzer.DataFormatTypeResources", typeof(DataFormatTypeResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace AttributeApplyAnalyzer {
         }
         
         /// <summary>
-        ///   查找类似 Property Display name exist same, please check the displayAttribute name. 的本地化字符串。
+        ///   查找类似 DataFormat argument type should inherit form ExcelConverter&lt;T&gt; 的本地化字符串。
         /// </summary>
         internal static string AnalyzerDescription {
             get {
@@ -70,7 +70,7 @@ namespace AttributeApplyAnalyzer {
         }
         
         /// <summary>
-        ///   查找类似 The {0} property&apos;s display name {1} have existed 的本地化字符串。
+        ///   查找类似 DataFormat argument type {0} is not inherit form ExcelConverter&lt;T&gt; 的本地化字符串。
         /// </summary>
         internal static string AnalyzerMessageFormat {
             get {
@@ -79,7 +79,7 @@ namespace AttributeApplyAnalyzer {
         }
         
         /// <summary>
-        ///   查找类似 Display name have existed 的本地化字符串。
+        ///   查找类似 DataFormat argument type not match 的本地化字符串。
         /// </summary>
         internal static string AnalyzerTitle {
             get {

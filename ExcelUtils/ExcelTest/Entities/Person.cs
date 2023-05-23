@@ -1,4 +1,5 @@
-﻿namespace ExcelTest.Entities;
+﻿using ExcelUtile;
+namespace ExcelTest.Entities;
 
 internal class Person
 {

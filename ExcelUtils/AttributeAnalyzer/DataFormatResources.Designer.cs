@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AttributeApplyAnalyzer {
+namespace AttributeAnalyzer {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace AttributeApplyAnalyzer {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AttributeApplyAnalyzer.DataFormatResources", typeof(DataFormatResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AttributeAnalyzer.DataFormatResources", typeof(DataFormatResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace AttributeApplyAnalyzer {
         }
         
         /// <summary>
-        ///   查找类似 Type names should be same as property. 的本地化字符串。
+        ///   查找类似 Type name&apos;s should be same as property. 的本地化字符串。
         /// </summary>
         internal static string AnalyzerDescription {
             get {

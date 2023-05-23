@@ -1,6 +1,6 @@
 ﻿using ExcelUtile.ExcelCore;
 
-namespace ExcelUtileTest.Tests
+namespace ExcelTest
 {
     [TestFixture]
     internal class DataStructTest

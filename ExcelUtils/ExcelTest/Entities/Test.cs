@@ -3,7 +3,7 @@ using ExcelUtile;
 
 namespace ExcelTest.Entities;
 
-internal class Record
+internal class Test
 {
     /// <summary>
     /// 计量名称
@@ -14,7 +14,7 @@ internal class Record
     /// <summary>
     /// 顺序
     /// </summary>
-    [Display("顺序", Order = 1)]
+    [Display("重量", Order = 1)]
     public int? Order { get; set; }
 
     /// <summary>

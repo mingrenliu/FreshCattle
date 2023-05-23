@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AnalyzerDescription" xml:space="preserve">
-    <value>Property Display name exist same, please check the displayAttribute name.</value>
+    <value>DataFormat argument type should inherit form ExcelConverter&lt;T&gt;</value>
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
   <data name="AnalyzerMessageFormat" xml:space="preserve">
-    <value>The {0} property's display name {1} have existed</value>
+    <value>DataFormat argument type {0} is not inherit form ExcelConverter&lt;T&gt;</value>
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
   <data name="AnalyzerTitle" xml:space="preserve">
-    <value>Display name have existed</value>
+    <value>DataFormat argument type not match</value>
     <comment>The title of the diagnostic.</comment>
   </data>
 </root>
