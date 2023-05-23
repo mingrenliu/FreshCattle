@@ -3,9 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelUtile", ".\ExcelUtils\ExcelUtile.csproj", "{A98F5D5A-5A07-4DB3-809C-7998EA601099}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelUtile", "ExcelUtils\ExcelUtile.csproj", "{A98F5D5A-5A07-4DB3-809C-7998EA601099}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelUtileTest", ".\ExcelTest\ExcelUtileTest.csproj", "{03CE418B-8FAA-4EF7-AD13-4FBAC4C470D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelUtileTest", "ExcelTest\ExcelUtileTest.csproj", "{03CE418B-8FAA-4EF7-AD13-4FBAC4C470D2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AttributeApplyAnalyzer", "AttributeApplyAnalyzer\AttributeApplyAnalyzer.csproj", "{0B13D5BE-56E1-4358-A7CB-EB447F01E274}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analyzers", "Analyzers", "{97C0D124-C995-43CD-B478-C99CD5FDF22A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelAttributeAnalyzer", "ExcelAttributeAnalyzer\ExcelAttributeAnalyzer\ExcelAttributeAnalyzer.csproj", "{FBCA051D-5912-40AE-995B-B622C98D54F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelAttributeAnalyzer.Package", "ExcelAttributeAnalyzer\ExcelAttributeAnalyzer.Package\ExcelAttributeAnalyzer.Package.csproj", "{CC107BE4-C789-4C96-B4AE-32FC7FCD8E6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelAttributeAnalyzer.Vsix", "ExcelAttributeAnalyzer\ExcelAttributeAnalyzer.Vsix\ExcelAttributeAnalyzer.Vsix.csproj", "{D9746834-1D0F-4E7C-BE3D-DFABD4B7F7E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +31,30 @@ Global
 		{03CE418B-8FAA-4EF7-AD13-4FBAC4C470D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03CE418B-8FAA-4EF7-AD13-4FBAC4C470D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03CE418B-8FAA-4EF7-AD13-4FBAC4C470D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B13D5BE-56E1-4358-A7CB-EB447F01E274}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B13D5BE-56E1-4358-A7CB-EB447F01E274}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B13D5BE-56E1-4358-A7CB-EB447F01E274}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B13D5BE-56E1-4358-A7CB-EB447F01E274}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBCA051D-5912-40AE-995B-B622C98D54F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBCA051D-5912-40AE-995B-B622C98D54F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBCA051D-5912-40AE-995B-B622C98D54F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBCA051D-5912-40AE-995B-B622C98D54F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC107BE4-C789-4C96-B4AE-32FC7FCD8E6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC107BE4-C789-4C96-B4AE-32FC7FCD8E6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC107BE4-C789-4C96-B4AE-32FC7FCD8E6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC107BE4-C789-4C96-B4AE-32FC7FCD8E6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9746834-1D0F-4E7C-BE3D-DFABD4B7F7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9746834-1D0F-4E7C-BE3D-DFABD4B7F7E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9746834-1D0F-4E7C-BE3D-DFABD4B7F7E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9746834-1D0F-4E7C-BE3D-DFABD4B7F7E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FBCA051D-5912-40AE-995B-B622C98D54F3} = {97C0D124-C995-43CD-B478-C99CD5FDF22A}
+		{CC107BE4-C789-4C96-B4AE-32FC7FCD8E6C} = {97C0D124-C995-43CD-B478-C99CD5FDF22A}
+		{D9746834-1D0F-4E7C-BE3D-DFABD4B7F7E2} = {97C0D124-C995-43CD-B478-C99CD5FDF22A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F1C6896A-803C-41BF-A624-052B3924C10A}

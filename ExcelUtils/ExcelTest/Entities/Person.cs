@@ -1,4 +1,4 @@
-﻿namespace ExcelTest.Entitys;
+﻿namespace ExcelTest.Entities;
 
 internal class Person
 {
@@ -42,7 +42,7 @@ internal class Person
     /// 父亲名字
     /// </summary>
     [Display("父亲名字", Order = 6, IsRequired = false)]
-    public string? FatharName { get; set; }
+    public string? FeatherName { get; set; }
 
     /// <summary>
     /// 备注

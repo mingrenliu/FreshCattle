@@ -1,13 +1,13 @@
 ﻿using ExcelUtile.Formats;
 
-namespace ExcelTest.Entitys;
+namespace ExcelTest.Entities;
 
 internal class Record
 {
     /// <summary>
     /// 计量名称
     /// </summary>
-    [Display("计量名称", Order = 0)]
+    [Display(nameof(Name), Order = 0)]
     public string? Name { get; set; }
 
     /// <summary>
@@ -26,14 +26,14 @@ internal class Record
     /// 重量
     /// </summary>
     [Display("体积", Order = 10)]
+    [DataFormat(typeof(LongTimeFormat))]
     public decimal? Volume { get; set; }
 
     /// <summary>
     /// 创建时间
     /// </summary>
     [Display("创建时间", Order = 4, Width = 20)]
-    [DataFormat(typeof(LongTimeFormat))]
-    public DateTime CreatedTime { get; set; }
+    public virtual DateTime CreatedTime { get; set; }
 
     /// <summary>
     /// 是否有效

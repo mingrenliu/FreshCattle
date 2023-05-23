@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AttributeApplyAnalyzer\AttributeApplyAnalyzer.csproj" />
     <ProjectReference Include="..\ExcelUtils\ExcelUtile.csproj" />
   </ItemGroup>
 
