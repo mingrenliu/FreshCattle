@@ -14,7 +14,7 @@ internal class Test
     /// <summary>
     /// 顺序
     /// </summary>
-    [Display("顺序", Order = 1)]
+    [Display("重量1", Order = 1)]
     public int? Order { get; set; }
 
     /// <summary>

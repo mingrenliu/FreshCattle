@@ -4,18 +4,25 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
     <PackageId>YangCode.ExcelUtile</PackageId>
     <PackageTags>ExcelUtile</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.1.1</PackageVersion>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageVersion>1.1.5</PackageVersion>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
     <Description>package is used to excel import or export </Description>
     <PackageIcon>L.png</PackageIcon>
     <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,8 +34,21 @@
 
   <ItemGroup>
     <PackageReference Include="NPOI" Version="2.6.0" />
-    <PackageReference Include="YangCode.ExcelUtile.AttributeAnalyzer" Version="1.0.0">
-    </PackageReference>
+  </ItemGroup>
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\AttributeAnalyzer.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\ExcelUtile.dll" PackagePath="lib/net6.0" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\AttributeAnalyzer\AttributeAnalyzer.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

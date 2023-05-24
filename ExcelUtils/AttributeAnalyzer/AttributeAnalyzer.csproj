@@ -5,7 +5,7 @@
     <IsPackable>false</IsPackable>
 
     <!-- Avoid ID conflicts with the package project. -->
-    <PackageId>*$(MSBuildProjectFile)*</PackageId>
+    <PackageId>$(MSBuildProjectFile)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
