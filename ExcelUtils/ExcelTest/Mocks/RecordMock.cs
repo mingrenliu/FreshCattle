@@ -17,7 +17,7 @@ namespace ExcelUtileTest.Mocks
                 .RuleFor(x=>x.Date,faker=>faker.Date.BetweenDateOnly(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddYears(1))))
                 .RuleFor(x=>x.Time,faker=>faker.Date.BetweenTimeOnly(TimeOnly.FromDateTime(DateTime.Now.Date),TimeOnly.FromDateTime(DateTime.Now.Date.AddSeconds(-1))))
                 .RuleFor(x => x.TimeOffset, faker => faker.Date.FutureOffset());
-            return faker.GenerateBetween(1000, 2000);
+            return faker.GenerateBetween(2000, 2000);
         }
     }
 }

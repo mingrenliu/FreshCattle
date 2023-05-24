@@ -21,16 +21,15 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
     <PackageReference Include="NUnit.Analyzers" Version="3.5.0" />
     <PackageReference Include="coverlet.collector" Version="3.1.2" />
-    <PackageReference Include="YangCode.ExcelUtile" Version="1.1.3" />
-
-    <PackageReference Include="AttributeAnalyzer" Version="1.0.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Resources\Exports\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExcelUtils\ExcelUtile.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,15 +8,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>AttributeAnalyzer</PackageId>
-    <PackageVersion>1.0.6</PackageVersion>
-    <PackageTags>AttributeAnalyzer, analyzers</PackageTags>
+    <PackageId>YangCode.ExcelUtile.AttributeAnalyzer</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <PackageTags>ExcelUtile,AttributeAnalyzer,analyzers</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
-    <Description>package is used to excel import or export </Description>
+    <Description>analyzer package is used to excel import or export </Description>
     <PackageIcon>L.png</PackageIcon>
     <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

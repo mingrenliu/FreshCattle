@@ -91,7 +91,11 @@
                 }
                 else
                 {
-                    cell.SetCellValue(value?.ToString());
+                    var str = value?.ToString();
+                    if (!string.IsNullOrEmpty(str))
+                    {
+                        cell.SetCellValue(str);
+                    }
                 }
             }
         }

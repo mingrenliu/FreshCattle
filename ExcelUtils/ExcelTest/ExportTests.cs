@@ -12,25 +12,25 @@ namespace ExcelTest
         public void New_Export_Person_Return_List_Test()
         {
             var persons = PersonMock.Persons();
-            var timer = StartTimer();
-            var bytes = ExcelHelper.Export<Person>(persons);
             var direction = LocationHelper.GetExportResourcesPath();
             var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
+            var timer = StartTimer();
+            var bytes = ExcelHelper.Export(persons);
+            Console.WriteLine("计算毫秒数："+timer.GetMilliseconds() + ";条数:" + persons.Count());
             File.WriteAllBytes(path, bytes);
-            Console.WriteLine("计算毫秒数："+timer.GetMilliseconds());
             Assume.That(bytes.Length, Is.AtLeast(10));
         }
         [Test]
         public void New_Export_Record_Return_List_Test()
         {
             var persons = RecordMock.Records();
-            var timer = StartTimer();
-            var bytes = ExcelHelper.Export(persons);
             var direction = LocationHelper.GetExportResourcesPath();
             var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
+            var timer = StartTimer();
+            var bytes = ExcelHelper.Export(persons);
+            Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds()+";条数:"+persons.Count());
             File.WriteAllBytes(path, bytes);
-            Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
-            Assume.That(bytes.Length, Is.AtLeast(10));
+            Assume.That(bytes.Length, Is.AtLeast(2000));
         }
         [Test]
         public void New_Export_Empty_Test()

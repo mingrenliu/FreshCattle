@@ -42,6 +42,7 @@ public abstract class ExcelConverter
             var formatIndex=format.GetFormat(_format);
             style.DataFormat=formatIndex;
         }
+        _cellStyle = style;
         return style;
     }
 }
