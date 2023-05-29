@@ -1,9 +1,9 @@
 ﻿namespace DatabaseHandler.Entities
 {
     /// <summary>
-    /// 当前用户信息
+    /// 默认用户信息
     /// </summary>
-    public class CurrentUser
+    public class CurrentUser : ICurrentUser
     {
         private static readonly string _defaultTenantId = "global";
 
@@ -28,11 +28,11 @@
             UserName = userName;
             TenantId = string.IsNullOrWhiteSpace(tenantId) ? _defaultTenantId : tenantId;
         }
-    }
-    public class UserInfoName
-    {
-        public const string UserId = "UserId";
-        public const string UserName = "UserName";
-        public const string TenantId = "TenantId";
+
+        public string? GetUserName() => UserName;
+
+        public string? GetUserId() => UserId;
+
+        public string GetTenantId() => TenantId;
     }
 }
