@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <PackageId>YangCode.InheritCore</PackageId>
+    <PackageTags>InheritCore</PackageTags>
+    <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
+    <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Company>YangCode</Company>
+    <Authors>LiuYang</Authors>
+    <Description>Class inherit</Description>
+    <PackageIcon>L.png</PackageIcon>
+    <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\L.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\InheritAnalyzer.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\InheritCore.dll" PackagePath="lib/net6.0" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\InheritAnalyzer\InheritAnalyzer.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>
