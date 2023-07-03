@@ -5,7 +5,18 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InheritAnalyzer", "InheritAnalyzer\InheritAnalyzer.csproj", "{0B446ED2-1409-4FDA-99D8-F164836EFDAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InheritCore", "InheritCore\InheritCore.csproj", "{7D3B5318-8B40-41BA-B45D-6053D813A9DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InheritCore", "InheritCore\InheritCore.csproj", "{7D3B5318-8B40-41BA-B45D-6053D813A9DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceAnalyzer", "ServiceAnalyzer\ServiceAnalyzer.csproj", "{605310D6-62C1-4E2A-8370-53B76F192E22}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerAnalyzer", "ControllerAnalyzer\ControllerAnalyzer.csproj", "{2A6CD7C9-0B73-47E9-80D3-3CB1B8438007}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0E75E3F-C4C7-49EC-A503-D3D2743CEF33}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceAnalyzer.Test", "ServiceAnalyzer.Test\ServiceAnalyzer.Test.csproj", "{1C3601FE-87EF-4B86-9B35-C8C3D08AB87A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +32,18 @@ Global
 		{7D3B5318-8B40-41BA-B45D-6053D813A9DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D3B5318-8B40-41BA-B45D-6053D813A9DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D3B5318-8B40-41BA-B45D-6053D813A9DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{605310D6-62C1-4E2A-8370-53B76F192E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{605310D6-62C1-4E2A-8370-53B76F192E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{605310D6-62C1-4E2A-8370-53B76F192E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{605310D6-62C1-4E2A-8370-53B76F192E22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A6CD7C9-0B73-47E9-80D3-3CB1B8438007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A6CD7C9-0B73-47E9-80D3-3CB1B8438007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A6CD7C9-0B73-47E9-80D3-3CB1B8438007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A6CD7C9-0B73-47E9-80D3-3CB1B8438007}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C3601FE-87EF-4B86-9B35-C8C3D08AB87A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C3601FE-87EF-4B86-9B35-C8C3D08AB87A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C3601FE-87EF-4B86-9B35-C8C3D08AB87A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C3601FE-87EF-4B86-9B35-C8C3D08AB87A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
