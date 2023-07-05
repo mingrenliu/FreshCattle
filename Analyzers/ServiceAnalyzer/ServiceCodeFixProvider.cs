@@ -1,7 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Host;
 using ServiceAnalyzer.Diagnostics;
 using ServiceAnalyzer.Diagnotics;
 using System;
@@ -30,34 +32,23 @@ namespace ServiceAnalyzer
             //var root=await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.First();
             var syntaxToken =(await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
-            var implement=syntaxToken.Parent.AncestorsAndSelf().OfType<InterfaceDeclarationSyntax>().First();
+            var target=(InterfaceDeclarationSyntax)syntaxToken.Parent;
             //
-            var lst = new List<MethodDeclarationSyntax>();
+            var interfaceMethods = new List<MethodDeclarationSyntax>();
+            var classMethods = new List<MethodDeclarationSyntax>();
             foreach (var item in diagnostic.AdditionalLocations)
             {
-                lst.AddRange(await FindMethodsInClass(item));
+
             }
             var sourceTree = diagnostic.AdditionalLocations.First().SourceTree;
             context.RegisterCodeFix(CodeAction.Create(ServiceCodeFixResource.CodeFixTitle,
-                createChangedDocument:token=>GenerateMethodsAsync(context.Document,implement,lst,token),
+                createChangedDocument:token=>GenerateMethodsAsync(context.Document,target,interfaceMethods, classMethods, token),
                 equivalenceKey:ServiceCodeFixResource.CodeFixTitle), 
                 context.Diagnostics.First());
         }
-        public static async Task<Document> GenerateMethodsAsync(Document doc,InterfaceDeclarationSyntax node,List<MethodDeclarationSyntax> methods,CancellationToken token)
+        public static async Task<Document> GenerateMethodsAsync(Document doc,InterfaceDeclarationSyntax target,List<MethodDeclarationSyntax> interfaceMethods, List<MethodDeclarationSyntax> classMethods, CancellationToken token)
         {
             return await Task.FromResult(doc);
-        }
-        public static async Task<IEnumerable<InterfaceDeclarationSyntax>> FindMethodsInInterface(Location location)
-        {
-            var rootTree = await location.SourceTree.GetRootAsync();
-            return rootTree.FindToken(location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<InterfaceDeclarationSyntax>().First()
-                .DescendantNodes().OfType<InterfaceDeclarationSyntax>();
-        }
-        public static async Task<IEnumerable<MethodDeclarationSyntax>> FindMethodsInClass(Location location)
-        {
-            var rootTree = await location.SourceTree.GetRootAsync();
-            return rootTree.FindToken(location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First()
-                .DescendantNodes().OfType<MethodDeclarationSyntax>();
         }
     }   
 
