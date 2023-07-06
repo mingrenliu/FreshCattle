@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 
-namespace InheritAnalyzer
+namespace InheritAnalyzer.TransformInfo
 {
     public class InheritorInfo
     {

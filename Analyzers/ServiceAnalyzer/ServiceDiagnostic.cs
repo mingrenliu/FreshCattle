@@ -94,7 +94,7 @@ namespace ServiceAnalyzer
             var methods = symbol.GetMembers().OfType<IMethodSymbol>().Except(symbol.Constructors);
             foreach (var method in methods)
             {
-                if (method.IsStatic)
+                if (method.IsStatic || method.IsGenericMethod)
                 {
                     continue;
                 }

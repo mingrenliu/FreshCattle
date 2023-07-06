@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 
-namespace InheritAnalyzer
+namespace InheritAnalyzer.TransformInfo
 {
     public class ClassInfo
     {
@@ -21,6 +21,6 @@ namespace InheritAnalyzer
         /// <summary>
         /// 自定义类型属性
         /// </summary>
-        public Dictionary<string,ITypeSymbol> ComplexProperties { get; set; }
+        public Dictionary<string, ITypeSymbol> ComplexProperties { get; set; }
     }
 }

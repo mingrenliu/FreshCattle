@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using InheritAnalyzer.TransformInfo;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceAnalyzer.Diagnostics;
@@ -22,6 +23,13 @@ namespace InheritAnalyzer
             {
                 Debugger.Launch();
             }
+            var additionClass = context.AdditionalTextsProvider.SelectMany((source, token) =>
+            {
+                var text = source.GetText(token);
+                SyntaxTree tree = CSharpSyntaxTree.ParseText(text);
+                return "string";
+            });
+
             var allClassName = context.SyntaxProvider.CreateSyntaxProvider((node, _) => node is ClassDeclarationSyntax, (context, _) =>
             {
                 var refAssembly = context.SemanticModel.Compilation.ReferencedAssemblyNames.FirstOrDefault(x => x.Name == "TestLib");
@@ -34,6 +42,10 @@ namespace InheritAnalyzer
                 }
                 return null;
             }).Collect();
+            context.RegisterSourceOutput(allClassName, (context, source) =>
+            {
+
+            });
             var inheritorInfo = context.SyntaxProvider.ForAttributeWithMetadataName(FullName, (node, _) => node is ClassDeclarationSyntax, Transform).WithTrackingName("PropName");
             var pairInfo = inheritorInfo.Combine(allClassName);
             context.RegisterSourceOutput(pairInfo, (context, source) =>
