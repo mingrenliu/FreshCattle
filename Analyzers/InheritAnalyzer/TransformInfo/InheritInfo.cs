@@ -19,12 +19,14 @@ namespace InheritAnalyzer.TransformInfo
         /// 类节点
         /// </summary>
         public ClassDeclarationSyntax ClassNode { get; set; }
+        public AttributeSyntax AttributeNode { get; set; }
 
-        public InheritInfo(string currentClassName, string inheritedClassName, ClassDeclarationSyntax classNode)
+        public InheritInfo(string currentClassName, string inheritedClassName, ClassDeclarationSyntax classNode, AttributeSyntax attributeNode)
         {
             CurrentClassName = currentClassName;
             InheritedClassName = inheritedClassName;
             ClassNode = classNode;
+            AttributeNode = attributeNode;
         }
 
         public bool Equals(InheritInfo x, InheritInfo y)

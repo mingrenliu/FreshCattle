@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+using ServiceAnalyzer.Diagnostics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -53,14 +55,20 @@ namespace InheritAnalyzer
             {
                 var currentClass = source.Left;
                 var classSources=source.Right;
-                if (classSources.Any(x=>x.ClassName== currentClass.InheritedClassName))
+                var inheritedClass = classSources.FirstOrDefault(x => x.ClassName == currentClass.InheritedClassName);
+                if (inheritedClass!=null)
                 {
                     ctx.AddSource(currentClass.CurrentClassName + ".gen.cs",);
                 }
-                ctx.ReportDiagnostic();
+                else
+                {
+                    ctx.ReportDiagnostic(Diagnostic.Create(ClassNotFoundDiagnostic.Rule, currentClass.AttributeNode.GetLocation(), currentClass.InheritedClassName),);
+                }
             });
         }
-
+        public static SourceText GenerateCode(InheritInfo to,ClassInfo from)
+        {
+        }
         public static bool ClassWithAttributeFilter(SyntaxNode node)
         {
             if (node is ClassDeclarationSyntax classNode)
@@ -92,7 +100,7 @@ namespace InheritAnalyzer
                             var argument = item.ArgumentList.Arguments.FirstOrDefault();
                             if (argument!=null)
                             {
-                                var result= new InheritInfo(classNode.Identifier.ValueText, argument.ToFullString(),classNode);
+                                var result= new InheritInfo(classNode.Identifier.ValueText, argument.ToFullString(),classNode,item);
                                 foreach (var prop in classNode.DescendantNodes().OfType<PropertyDeclarationSyntax>())
                                 {
                                     result.Add(prop.Identifier.ValueText);

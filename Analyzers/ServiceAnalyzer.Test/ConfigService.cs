@@ -1,25 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace ServiceAnalyzer.Test
+namespace ServiceAnalyzer.Test;
+
+public interface IConfigService
+
 {
-    public interface IConfigService
+    void Display(string name);
+    void Display1(string name);
+}
 
+public class ConfigService : IConfigService
+
+{
+    public int Name { get; set; }
+    public void Display(string name)
     {
-        void Display(string name);
-        void Display1(string name);
+        Console.WriteLine(name);
     }
-
-    public class ConfigService : IConfigService
-
+    public void Display1(string name)
     {
-        public int Name { get; set; }
-        public void Display(string name)
-        {
-            Console.WriteLine(name);
-        }
-        public void Display1(string name)
-        {
-            Console.WriteLine(name);
-        }
+        Console.WriteLine(name);
     }
 }
+
+
