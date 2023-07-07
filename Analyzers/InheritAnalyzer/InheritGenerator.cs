@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace InheritAnalyzer
 {
@@ -16,12 +17,13 @@ namespace InheritAnalyzer
         public static readonly string Inherit = "Inherit";
         public static readonly string DeepInherit = "DeepInherit";
         public static readonly string InheritIgnore = "InheritIgnore";
+        public static readonly SyntaxTrivia DefaultSpace = Whitespace("    ");
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             if (!Debugger.IsAttached)
             {
-                Debugger.Launch();
+                Debugger.Launch(); 
             }
             var classSource = context.AdditionalTextsProvider.Select((source, token) => source.GetText(token)).SelectMany((source, token) =>
             {
