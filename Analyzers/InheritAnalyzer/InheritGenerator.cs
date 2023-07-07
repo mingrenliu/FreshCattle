@@ -66,9 +66,7 @@ namespace InheritAnalyzer
                 }
             });
         }
-        public static SourceText GenerateCode(InheritInfo to,ClassInfo from)
-        {
-        }
+
         public static bool ClassWithAttributeFilter(SyntaxNode node)
         {
             if (node is ClassDeclarationSyntax classNode)
