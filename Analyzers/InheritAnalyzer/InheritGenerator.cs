@@ -25,7 +25,7 @@ namespace InheritAnalyzer
         {
             if (!Debugger.IsAttached)
             {
-                Debugger.Launch(); 
+                Debugger.Launch();
             }
             var classSource = context.AdditionalTextsProvider.Select((source, token) => source.GetText(token)).SelectMany((source, token) =>
             {
@@ -58,11 +58,11 @@ namespace InheritAnalyzer
                 var inheritedClass = classSources.FirstOrDefault(x => x.ClassName == currentClass.InheritedClassName);
                 if (inheritedClass!=null)
                 {
-                    ctx.AddSource(currentClass.CurrentClassName + ".gen.cs",);
+                    ctx.AddSource(currentClass.CurrentClassName + ".gen.cs", CodeGeneratorFactory.GenerateCode(currentClass, inheritedClass));
                 }
                 else
                 {
-                    ctx.ReportDiagnostic(Diagnostic.Create(ClassNotFoundDiagnostic.Rule, currentClass.AttributeNode.GetLocation(), currentClass.InheritedClassName),);
+                    ctx.ReportDiagnostic(Diagnostic.Create(ClassNotFoundDiagnostic.Rule, currentClass.AttributeNode.GetLocation(), new object[] { currentClass.InheritedClassName }));
                 }
             });
         }
@@ -96,9 +96,10 @@ namespace InheritAnalyzer
                         if (item.Name.ToFullString() == ShallowInherit)
                         {
                             var argument = item.ArgumentList.Arguments.FirstOrDefault();
+                            var inheritedName=argument.DescendantTokens().First().ValueText;
                             if (argument!=null)
                             {
-                                var result= new InheritInfo(classNode.Identifier.ValueText, argument.ToFullString(),classNode,item);
+                                var result= new InheritInfo(classNode.Identifier.ValueText, inheritedName, classNode,item);
                                 foreach (var prop in classNode.DescendantNodes().OfType<PropertyDeclarationSyntax>())
                                 {
                                     result.Add(prop.Identifier.ValueText);

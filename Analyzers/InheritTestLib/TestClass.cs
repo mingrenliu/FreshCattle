@@ -2,7 +2,7 @@
 namespace InheritTestLib;
 
 [ShallowInherit("UserConfig")]
-public class TestClass
+public partial class TestClass
 {
 
 }
