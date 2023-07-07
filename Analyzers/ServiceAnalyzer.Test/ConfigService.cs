@@ -12,6 +12,7 @@ namespace ServiceAnalyzer.Test
     public class ConfigService : IConfigService
 
     {
+        public int Name { get; set; }
         public void Display(string name)
         {
             Console.WriteLine(name);

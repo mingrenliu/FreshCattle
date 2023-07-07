@@ -12,10 +12,10 @@
     <None Remove="Entities\**" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="Entities\*.cs" />
+    <AdditionalFiles Include="..\TestResources\*Entities\*.cs" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\InheritAnalyzer\InheritAnalyzer.csproj" />
+    <ProjectReference Include="..\InheritAnalyzer\InheritAnalyzer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     <ProjectReference Include="..\InheritCore\InheritCore.csproj" />
   </ItemGroup>
 </Project>

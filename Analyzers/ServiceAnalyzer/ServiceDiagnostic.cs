@@ -25,17 +25,13 @@ namespace ServiceAnalyzer
             var option = context.Options;
             if (context.Symbol is INamedTypeSymbol symbol)
             {
-/*                if (!context.Options.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue("", out var suffix) || string.IsNullOrWhiteSpace(suffix))
-                {
-                    suffix = _suffix;
-                }*/
                 if (symbol.Name.EndsWith(_suffix))
                 {
                     var implement = symbol.AllInterfaces.FirstOrDefault(x => x.Name.Equals("I" + symbol.Name));
                     if (implement != null)
                     {
                         var methods = FindMethodsInClass(symbol);
-                        var implementedMethods =FindImplementedMethods(symbol,FindMethodsInInterface(implement));
+                        var implementedMethods = FindImplementedMethods(symbol, FindMethodsInInterface(implement));
                         var locations = GetLocations(methods.Except(implementedMethods));
                         if (locations.Any())
                         {
@@ -44,24 +40,6 @@ namespace ServiceAnalyzer
                     }
                 }
             }
-        }
-
-        public static IEnumerable<Location> GetMethodNotInInterface(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol)
-        {
-            foreach (var method in classSymbol.GetMembers().OfType<IMethodSymbol>().Except(classSymbol.Constructors))
-            {
-                if (method.IsAbstract) continue;
-                if (method.DeclaredAccessibility == Accessibility.Public || method.DeclaredAccessibility == Accessibility.Internal)
-                {
-                    yield return method.Locations.First();
-                }
-            }
-        }
-
-        public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol symbol)
-        {
-            var methods = symbol.GetMembers().OfType<IMethodSymbol>();
-            return methods.Where(x => !x.IsAbstract && (x.DeclaredAccessibility == Accessibility.Public || x.DeclaredAccessibility == Accessibility.Internal)).Except(symbol.Constructors);
         }
 
         public static IEnumerable<IMethodSymbol> FindMethodsInInterface(INamedTypeSymbol symbol)

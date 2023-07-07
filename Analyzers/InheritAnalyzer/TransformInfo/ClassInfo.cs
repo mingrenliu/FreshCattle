@@ -1,26 +1,30 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace InheritAnalyzer.TransformInfo
+namespace InheritAnalyzer.TransformInfo;
+
+public class ClassInfo : Dictionary<string, PropertyInfo>, IEqualityComparer<ClassInfo>
 {
-    public class ClassInfo
+    public string ClassName { get; }
+
+    public ClassInfo(string className)
     {
-        /// <summary>
-        /// 类名
-        /// </summary>
-        public string ClassName { get; set; }
-        /// <summary>
-        /// 类的语法节点
-        /// </summary>
-        public ClassDeclarationSyntax InheritorNode { get; set; }
-        /// <summary>
-        /// 忽略的属性
-        /// </summary>
-        public List<string> IgnoreProperties { get; set; }
-        /// <summary>
-        /// 自定义类型属性
-        /// </summary>
-        public Dictionary<string, ITypeSymbol> ComplexProperties { get; set; }
+        ClassName = className;
+    }
+
+    public bool Equals(ClassInfo x, ClassInfo y)
+    {
+        if (x.ClassName != ClassName) return false;
+        if (x.Keys.Count != y.Keys.Count) return false;
+        foreach (var key in x.Keys)
+        {
+            if (!y.ContainsKey(key)) return false;
+            if (x[key] != y[key]) return false;
+        }
+        return true;
+    }
+
+    public int GetHashCode(ClassInfo obj)
+    {
+        return obj.ClassName.GetHashCode();
     }
 }
