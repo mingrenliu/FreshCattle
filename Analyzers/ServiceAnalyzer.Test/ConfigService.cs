@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace ServiceAnalyzer.Test;
@@ -10,7 +11,8 @@ public partial class ConfigService : IConfigService
     /// <summary>
     /// 中国
     /// </summary>
-    public int Name { get; set; }
+    [StringLength(100)]
+    public IEnumerable<DateTime> AllTime { get; set; }= new List<DateTime>();
 
     public void Display(string name)
     {

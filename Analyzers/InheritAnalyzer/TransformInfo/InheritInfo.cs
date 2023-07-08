@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 
 namespace InheritAnalyzer.TransformInfo
@@ -24,16 +25,18 @@ namespace InheritAnalyzer.TransformInfo
         /// 类节点
         /// </summary>
         public ClassDeclarationSyntax ClassNode { get; }
+        /// <summary>
+        /// attribute location,for diagnostic
+        /// </summary>
+        public Location AttributeLocation { get; }
 
-        public AttributeSyntax AttributeNode { get; }
-
-        public InheritInfo(string currentClassName, string inheritedClassName, ClassDeclarationSyntax classNode, AttributeSyntax attributeNode, bool isDeepInherit=false)
+        public InheritInfo(string currentClassName, string inheritedClassName, ClassDeclarationSyntax classNode, Location location,bool isDeepInherit=false)
         {
             CurrentClassName = currentClassName;
             InheritedClassName = inheritedClassName;
             ClassNode = classNode;
-            AttributeNode = attributeNode;
             IsDeepInherit = isDeepInherit;
+            AttributeLocation = location;
         }
 
         public bool Equals(InheritInfo x, InheritInfo y)

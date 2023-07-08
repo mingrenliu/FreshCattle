@@ -1,7 +1,20 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 
 namespace InheritAnalyzer.TransformInfo;
+public class ClassComparer : IEqualityComparer<ClassInfo>
+{
+    public bool Equals(ClassInfo x, ClassInfo y)
+    {
+        return x.Equals(y);
+    }
+
+    public int GetHashCode(ClassInfo obj)
+    {
+        return obj.GetHashCode();
+    }
+}
 public class ClassInfo : Dictionary<string, PropertyInfo>,IEqualityComparer<ClassInfo>
 {
     /// <summary>
@@ -12,10 +25,15 @@ public class ClassInfo : Dictionary<string, PropertyInfo>,IEqualityComparer<Clas
     /// 泛型类型个数
     /// </summary>
     public int TypeParameterCount { get; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public ClassDeclarationSyntax ClassNode { get;}
 
-    public ClassInfo(string className, int typeParameterCount=0)
+    public ClassInfo(string className, ClassDeclarationSyntax classNode, int typeParameterCount = 0)
     {
         ClassName = className;
+        ClassNode= classNode;
         TypeParameterCount = typeParameterCount;
     }
     public bool Equals(ClassInfo x, ClassInfo y)

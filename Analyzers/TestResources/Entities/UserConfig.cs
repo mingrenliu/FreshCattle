@@ -5,6 +5,12 @@ namespace Cybstar.MES.Duty.DatabaseAccess.Entities;
 /// </summary>
 public class UserConfig
 {
+    public (int,int) MyProperty4 { get; set; }
+    /// <summary>
+    /// id
+    /// </summary>
+    public System.Collections.Generic.IEnumerable<string> MyProperty { get; set; }
+
     /// <summary>
     /// id
     /// </summary>
@@ -29,4 +35,9 @@ public class UserConfig
     /// 对应的配置
     /// </summary>
     public DutyConfig? Config { get; set; }
+
+    /// <summary>
+    /// 中国
+    /// </summary>
+    public IEnumerable<DateTime> AllTime { get; set; }
 }
