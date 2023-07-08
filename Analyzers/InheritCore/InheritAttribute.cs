@@ -11,8 +11,11 @@ public class InheritAttribute : Attribute
     /// </summary>
     public string Name { get; }
 
-    public InheritAttribute(string name)
+    public bool Deep { get; }
+
+    public InheritAttribute(string name, bool deep=false)
     {
         Name = name;
+        Deep = deep;
     }
 }

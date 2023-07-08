@@ -15,7 +15,6 @@ namespace InheritAnalyzer
     [Generator(LanguageNames.CSharp)]
     public class InheritGenerator : IIncrementalGenerator
     {
-        public static readonly string ShallowInherit = "ShallowInherit";
         public static readonly string Inherit = "Inherit";
         public static readonly string DeepInherit = "DeepInherit";
         public static readonly string InheritIgnore = "InheritIgnore";
@@ -23,10 +22,10 @@ namespace InheritAnalyzer
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            if (!Debugger.IsAttached)
+/*            if (!Debugger.IsAttached)
             {
                 Debugger.Launch();
-            }
+            }*/
             var classSource = context.AdditionalTextsProvider.Select((source, token) => source.GetText(token)).SelectMany((source, token) =>
             {
                 var root = CSharpSyntaxTree.ParseText(source, cancellationToken: token).GetRootAsync(token).GetAwaiter().GetResult();
@@ -37,7 +36,7 @@ namespace InheritAnalyzer
                     results.Add(classInfo);
                     foreach (var prop in item.DescendantNodes().OfType<PropertyDeclarationSyntax>().Where(PropertyFilter))
                     {
-                        if (IsBasicType(prop.Type))
+                        if (PropertyFilterByIgnoreAttribute(prop))
                         {
                             classInfo.Add(prop.Identifier.ValueText, new PropertyInfo(classInfo.ClassName, prop.Identifier.ValueText, prop.Type.ToFullString(), prop));
                         }
@@ -46,9 +45,13 @@ namespace InheritAnalyzer
                 return results;
             });
             var classSources = classSource.Collect();
-            var inheritClassSource = context.SyntaxProvider.CreateSyntaxProvider((node, _) => ClassWithAttributeFilter(node), (context, token) =>
+            var inheritClassSource = context.SyntaxProvider.CreateSyntaxProvider((node, _) => ClassFilterByAttribute(node), (context, token) =>
             {
                 return GetInfo(context.Node);
+            });
+            var deepSource = inheritClassSource.Where(x => x.IsDeepInherit).Collect().Combine(classSources).Select(source =>
+            {
+
             });
             var combineSource=inheritClassSource.Combine(classSources);
             context.RegisterSourceOutput(combineSource, (ctx, source) =>
@@ -67,7 +70,7 @@ namespace InheritAnalyzer
             });
         }
 
-        public static bool ClassWithAttributeFilter(SyntaxNode node)
+        public static bool ClassFilterByAttribute(SyntaxNode node)
         {
             if (node is ClassDeclarationSyntax classNode)
             {
@@ -75,7 +78,8 @@ namespace InheritAnalyzer
                 {
                     foreach (var item in attributeList.Attributes)
                     {
-                        if (item.Name.ToFullString() == ShallowInherit)
+                        var name = item.Name.ToString();
+                        if (name == Inherit || name==DeepInherit )
                         {
                             return true;
                         }
@@ -84,7 +88,20 @@ namespace InheritAnalyzer
             }
             return false;
         }
-
+        public static bool PropertyFilterByIgnoreAttribute(PropertyDeclarationSyntax node)
+        {
+            foreach (var attributeList in node.AttributeLists)
+            {
+                foreach (var item in attributeList.Attributes)
+                {
+                    if (item.Name.ToString() == InheritIgnore)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
         public static InheritInfo GetInfo(SyntaxNode node)
         {
             if (node is ClassDeclarationSyntax classNode)
@@ -93,7 +110,7 @@ namespace InheritAnalyzer
                 {
                     foreach (var item in attributeList.Attributes)
                     {
-                        if (item.Name.ToFullString() == ShallowInherit)
+                        if (item.Name.ToString() == Inherit)
                         {
                             var argument = item.ArgumentList.Arguments.FirstOrDefault();
                             var inheritedName=argument.DescendantTokens().First().ValueText;
@@ -126,7 +143,7 @@ namespace InheritAnalyzer
             return false;
         }
 
-        private static bool IsBasicType(TypeSyntax type)
+        /*private static bool IsBasicType(TypeSyntax type)
         {
             if (type == null) return false;
             if (type.IsKind(SyntaxKind.PredefinedType))
@@ -141,7 +158,11 @@ namespace InheritAnalyzer
             {
                 return IsBasicType(nullableType.ElementType);
             }
+            if (type is NameSyntax name)
+            {
+                return false;
+            }
             return false;
-        }
+        }*/
     }
 }

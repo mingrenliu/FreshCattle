@@ -8,25 +8,32 @@ namespace InheritAnalyzer.TransformInfo
         /// <summary>
         /// 当前类名
         /// </summary>
-        public string CurrentClassName { get; set; }
+        public string CurrentClassName { get; }
+
+        /// <summary>
+        /// 是否为深度继承
+        /// </summary>
+        public bool IsDeepInherit { get; }
 
         /// <summary>
         /// 被继承的类名
         /// </summary>
-        public string InheritedClassName { get; set; }
+        public string InheritedClassName { get; }
 
         /// <summary>
         /// 类节点
         /// </summary>
-        public ClassDeclarationSyntax ClassNode { get; set; }
-        public AttributeSyntax AttributeNode { get; set; }
+        public ClassDeclarationSyntax ClassNode { get; }
 
-        public InheritInfo(string currentClassName, string inheritedClassName, ClassDeclarationSyntax classNode, AttributeSyntax attributeNode)
+        public AttributeSyntax AttributeNode { get; }
+
+        public InheritInfo(string currentClassName, string inheritedClassName, ClassDeclarationSyntax classNode, AttributeSyntax attributeNode, bool isDeepInherit=false)
         {
             CurrentClassName = currentClassName;
             InheritedClassName = inheritedClassName;
             ClassNode = classNode;
             AttributeNode = attributeNode;
+            IsDeepInherit = isDeepInherit;
         }
 
         public bool Equals(InheritInfo x, InheritInfo y)

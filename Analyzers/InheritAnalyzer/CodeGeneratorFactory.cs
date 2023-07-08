@@ -38,7 +38,6 @@ namespace InheritAnalyzer
                 }
             }
             return result.GetText(new UTF8Encoding());
-            //to.ClassNode.SyntaxTree.GetRoot().us
         }
         private static ClassDeclarationSyntax CreateClass(InheritInfo to, ClassInfo from)
         {
@@ -56,7 +55,8 @@ namespace InheritAnalyzer
             {
                 modifiers = modifiers.Add(Token(SyntaxKind.PartialKeyword));
             }
-            return ClassDeclaration(to.ClassNode.Identifier).WithModifiers(modifiers).WithMembers(List<MemberDeclarationSyntax>(props));
+            return ClassDeclaration(to.ClassNode.Identifier).WithModifiers(modifiers).WithMembers(List<MemberDeclarationSyntax>(props))
+                .WithTypeParameterList(to.ClassNode.TypeParameterList).WithConstraintClauses(to.ClassNode.ConstraintClauses);
         }
     }
 }

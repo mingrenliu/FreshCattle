@@ -1,8 +1,8 @@
 ﻿using InheritCore;
 namespace InheritTestLib;
 
-[ShallowInherit("UserConfig")]
-public partial class TestClass
+[Inherit("UserConfig")]
+public partial class TestClass<T> where T : class
 {
 
 }
