@@ -57,7 +57,7 @@ namespace ServiceAnalyzer.Test
 }
 ";
             var expected = VerifyCS.Diagnostic(ServiceHintDiagnostic.DiagnosticId).WithLocation(0).WithLocation(1).WithArguments("ConfigService")
-                .WithSeverity(Microsoft.CodeAnalysis.DiagnosticSeverity.Error);
+                .WithSeverity(Microsoft.CodeAnalysis.DiagnosticSeverity.Info);
             
             await VerifyCS.VerifyCodeFixAsync(sourceCode,expected,fixedCode);
 
@@ -108,7 +108,7 @@ namespace ServiceAnalyzer.Test
 }
 ";
             var expected = VerifyCS.Diagnostic(ServiceHintDiagnostic.DiagnosticId).WithLocation(0).WithLocation(2).WithLocation(1).WithArguments("ConfigService")
-                .WithSeverity(Microsoft.CodeAnalysis.DiagnosticSeverity.Error);
+                .WithSeverity(Microsoft.CodeAnalysis.DiagnosticSeverity.Info);
 
             await VerifyCS.VerifyCodeFixAsync(sourceCode, expected, fixedCode);
 

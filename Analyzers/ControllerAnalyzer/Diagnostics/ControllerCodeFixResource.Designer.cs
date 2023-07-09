@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ServiceAnalyzer.Diagnotics {
+namespace ControllerAnalyzer.Diagnostics {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace ServiceAnalyzer.Diagnotics {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ServiceCodeFixResource {
+    internal class ControllerCodeFixResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ServiceCodeFixResource() {
+        internal ControllerCodeFixResource() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace ServiceAnalyzer.Diagnotics {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ServiceAnalyzer.Diagnotics.ServiceCodeFixResource", typeof(ServiceCodeFixResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ControllerAnalyzer.Diagnostics.ControllerCodeFixResource", typeof(ControllerCodeFixResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,20 @@ namespace ServiceAnalyzer.Diagnotics {
         }
         
         /// <summary>
-        ///   查找类似 Generate Implemented Methods 的本地化字符串。
+        ///   查找类似 Add Service Reference 的本地化字符串。
         /// </summary>
-        internal static string CodeFixTitle {
+        internal static string FieldCodeFixTitle {
             get {
-                return ResourceManager.GetString("CodeFixTitle", resourceCulture);
+                return ResourceManager.GetString("FieldCodeFixTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Invoke Service Methods 的本地化字符串。
+        /// </summary>
+        internal static string MethodCodeFixTitle {
+            get {
+                return ResourceManager.GetString("MethodCodeFixTitle", resourceCulture);
             }
         }
     }

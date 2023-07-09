@@ -17,12 +17,11 @@ namespace ServiceAnalyzer
         {
             context.EnableConcurrentExecution();
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-            context.RegisterSymbolAction(ReportHints, SymbolKind.NamedType);
+            context.RegisterSymbolAction(ReportServiceHints, SymbolKind.NamedType);
         }
 
-        public static void ReportHints(SymbolAnalysisContext context)
+        public static void ReportServiceHints(SymbolAnalysisContext context)
         {
-            var option = context.Options;
             if (context.Symbol is INamedTypeSymbol symbol)
             {
                 if (symbol.Name.EndsWith(_suffix))

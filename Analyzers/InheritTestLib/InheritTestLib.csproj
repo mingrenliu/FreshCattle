@@ -5,11 +5,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>8618</NoWarn>
+    <Test>test1</Test>
+    <Test>$(Test),test2</Test>
+    <Test>$(Test),test13</Test>
   </PropertyGroup>
 
   <ItemGroup>
+    <CompilerVisibleProperty Include="Test"></CompilerVisibleProperty>
     <AdditionalFiles Include="..\TestResources\*Entities\*.cs" Visible="false" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\InheritAnalyzer\InheritAnalyzer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     <ProjectReference Include="..\InheritCore\InheritCore.csproj" />

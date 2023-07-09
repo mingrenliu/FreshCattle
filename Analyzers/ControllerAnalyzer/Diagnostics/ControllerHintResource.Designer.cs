@@ -61,7 +61,7 @@ namespace ControllerAnalyzer.Diagnostics {
         }
         
         /// <summary>
-        ///   查找类似 Inherited class should exist. 的本地化字符串。
+        ///   查找类似 According to same name Service to generate controller. 的本地化字符串。
         /// </summary>
         internal static string AnalyzerDescription {
             get {
@@ -70,7 +70,7 @@ namespace ControllerAnalyzer.Diagnostics {
         }
         
         /// <summary>
-        ///   查找类似 the inherited class {0}  not found 的本地化字符串。
+        ///   查找类似 Have methods defined in the same name service not be invoked by {0} 的本地化字符串。
         /// </summary>
         internal static string AnalyzerMessageFormat {
             get {
@@ -79,7 +79,7 @@ namespace ControllerAnalyzer.Diagnostics {
         }
         
         /// <summary>
-        ///   查找类似 Inherited class not found 的本地化字符串。
+        ///   查找类似 Mehods can be defined 的本地化字符串。
         /// </summary>
         internal static string AnalyzerTitle {
             get {

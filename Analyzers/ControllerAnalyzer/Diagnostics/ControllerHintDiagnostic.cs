@@ -9,6 +9,6 @@ namespace ControllerAnalyzer.Diagnostics
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(ControllerHintResource.AnalyzerMessageFormat), ControllerHintResource.ResourceManager, typeof(ControllerHintResource));
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(ControllerHintResource.AnalyzerDescription), ControllerHintResource.ResourceManager, typeof(ControllerHintResource));
         private const string Category = "ControllerHint";
-        internal static readonly DiagnosticDescriptor Rule = new(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
+        public static readonly DiagnosticDescriptor Rule = new(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
     }
 }

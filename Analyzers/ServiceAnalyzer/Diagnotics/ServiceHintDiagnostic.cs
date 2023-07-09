@@ -10,6 +10,6 @@ namespace ServiceAnalyzer.Diagnostics
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(ServiceHintResource.AnalyzerMessageFormat), ServiceHintResource.ResourceManager, typeof(ServiceHintResource));
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(ServiceHintResource.AnalyzerDescription), ServiceHintResource.ResourceManager, typeof(ServiceHintResource));
         private const string Category = "ServiceHint";
-        internal static readonly DiagnosticDescriptor Rule = new(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+        internal static readonly DiagnosticDescriptor Rule = new(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
     }
 }

@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace ServiceAnalyzer.Test;
 
-public partial class ConfigService : IConfigService
-
+public class ConfigController
 {
-    /// <summary>
-    /// 中国
-    /// </summary>
-    [StringLength(100)]
-    public IEnumerable<DateTime> AllTime { get; set; }= new List<DateTime>();
+    private readonly IConfigService _configService;
+    public void Dis(string name)
+    {
+        _configService.Display(name);
+    }
+}
 
+public partial class ConfigService : IConfigService
+{
     public void Display(string name)
     {
         Console.WriteLine(name);
