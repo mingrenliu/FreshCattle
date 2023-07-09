@@ -11,7 +11,7 @@ namespace ControllerAnalyzer
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ControllerCodeFixProvider)), Shared]
     public class ControllerCodeFixProvider : CodeFixProvider
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ControllerFieldHintDiagnostic.DiagnosticId);
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ControllerFieldHintDiagnostic.DiagnosticId,ControllerHintDiagnostic.DiagnosticId);
 
         public override FixAllProvider GetFixAllProvider()
         {

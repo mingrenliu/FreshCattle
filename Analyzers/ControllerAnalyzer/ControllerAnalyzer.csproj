@@ -14,6 +14,11 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Diagnostics\ControllerCodeFixResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ControllerCodeFixResource.resx</DependentUpon>
+    </Compile>
     <Compile Update="Diagnostics\ControllerFieldHintResource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -26,6 +31,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="Diagnostics\ControllerCodeFixResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ControllerCodeFixResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Diagnostics\ControllerFieldHintResource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ControllerFieldHintResource.Designer.cs</LastGenOutput>
