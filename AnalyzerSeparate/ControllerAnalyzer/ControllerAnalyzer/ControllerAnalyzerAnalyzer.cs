@@ -69,8 +69,8 @@ namespace ControllerAnalyzer
                     {
                         additionalLocations.Add(item.Locations.First());
                     }
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation(), additionalLocations,
-                        new Dictionary<string, string>() { ["FieldName"] = symbol.Name }, new object[] { node.Identifier.ValueText.ToString() }));
+                    context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), additionalLocations,
+                        new Dictionary<string, string>() { ["FieldName"] = field.Declaration.Variables.First().Identifier.ValueText }, new object[] { node.Identifier.ValueText.ToString() }));
                 }
             }
         }

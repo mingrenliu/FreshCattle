@@ -33,7 +33,7 @@ namespace ControllerAnalyzer
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.First();
-            diagnostic.Properties.TryGetKey("FieldName", out var fieldName);
+            diagnostic.Properties.TryGetValue("FieldName", out var fieldName);
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (ClassDeclarationSyntax)syntaxToken.Parent;
             context.RegisterCodeFix(CodeAction.Create(CodeFixResources.MethodCodeFixTitle,

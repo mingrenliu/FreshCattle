@@ -3,9 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Rename;
-using Microsoft.CodeAnalysis.Text;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -19,12 +16,12 @@ namespace ControllerAnalyzer
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ControllerAnalyzerCodeFixProvider)), Shared]
     public class ControllerCtorAnalyzerCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> FixableDiagnosticIds
+        public override sealed ImmutableArray<string> FixableDiagnosticIds
         {
             get { return ImmutableArray.Create(CtorDiagnostic.DiagnosticId); }
         }
 
-        public sealed override FixAllProvider GetFixAllProvider()
+        public override sealed FixAllProvider GetFixAllProvider()
         {
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/FixAllProvider.md for more information on Fix All Providers
             return WellKnownFixAllProviders.BatchFixer;
@@ -40,10 +37,12 @@ namespace ControllerAnalyzer
                 createChangedDocument: token => GenerateMethodsAsync(context.Document, target, serviceName, token),
                 equivalenceKey: CodeFixResources.FieldCodeFixTitle), diagnostic);
         }
+
         public static string GetServiceName(string controllerName)
         {
             return "I" + controllerName.Substring(0, controllerName.Length - 10) + "Service";
         }
+
         public static async Task<Document> GenerateMethodsAsync(Document doc, ClassDeclarationSyntax target, string serviceName, CancellationToken token)
         {
             var paraName = serviceName[1].ToString().ToLower() + serviceName.Substring(2);
@@ -52,12 +51,21 @@ namespace ControllerAnalyzer
             var leadingSpace = space == null ? TriviaList(Whitespace("    ")) : TriviaList(space, Whitespace("    "));
             var members = target.Members;
             var field = FieldDeclaration(VariableDeclaration(IdentifierName(serviceName), SingletonSeparatedList(VariableDeclarator(Identifier(fieldName)))))
-                .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ReadOnlyKeyword))).WithLeadingTrivia(leadingSpace).NormalizeWhitespace();
-            var ctor = ConstructorDeclaration(
+                .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword).WithLeadingTrivia(leadingSpace), Token(SyntaxKind.ReadOnlyKeyword))).WithSemicolonToken(Token(SyntaxKind.SemicolonToken).WithTrailingTrivia(SyntaxTrivia(SyntaxKind.EndOfLineTrivia,"newlines"))).NormalizeWhitespace();
+            var ctor = CreateCtor(target, paraName, serviceName, fieldName,leadingSpace);
+            var list = new MemberDeclarationSyntax[] { field, ctor }.Concat(members);
+            var newInterface = target.WithMembers(List(list)).NormalizeWhitespace();
+            var root = await doc.GetSyntaxRootAsync(token);
+            return doc.WithSyntaxRoot(root.ReplaceNode(target, newInterface));
+        }
+
+        private static ConstructorDeclarationSyntax CreateCtor(ClassDeclarationSyntax target, string paraName, string serviceName, string fieldName,SyntaxTriviaList leadingSpace)
+        {
+            return ConstructorDeclaration(
                         target.Identifier)
                     .WithModifiers(
                         TokenList(
-                            Token(SyntaxKind.PublicKeyword)))
+                            Token(SyntaxKind.PublicKeyword).WithLeadingTrivia()))
                     .WithParameterList(
                         ParameterList(
                             SingletonSeparatedList(
@@ -72,11 +80,7 @@ namespace ControllerAnalyzer
                                     AssignmentExpression(
                                         SyntaxKind.SimpleAssignmentExpression,
                                         IdentifierName(fieldName),
-                                        IdentifierName(paraName)))))).WithLeadingTrivia(leadingSpace).NormalizeWhitespace();
-
-            var newInterface = target.WithMembers(List(members.Insert(0, ctor).Insert(0, field)));
-            var root = await doc.GetSyntaxRootAsync(token);
-            return doc.WithSyntaxRoot(root.ReplaceNode(target, newInterface));
+                                        IdentifierName(paraName)))))).NormalizeWhitespace();
         }
     }
 }

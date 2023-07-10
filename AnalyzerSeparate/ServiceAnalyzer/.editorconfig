@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# RS2008: 启用分析器发布跟踪
+dotnet_diagnostic.RS2008.severity = silent
