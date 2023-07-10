@@ -1,14 +1,24 @@
-﻿using ControllerAnalyzer.Diagnostics;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using VerifyCS1 = ServiceAnalyzer.Test.CSharpCodeFixVerifier<
-    ControllerAnalyzer.ControllerAnalyzer,
-    ControllerAnalyzer.ControllerMethodCodeFixProvider>;
+using VerifyCS = ControllerAnalyzer.Test.CSharpCodeFixVerifier<
+    ControllerAnalyzer.ControllerAnalyzerAnalyzer,
+    ControllerAnalyzer.ControllerAnalyzerCodeFixProvider>;
 
-namespace ServiceAnalyzer.Test
+namespace ControllerAnalyzer.Test
 {
     [TestClass]
     public class ControllerAnalyzerUnitTest
     {
+        //No diagnostics expected to show up
+        [TestMethod]
+        public async Task TestMethod1()
+        {
+            var test = @"";
+
+            await VerifyCS.VerifyAnalyzerAsync(test);
+        }
+
+        //Diagnostic and CodeFix both triggered and checked for
         [TestMethod]
         public async Task TwoLocationTest_Diagnostic()
         {
@@ -47,7 +57,7 @@ public interface IConfigService
     void Display1(string name);
 }
 ";
-            await VerifyCS1.VerifyAnalyzerAsync(sourceCode);
+            await VerifyCS.VerifyAnalyzerAsync(sourceCode);
         }
     }
 }

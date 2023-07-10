@@ -3,8 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ServiceAnalyzer.Diagnostics;
-using ServiceAnalyzer.Diagnotics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -15,13 +13,17 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace ServiceAnalyzer
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ServiceCodeFixProvider)), Shared]
-    public class ServiceCodeFixProvider : CodeFixProvider
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ServiceAnalyzerCodeFixProvider)), Shared]
+    public class ServiceAnalyzerCodeFixProvider : CodeFixProvider
     {
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(ServiceHintDiagnostic.DiagnosticId);
-
-        public override FixAllProvider GetFixAllProvider()
+        public override sealed ImmutableArray<string> FixableDiagnosticIds
         {
+            get { return ImmutableArray.Create(ServiceAnalyzerAnalyzer.DiagnosticId); }
+        }
+
+        public override sealed FixAllProvider GetFixAllProvider()
+        {
+            // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/FixAllProvider.md for more information on Fix All Providers
             return WellKnownFixAllProviders.BatchFixer;
         }
 
@@ -30,9 +32,9 @@ namespace ServiceAnalyzer
             var diagnostic = context.Diagnostics.First();
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (InterfaceDeclarationSyntax)syntaxToken.Parent;
-            context.RegisterCodeFix(CodeAction.Create(ServiceCodeFixResource.CodeFixTitle,
+            context.RegisterCodeFix(CodeAction.Create(CodeFixResources.CodeFixTitle,
                 createChangedDocument: token => GenerateMethodsAsync(context.Document, target, diagnostic.AdditionalLocations, token),
-                equivalenceKey: ServiceCodeFixResource.CodeFixTitle),
+                equivalenceKey: CodeFixResources.CodeFixTitle),
                 context.Diagnostics.First());
         }
 

@@ -220,7 +220,7 @@ namespace InheritAnalyzer
                 {
                     var arguments = attribute.ConstructorArguments;
                     var name = (string)arguments.First().Value;
-                    bool isDeep = arguments.Length > 1 ? (bool)arguments[1].Value : false;
+                    bool isDeep = arguments.Length > 1 && (bool)arguments[1].Value;
                     var attributeLocation = classNode.AttributeLists.SelectMany(x => x.Attributes).First(x => x.Name.ToString() == Inherit).GetLocation();
                     var result = new InheritInfo(classNode.Identifier.ValueText, name, classNode, attributeLocation, isDeep);
                     foreach (var prop in classNode.DescendantNodes().OfType<PropertyDeclarationSyntax>())

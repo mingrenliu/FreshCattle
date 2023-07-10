@@ -12,9 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0-preview.23280.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.4" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.4" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.6.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" Version="1.1.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" Version="1.1.1" />
@@ -25,8 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ControllerAnalyzer\ControllerAnalyzer.csproj" />
-    <ProjectReference Include="..\ServiceAnalyzer\ServiceAnalyzer.csproj" />
+    <ProjectReference Include="..\ControllerAnalyzer\ControllerAnalyzer.csproj" OutputItemType="Analyzer"/>
+    <ProjectReference Include="..\ServiceAnalyzer\ServiceAnalyzer.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
 </Project>
