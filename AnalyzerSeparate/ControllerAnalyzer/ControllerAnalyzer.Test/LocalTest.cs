@@ -1,9 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading;
 
 namespace ControllerAnalyzer
@@ -14,11 +10,11 @@ namespace ControllerAnalyzer
 
         public override SourceText GetText(CancellationToken cancellationToken = default)
         {
-            var str= @"namespace CustomeService
+            var str = @"namespace CustomeService
 {
     public interface ITestService
     {
-        Task Delete(string id);
+        Task DeleteAsync(string id);
         Task<string> Get(string id);
         void Display(string name);
         string GetName(string name);

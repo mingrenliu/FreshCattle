@@ -55,8 +55,7 @@ namespace ControllerAnalyzer
             return ConstructorDeclaration(
                     Identifier(target.Identifier.ValueText))
                     .WithModifiers(
-                        TokenList(
-                            Token(SyntaxKind.PublicKeyword)))
+                        TokenList(XmlCreator.CreateXml(paraName,false)))
                     .WithParameterList(
                         ParameterList(
                             SingletonSeparatedList(
@@ -91,8 +90,8 @@ namespace ControllerAnalyzer
                 var (isAsync, haveReturn) = ParseMethodReturnType(node.ReturnType);
                 var methodName = node.Identifier.ValueText.EndsWith("Async") ? node.Identifier.ValueText.Substring(0, node.Identifier.ValueText.Length - 5) : node.Identifier.ValueText;
                 var method = MethodDeclaration(node.ReturnType, Identifier(methodName))
+                    .WithHttpMethods(HttpMethod.HttpPost, XmlCreator.CreateXml(node.ParameterList.Parameters.Select(x=>x.Identifier.ValueText)))
                     .WithMethodModifiers(isAsync)
-                    .WithHttpMethods(HttpMethod.HttpPost)
                     .WithParameterList(node.ParameterList)
                     .WithMethodBody(fieldName, isAsync, haveReturn, node);
                 members.Add(method);

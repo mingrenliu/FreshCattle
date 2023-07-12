@@ -18,9 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerTest", "ControllerTest\ControllerTest.csproj", "{DD29338F-1B98-4A35-A29A-A70620BEC536}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerTest", "ControllerTest\ControllerTest.csproj", "{DD29338F-1B98-4A35-A29A-A70620BEC536}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceTest", "ServiceTest\ServiceTest.csproj", "{36E00992-2391-4A67-B602-7D75DE00DCD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceTest", "ServiceTest\ServiceTest.csproj", "{69AB8021-5AD4-42DA-B36B-7C21EE212628}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,10 +52,10 @@ Global
 		{DD29338F-1B98-4A35-A29A-A70620BEC536}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD29338F-1B98-4A35-A29A-A70620BEC536}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD29338F-1B98-4A35-A29A-A70620BEC536}.Release|Any CPU.Build.0 = Release|Any CPU
-		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69AB8021-5AD4-42DA-B36B-7C21EE212628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69AB8021-5AD4-42DA-B36B-7C21EE212628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69AB8021-5AD4-42DA-B36B-7C21EE212628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69AB8021-5AD4-42DA-B36B-7C21EE212628}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

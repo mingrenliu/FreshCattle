@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +9,14 @@ namespace ControllerAnalyzer
 {
     public static class SyntaxFactoryExtension
     {
-        public static MethodDeclarationSyntax WithHttpMethods(this MethodDeclarationSyntax node, HttpMethod method)
+        public static MethodDeclarationSyntax WithHttpMethods(this MethodDeclarationSyntax node, HttpMethod method,SyntaxToken token)
         {
             return node.WithAttributeLists(
                                 SingletonList(
                                     AttributeList(
                                         SingletonSeparatedList(
                                             Attribute(
-                                                IdentifierName(method.ToString()))))));
+                                                IdentifierName(method.ToString())))).WithOpenBracketToken(token)));
         }
 
         public static MethodDeclarationSyntax WithMethodModifiers(this MethodDeclarationSyntax node, bool isAsync)

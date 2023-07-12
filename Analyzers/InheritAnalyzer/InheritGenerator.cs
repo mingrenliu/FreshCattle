@@ -22,10 +22,10 @@ namespace InheritAnalyzer
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-/*            if (!Debugger.IsAttached)
+            if (!Debugger.IsAttached)
             {
                 Debugger.Launch();
-            }*/
+            }
             var rootNameSpace = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
             {
                 if (!source.GlobalOptions.TryGetValue(PropertyNameBase + RootNameSpace, out var spaceName) || string.IsNullOrWhiteSpace(spaceName))

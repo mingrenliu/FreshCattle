@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -48,19 +49,24 @@ namespace ControllerAnalyzer
 
         public override void Initialize(AnalysisContext context)
         {
-/*            if (!Debugger.IsAttached)
+            if (!Debugger.IsAttached)
             {
                 Debugger.Launch();
-            }*/
+            }
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterCompilationStartAction(ctx =>
             {
                 var haveOption = ctx.Options.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue(PropertyNameBase + "ServiceNameModel", out var serviceNameModel) && !string.IsNullOrEmpty(serviceNameModel);
                 var patterns = haveOption ? new List<Regex>() { new Regex("^" + serviceNameModel + "$") } : Patterns;
+                ctx.Options.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue(PropertyNameBase + "ProjectDir", out var projectDir);
+                if (string.IsNullOrEmpty(projectDir))
+                {
+                    return;
+                }
                 var files = new Dictionary<string, AdditionalText>();
-                var additionalFiles=new List<AdditionalText>() { new LocalTest() };
-                //var additionalFiles = ctx.Options.AdditionalFiles;
+                var dic1121 = System.AppDomain.CurrentDomain.BaseDirectory;
+                var additionalFiles = ctx.Options.AdditionalFiles;
                 foreach (var item in additionalFiles)
                 {
                     var fileName = item.Path.Split(Path.DirectorySeparatorChar).Last();
