@@ -34,10 +34,16 @@ namespace ControllerAnalyzer
         {
             var diagnostic = context.Diagnostics.Last();
             diagnostic.Properties.TryGetValue("FieldName", out var fieldName);
+            diagnostic.Properties.TryGetValue("UnUsedMethods", out var methodStr);
+            diagnostic.Properties.TryGetValue("SourceCode", out var SourceCodeStr);
+            var unUsedMethods = methodStr.Split(',');
+            var sourceCode = SourceText.From(SourceCodeStr);
+            var methods=(await CSharpSyntaxTree.ParseText(sourceCode).GetRootAsync(context.CancellationToken)).DescendantNodesAndSelf()
+                .OfType<MethodDeclarationSyntax>().Where(x=>unUsedMethods.Contains(x.Identifier.ValueText));
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (ClassDeclarationSyntax)syntaxToken.Parent;
             context.RegisterCodeFix(CodeAction.Create(CodeFixResources.MethodCodeFixTitle,
-                createChangedDocument: token => GenerateMethodsAsync(context.Document, target, fieldName, diagnostic.AdditionalLocations, token),
+                createChangedDocument: token => GenerateMethodsAsync(context.Document, target, fieldName, methods, token),
                 equivalenceKey: CodeFixResources.MethodCodeFixTitle), diagnostic);
         }
         public static string GetServiceName(string controllerName)
@@ -67,7 +73,7 @@ namespace ControllerAnalyzer
                                         IdentifierName(fieldName),
                                         IdentifierName(paraName))))));
         }
-        public static async Task<Document> GenerateMethodsAsync(Document doc, ClassDeclarationSyntax target, string fieldName, IEnumerable<Location> methodLocations, CancellationToken token)
+        public static async Task<Document> GenerateMethodsAsync(Document doc, ClassDeclarationSyntax target, string fieldName, IEnumerable<MethodDeclarationSyntax> methods, CancellationToken token)
         {
             var members = new List<MemberDeclarationSyntax>();
             var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
@@ -80,9 +86,8 @@ namespace ControllerAnalyzer
                 var ctor = CreateCtor(target, paraName, serviceName, fieldName);
                 members.Add(field);members.Add(ctor);
             }
-            foreach (var location in methodLocations)
+            foreach (var node in methods)
             {
-                var node = (MethodDeclarationSyntax)(await location.SourceTree.GetRootAsync()).FindToken(location.SourceSpan.Start).Parent;
                 var (isAsync, haveReturn) = ParseMethodReturnType(node.ReturnType);
                 var methodName = node.Identifier.ValueText.EndsWith("Async") ? node.Identifier.ValueText.Substring(0, node.Identifier.ValueText.Length - 5) : node.Identifier.ValueText;
                 var method = MethodDeclaration(node.ReturnType, Identifier(methodName))

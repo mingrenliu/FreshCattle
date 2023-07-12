@@ -106,8 +106,10 @@ namespace ControllerAnalyzer
                     }
                     if (methods.Any())
                     {
-                        var dic = new Dictionary<string, string>() { ["FieldName"] = field?.Declaration.Variables.First().Identifier.ValueText }.ToImmutableDictionary();
-                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), GetLocations(methods), dic, node.Identifier.ValueText.ToString()));
+                        var dic = new Dictionary<string, string>() { ["FieldName"] = field?.Declaration.Variables.First().Identifier.ValueText };
+                        dic["UnUsedMethods"] = string.Join(",", methods.Select(x=>x.Identifier.ValueText));
+                        dic["SourceCode"]=file.GetText().ToString();
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), dic.ToImmutableDictionary(), node.Identifier.ValueText.ToString()));
                     }
                 }
             }
