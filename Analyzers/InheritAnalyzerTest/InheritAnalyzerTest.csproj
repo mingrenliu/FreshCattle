@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ServiceNameModel>(\w+).spec</ServiceNameModel>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InheritAnalyzer\InheritAnalyzer.csproj"  OutputItemType="Analyzer" ReferenceOutputItem="false"  />
+    <ProjectReference Include="..\InheritCore\InheritCore.csproj" />
+    <CompilerVisibleProperty Include="ServiceNameModel" />
+    <AdditionalFiles Include="..\TestResources\*Entities\*.cs"></AdditionalFiles>
+  </ItemGroup>
+
+</Project>

@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceAnalyzer.Package", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerAnalyzer.Package", "ControllerAnalyzer.Package\ControllerAnalyzer.Package.csproj", "{00945B4C-2187-4BD1-86CA-7A05114337B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzerTestLib", "AnalyzerTestLib\AnalyzerTestLib.csproj", "{74D9C2F6-466A-433F-90B0-2F330297B28A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InheritAnalyzerTest", "InheritAnalyzerTest\InheritAnalyzerTest.csproj", "{8AE613E3-52DC-480F-9AF3-072DA91E8A01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +55,10 @@ Global
 		{00945B4C-2187-4BD1-86CA-7A05114337B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00945B4C-2187-4BD1-86CA-7A05114337B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00945B4C-2187-4BD1-86CA-7A05114337B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74D9C2F6-466A-433F-90B0-2F330297B28A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74D9C2F6-466A-433F-90B0-2F330297B28A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74D9C2F6-466A-433F-90B0-2F330297B28A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74D9C2F6-466A-433F-90B0-2F330297B28A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AE613E3-52DC-480F-9AF3-072DA91E8A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AE613E3-52DC-480F-9AF3-072DA91E8A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AE613E3-52DC-480F-9AF3-072DA91E8A01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AE613E3-52DC-480F-9AF3-072DA91E8A01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
