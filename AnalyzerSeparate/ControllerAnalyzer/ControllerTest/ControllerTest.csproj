@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ServiceNameModel>I(\w)</ServiceNameModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ControllerAnalyzer.CodeFixes\ControllerAnalyzer.CodeFixes.csproj" />
+    <!--
+    <ProjectReference Include="..\ControllerAnalyzer\ControllerAnalyzer.csproj" OutputItemType="Analyzer" ReferenceOutputItem="false" />
+    
+    <ProjectReference Include="..\ServiceTest\ServiceTest.csproj" OutputItemType="Analyzer" ReferenceOutputItem="false" />
+    -->
+    <CompilerVisibleProperty Include="ServiceNameModel" />
+  </ItemGroup>
+
+</Project>

@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <LangVersion>10.0</LangVersion>
     <!-- Avoid ID conflicts with the package project. -->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <PackageId>*$(MSBuildProjectFile)*</PackageId>
   </PropertyGroup>
 
@@ -17,16 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="CtorResources.Designer.cs">
-      <DependentUpon>CtorResources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Update="Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
-    <EmbeddedResource Update="CtorResources.resx">
-      <LastGenOutput>CtorResources.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Update="Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
   </ItemGroup>
 

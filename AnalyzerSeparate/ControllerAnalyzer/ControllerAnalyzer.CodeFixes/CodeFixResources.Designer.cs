@@ -61,15 +61,6 @@ namespace ControllerAnalyzer {
         }
         
         /// <summary>
-        ///   查找类似 Add Service Reference 的本地化字符串。
-        /// </summary>
-        internal static string FieldCodeFixTitle {
-            get {
-                return ResourceManager.GetString("FieldCodeFixTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Invoke Service Methods 的本地化字符串。
         /// </summary>
         internal static string MethodCodeFixTitle {

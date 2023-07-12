@@ -21,7 +21,7 @@ namespace ControllerAnalyzer
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(ControllerAnalyzerAnalyzer.DiagnosticId); }
+            get { return ImmutableArray.Create(ControllerAnalyzer.DiagnosticId); }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
@@ -32,7 +32,7 @@ namespace ControllerAnalyzer
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var diagnostic = context.Diagnostics.First();
+            var diagnostic = context.Diagnostics.Last();
             diagnostic.Properties.TryGetValue("FieldName", out var fieldName);
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (ClassDeclarationSyntax)syntaxToken.Parent;
@@ -40,10 +40,46 @@ namespace ControllerAnalyzer
                 createChangedDocument: token => GenerateMethodsAsync(context.Document, target, fieldName, diagnostic.AdditionalLocations, token),
                 equivalenceKey: CodeFixResources.MethodCodeFixTitle), diagnostic);
         }
-
+        public static string GetServiceName(string controllerName)
+        {
+            return "I" + controllerName.Substring(0, controllerName.Length - 10) + "Service";
+        }
+        private static ConstructorDeclarationSyntax CreateCtor(ClassDeclarationSyntax target, string paraName, string serviceName, string fieldName)
+        {
+            return ConstructorDeclaration(
+                    Identifier(target.Identifier.ValueText))
+                    .WithModifiers(
+                        TokenList(
+                            Token(SyntaxKind.PublicKeyword)))
+                    .WithParameterList(
+                        ParameterList(
+                            SingletonSeparatedList(
+                                Parameter(
+                                    Identifier(paraName))
+                                .WithType(
+                                    IdentifierName(serviceName)))).WithoutLeadingTrivia())
+                    .WithBody(
+                        Block(
+                            SingletonList<StatementSyntax>(
+                                ExpressionStatement(
+                                    AssignmentExpression(
+                                        SyntaxKind.SimpleAssignmentExpression,
+                                        IdentifierName(fieldName),
+                                        IdentifierName(paraName))))));
+        }
         public static async Task<Document> GenerateMethodsAsync(Document doc, ClassDeclarationSyntax target, string fieldName, IEnumerable<Location> methodLocations, CancellationToken token)
         {
-            var members = target.Members;
+            var members = new List<MemberDeclarationSyntax>();
+            var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
+            if (string.IsNullOrEmpty(fieldName))
+            {
+                var paraName = serviceName[1].ToString().ToLower() + serviceName.Substring(2);
+                fieldName = "_" + paraName;
+                var field = FieldDeclaration(VariableDeclaration(IdentifierName(serviceName), SingletonSeparatedList(VariableDeclarator(Identifier(fieldName)))))
+                .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ReadOnlyKeyword)));
+                var ctor = CreateCtor(target, paraName, serviceName, fieldName);
+                members.Add(field);members.Add(ctor);
+            }
             foreach (var location in methodLocations)
             {
                 var node = (MethodDeclarationSyntax)(await location.SourceTree.GetRootAsync()).FindToken(location.SourceSpan.Start).Parent;
@@ -54,16 +90,16 @@ namespace ControllerAnalyzer
                     .WithHttpMethods(HttpMethod.HttpPost)
                     .WithParameterList(node.ParameterList)
                     .WithMethodBody(fieldName, isAsync, haveReturn, node);
-                members = members.Add(method);
+                members.Add(method);
             }
-            var newClass = target.WithMembers(members);
+            var newClass = target.AddMembers(members.ToArray());
             var root = await doc.GetSyntaxRootAsync(token);
             return doc.WithSyntaxRoot(root.ReplaceNode(target, newClass));
         }
 
         public static (bool, bool) ParseMethodReturnType(TypeSyntax type)
         {
-            if (type.IsKind(SyntaxKind.VoidKeyword))
+            if (type is PredefinedTypeSyntax predefinedNode && predefinedNode.Keyword.IsKind(SyntaxKind.VoidKeyword))
             {
                 return (false, false);
             }

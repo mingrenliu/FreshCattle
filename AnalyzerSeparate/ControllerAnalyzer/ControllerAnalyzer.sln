@@ -3,15 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerAnalyzer", "ControllerAnalyzer\ControllerAnalyzer.csproj", "{FE44BB4E-C454-447A-956A-6276D2F91C04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerAnalyzer", "ControllerAnalyzer\ControllerAnalyzer.csproj", "{FE44BB4E-C454-447A-956A-6276D2F91C04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerAnalyzer.CodeFixes", "ControllerAnalyzer.CodeFixes\ControllerAnalyzer.CodeFixes.csproj", "{4A26D1E3-F538-4CF0-87B7-6E9699376183}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerAnalyzer.CodeFixes", "ControllerAnalyzer.CodeFixes\ControllerAnalyzer.CodeFixes.csproj", "{4A26D1E3-F538-4CF0-87B7-6E9699376183}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerAnalyzer.Package", "ControllerAnalyzer.Package\ControllerAnalyzer.Package.csproj", "{FC257E82-F839-4BDD-A8C8-14F907DC024F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerAnalyzer.Package", "ControllerAnalyzer.Package\ControllerAnalyzer.Package.csproj", "{FC257E82-F839-4BDD-A8C8-14F907DC024F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerAnalyzer.Test", "ControllerAnalyzer.Test\ControllerAnalyzer.Test.csproj", "{CA1AB01D-0CB2-409D-A7DE-9D48EA6FDCBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerAnalyzer.Test", "ControllerAnalyzer.Test\ControllerAnalyzer.Test.csproj", "{CA1AB01D-0CB2-409D-A7DE-9D48EA6FDCBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerAnalyzer.Vsix", "ControllerAnalyzer.Vsix\ControllerAnalyzer.Vsix.csproj", "{285509DB-DBAA-4D91-9A1C-F0E9125DC86B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerAnalyzer.Vsix", "ControllerAnalyzer.Vsix\ControllerAnalyzer.Vsix.csproj", "{285509DB-DBAA-4D91-9A1C-F0E9125DC86B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D662AE78-C29B-4B8D-ABA5-B6A89D5E18BB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerTest", "ControllerTest\ControllerTest.csproj", "{DD29338F-1B98-4A35-A29A-A70620BEC536}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceTest", "ServiceTest\ServiceTest.csproj", "{36E00992-2391-4A67-B602-7D75DE00DCD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +48,14 @@ Global
 		{285509DB-DBAA-4D91-9A1C-F0E9125DC86B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{285509DB-DBAA-4D91-9A1C-F0E9125DC86B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{285509DB-DBAA-4D91-9A1C-F0E9125DC86B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD29338F-1B98-4A35-A29A-A70620BEC536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD29338F-1B98-4A35-A29A-A70620BEC536}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD29338F-1B98-4A35-A29A-A70620BEC536}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD29338F-1B98-4A35-A29A-A70620BEC536}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36E00992-2391-4A67-B602-7D75DE00DCD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

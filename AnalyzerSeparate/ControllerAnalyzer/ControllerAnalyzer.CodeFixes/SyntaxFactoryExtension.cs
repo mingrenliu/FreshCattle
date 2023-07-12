@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace ControllerAnalyzer
@@ -22,7 +23,6 @@ namespace ControllerAnalyzer
             var tokens = isAsync ? new[] { Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AsyncKeyword) } : new[] { Token(SyntaxKind.PublicKeyword) };
             return node.WithModifiers(TokenList(tokens));
         }
-
         public static MethodDeclarationSyntax WithMethodBody(this MethodDeclarationSyntax node, string fieldName, bool isAsync, bool haveReturn, MethodDeclarationSyntax method)
         {
             ExpressionSyntax invokeExpression = isAsync ? AwaitExpression(CreateInvokeExpression(fieldName, method)) : CreateInvokeExpression(fieldName, method);
@@ -40,13 +40,10 @@ namespace ControllerAnalyzer
             {
                 arguments.Add(Argument(IdentifierName(parameter.Identifier.ValueText)));
             }
-            var invokeExpression = InvocationExpression(
-                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(fieldName), IdentifierName(method.Identifier)));
-            if (arguments.Count > 1)
-            {
-                return invokeExpression.WithArgumentList(ArgumentList(SeparatedList(arguments)));
-            }
-            return invokeExpression;
+            var result= InvocationExpression(
+                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName(fieldName), IdentifierName(method.Identifier)))
+                        .WithArgumentList(ArgumentList(SeparatedList(arguments)));
+            return result;
         }
     }
 

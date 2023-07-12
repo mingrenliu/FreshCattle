@@ -117,10 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FieldCodeFixTitle" xml:space="preserve">
-    <value>Add Service Reference</value>
-    <comment>code fix title</comment>
-  </data>
   <data name="MethodCodeFixTitle" xml:space="preserve">
     <value>Invoke Service Methods</value>
     <comment>code fix title</comment>
