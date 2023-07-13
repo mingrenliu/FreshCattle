@@ -2,6 +2,7 @@
 
 # RS2008: 启用分析器发布跟踪
 dotnet_diagnostic.RS2008.severity = silent
+dotnet_diagnostic.RS1035.severity = silent
 
 [*.cs]
 #### 命名样式 ####

@@ -6,26 +6,24 @@ using ServiceAnalyzer.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
+using static InheritAnalyzer.TextParseFactory;
 
 namespace InheritAnalyzer
 {
     [Generator(LanguageNames.CSharp)]
     public class InheritGenerator : IIncrementalGenerator
     {
-        public static readonly string Inherit = "Inherit";
-        public static readonly string InheritAttribute = "InheritAttribute";
-        public static readonly string InheritIgnore = "InheritIgnore";
-        public static readonly string AssemblyName = "InheritCore";
-        public const string PropertyNameBase = "build_property.";
-        public const string RootNameSpace = "rootnamespace";
+
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            if (!Debugger.IsAttached)
+/*            if (!Debugger.IsAttached)
             {
                 Debugger.Launch();
-            }
+            }*/
             var rootNameSpace = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
             {
                 if (!source.GlobalOptions.TryGetValue(PropertyNameBase + RootNameSpace, out var spaceName) || string.IsNullOrWhiteSpace(spaceName))
@@ -34,8 +32,10 @@ namespace InheritAnalyzer
                 }
                 return spaceName;
             });
-            context.RegisterSourceOutput(rootNameSpace, (ctx, token) =>
+            var projectDir = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
             {
+                source.GlobalOptions.TryGetValue(PropertyNameBase + ProjectDir, out var projectDir);
+                return projectDir;
             });
             var classSource = context.AdditionalTextsProvider.Select((source, token) => source.GetText(token)).SelectMany((source, token) =>
             {
@@ -195,20 +195,7 @@ namespace InheritAnalyzer
             return false;
         }
 
-        public static bool PropertyFilterByIgnoreAttribute(PropertyDeclarationSyntax node)
-        {
-            foreach (var attributeList in node.AttributeLists)
-            {
-                foreach (var item in attributeList.Attributes)
-                {
-                    if (item.Name.ToString() == InheritIgnore)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
+        
 
         public static InheritInfo GetInfo(SyntaxNode node, SemanticModel semantic)
         {
@@ -233,17 +220,6 @@ namespace InheritAnalyzer
             return null;
         }
 
-        public static bool PropertyFilter(PropertyDeclarationSyntax prop)
-        {
-            if (prop.Modifiers.Any(x => x.IsKind(SyntaxKind.AbstractKeyword)))
-            {
-                return false;
-            }
-            if (prop.Modifiers.Any(x => x.IsKind(SyntaxKind.PublicKeyword) || x.IsKind(SyntaxKind.InternalKeyword)))
-            {
-                return true;
-            }
-            return false;
-        }
+        
     }
 }
