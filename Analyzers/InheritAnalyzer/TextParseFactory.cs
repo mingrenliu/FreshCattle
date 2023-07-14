@@ -17,6 +17,7 @@ namespace InheritAnalyzer
         public const string PropertyNameBase = "build_property.";
         public const string RootNameSpace = "RootNamespace";
         public const string ProjectDir = "ProjectDir";
+        public const string AdditionalFilePath = "AdditionalFilePath";
         public static async Task<IEnumerable<ClassInfo>> ParseText(AdditionalText text)
         {
             if (text?.GetText() == null) return Enumerable.Empty<ClassInfo>();

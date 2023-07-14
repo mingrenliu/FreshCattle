@@ -5,10 +5,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceAnalyzer.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using static InheritAnalyzer.TextParseFactory;
 
 namespace InheritAnalyzer
@@ -16,14 +14,12 @@ namespace InheritAnalyzer
     [Generator(LanguageNames.CSharp)]
     public class InheritGenerator : IIncrementalGenerator
     {
-
-
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-/*            if (!Debugger.IsAttached)
-            {
-                Debugger.Launch();
-            }*/
+            /*            if (!Debugger.IsAttached)
+                        {
+                            Debugger.Launch();
+                        }*/
             var rootNameSpace = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
             {
                 if (!source.GlobalOptions.TryGetValue(PropertyNameBase + RootNameSpace, out var spaceName) || string.IsNullOrWhiteSpace(spaceName))
@@ -32,55 +28,40 @@ namespace InheritAnalyzer
                 }
                 return spaceName;
             });
-            var projectDir = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
+            var classSources = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
             {
                 source.GlobalOptions.TryGetValue(PropertyNameBase + ProjectDir, out var projectDir);
-                return projectDir;
-            });
-            var classSource = context.AdditionalTextsProvider.Select((source, token) => source.GetText(token)).SelectMany((source, token) =>
-            {
-                var root = CSharpSyntaxTree.ParseText(source, cancellationToken: token).GetRootAsync(token).GetAwaiter().GetResult();
-                var results = new List<ClassInfo>();
-                foreach (var item in root.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>())
+                source.GlobalOptions.TryGetValue(PropertyNameBase + AdditionalFilePath, out var additionalFilePath);
+                if (string.IsNullOrEmpty(additionalFilePath))
                 {
-                    var classInfo = new ClassInfo(item.Identifier.ValueText, item);
-                    results.Add(classInfo);
-                    foreach (var prop in item.DescendantNodes().OfType<PropertyDeclarationSyntax>().Where(PropertyFilter))
-                    {
-                        if (PropertyFilterByIgnoreAttribute(prop))
-                        {
-                            classInfo.Add(prop.Identifier.ValueText, new PropertyInfo(classInfo.ClassName, prop.Identifier.ValueText, prop.Type.ToFullString(), prop));
-                        }
-                    }
+                    return null;
                 }
-                return results;
+                return ClassInfoProvider.Create(Path.Combine(additionalFilePath, projectDir));
             });
-            var classSources = classSource.Collect();
-            var inheritClassSource = context.SyntaxProvider.CreateSyntaxProvider((node, _) => ClassFilterByAttribute(node), (context, token) =>
+            //深度继承
+            var inheritClassSource = context.SyntaxProvider.ForAttributeWithMetadataName(AssemblyName + InheritAttribute, (node,_) => node is ClassDeclarationSyntax, (context, token) =>
             {
-                return GetInfo(context.Node, context.SemanticModel);
+                return GetInfo(context.TargetNode, context.SemanticModel);
             });
             var deepSource = inheritClassSource.Where(x => x.IsDeepInherit).Collect().Combine(classSources);
             var generatedNames = deepSource.Select((source, token) =>
             {
                 return GetDeepInheritClassNames(source.Left, source.Right);
             });
-            var deepGeneratedClass = classSource.Combine(generatedNames).Where(x => x.Right.Any(y => y.ClassName == x.Left.ClassName && y.TypeParameterCount == x.Left.TypeParameterCount))
-                .Select((source, token) => source.Left).Combine(rootNameSpace);
-
+            var deepGeneratedClass = classSources.Combine(generatedNames).SelectMany((x, token) => GetClassInfo(x.Right, x.Left)).Combine(rootNameSpace);
             context.RegisterSourceOutput(deepGeneratedClass, (ctx, source) =>
             {
                 ctx.AddSource(source.Left.ClassName + ".gen.cs", CodeGeneratorFactory.GenerateCode(source.Left, source.Right));
             });
+            //继承
             var combineSource = inheritClassSource.Combine(classSources);
             context.RegisterSourceOutput(combineSource, (ctx, source) =>
             {
                 var currentClass = source.Left;
                 var classSources = source.Right;
-                var inheritedClass = classSources.FirstOrDefault(x => x.ClassName == currentClass.InheritedClassName);
-                if (inheritedClass != null)
+                if (classSources != null && classSources.TryGetClassInfo(new ClassSimpleInfo(currentClass.InheritedClassName, 0), out var info))
                 {
-                    ctx.AddSource(currentClass.CurrentClassName + ".gen.cs", CodeGeneratorFactory.GenerateCode(currentClass, inheritedClass));
+                    ctx.AddSource(currentClass.CurrentClassName + ".gen.cs", CodeGeneratorFactory.GenerateCode(currentClass, info));
                 }
                 else
                 {
@@ -140,13 +121,12 @@ namespace InheritAnalyzer
             }
         }
 
-        public static IEnumerable<DeepClassInfo> GetDeepInheritClassNames(ImmutableArray<InheritInfo> info, ImmutableArray<ClassInfo> classSources)
+        public static IEnumerable<ClassSimpleInfo> GetDeepInheritClassNames(ImmutableArray<InheritInfo> info, ClassInfoProvider classSources)
         {
-            var generatedClass = classSources.Distinct(new ClassComparer()).ToDictionary(x => (x.ClassName, x.TypeParameterCount), x => (false, x));
+            var generatedClass = classSources.Values.ToDictionary(x => (x.ClassName, x.TypeParameterCount), x => (false, x));
             foreach (var item in info)
             {
-                var obj = classSources.FirstOrDefault(x => x.ClassName == item.InheritedClassName);
-                if (obj != null)
+                if (classSources.TryGetClassInfo(new ClassSimpleInfo(item.InheritedClassName, 0), out var obj))
                 {
                     foreach (var prop in obj)
                     {
@@ -162,7 +142,7 @@ namespace InheritAnalyzer
             {
                 if (item.Value.Item1)
                 {
-                    yield return new DeepClassInfo(item.Key.ClassName, item.Key.TypeParameterCount);
+                    yield return new ClassSimpleInfo(item.Key.ClassName, item.Key.TypeParameterCount);
                 }
             }
         }
@@ -195,7 +175,16 @@ namespace InheritAnalyzer
             return false;
         }
 
-        
+        public static IEnumerable<ClassInfo> GetClassInfo(IEnumerable<ClassSimpleInfo> info, ClassInfoProvider provider)
+        {
+            foreach (var generatedName in info)
+            {
+                if (provider.TryGetClassInfo(generatedName, out var value))
+                {
+                    yield return value;
+                }
+            }
+        }
 
         public static InheritInfo GetInfo(SyntaxNode node, SemanticModel semantic)
         {
@@ -219,7 +208,5 @@ namespace InheritAnalyzer
             }
             return null;
         }
-
-        
     }
 }

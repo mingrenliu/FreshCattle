@@ -2,19 +2,19 @@
 
 namespace InheritAnalyzer.TransformInfo
 {
-    public class DeepClassComparer : IEqualityComparer<DeepClassInfo>
+    public class DeepClassComparer : IEqualityComparer<ClassSimpleInfo>
     {
-        public bool Equals(DeepClassInfo x, DeepClassInfo y)
+        public bool Equals(ClassSimpleInfo x, ClassSimpleInfo y)
         {
             return x.Equals(y);
         }
 
-        public int GetHashCode(DeepClassInfo obj)
+        public int GetHashCode(ClassSimpleInfo obj)
         {
             return obj.GetHashCode();
         }
     }
-    public struct DeepClassInfo : IEqualityComparer<DeepClassInfo>
+    public struct ClassSimpleInfo : IEqualityComparer<ClassSimpleInfo>
     {
         public string ClassName { get; }
 
@@ -23,19 +23,19 @@ namespace InheritAnalyzer.TransformInfo
         /// </summary>
         public int TypeParameterCount { get; }
 
-        public DeepClassInfo(string className, int typeParameterCount)
+        public ClassSimpleInfo(string className, int typeParameterCount)
         {
             ClassName = className;
             TypeParameterCount = typeParameterCount;
         }
-        public bool Equals(DeepClassInfo x, DeepClassInfo y)
+        public bool Equals(ClassSimpleInfo x, ClassSimpleInfo y)
         {
             if (x.ClassName != y.ClassName) return false;
             if (x.TypeParameterCount != y.TypeParameterCount) return false;
             return true;
         }
 
-        public int GetHashCode(DeepClassInfo obj)
+        public int GetHashCode(ClassSimpleInfo obj)
         {
             return (obj.ClassName + obj.TypeParameterCount).GetHashCode();
         }

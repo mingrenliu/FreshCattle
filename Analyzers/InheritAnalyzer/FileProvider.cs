@@ -6,40 +6,57 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static InheritAnalyzer.TextParseFactory;
 
 namespace InheritAnalyzer
 {
-    internal class ClassInfoProvider
+    public class ClassInfoProvider
     {
         public static ClassInfoProvider Create(string path)
         {
-            var provider = new FileProvider(path);
-            var result = new ClassInfoProvider(provider);
-            provider.SetProvider(result);
-            return result;
+            var provider= new ClassInfoProvider(path);
+            provider.StartWatch();
+            return provider;
         }
-
-        private readonly ConcurrentDictionary<string, ClassInfo> _info = new();
-        private readonly ConcurrentDictionary<string, IEnumerable<string>> _fileMapToInfo = new();
+        public IEnumerable<ClassInfo> Values=>_info.Values;
+        private readonly ConcurrentDictionary<ClassSimpleInfo, ClassInfo> _info = new();
+        private readonly ConcurrentDictionary<string, IEnumerable<ClassSimpleInfo>> _fileMapToClassInfo = new();
 
         private readonly FileProvider _fileProvider;
-
-        private ClassInfoProvider(FileProvider provider)
+        private string Path { get; }
+        private ClassInfoProvider(string path)
         {
-            _fileProvider = provider;
+            Path = path;
+            _fileProvider = new FileProvider(this);
+            Load();
         }
-
-        public bool TryGetClassInfo(string name, out ClassInfo info)
+        private async void Load()
         {
-            return _info.TryGetValue(name, out info);
+            foreach (var text in _fileProvider.GetAllText())
+            {
+                var info =await ParseText(text);
+                if (info.Any())
+                {
+                    foreach (var item in info)
+                    {
+                        _info[new(item.ClassName,item.TypeParameterCount)] = item;
+                    }
+                    _fileMapToClassInfo[text.Path] = info.Select(x => new ClassSimpleInfo(x.ClassName,x.TypeParameterCount));
+                }
+            }
+        }
+        public void StartWatch() => _fileProvider.StartWatch();
+        public bool TryGetClassInfo(ClassSimpleInfo simpleInfo, out ClassInfo info)
+        {
+            return _info.TryGetValue(simpleInfo, out info);
         }
 
         public void Delete(string path)
         {
-            if (_fileMapToInfo.TryRemove(path, out var values))
+            if (_fileMapToClassInfo.TryRemove(path, out var values))
             {
                 foreach (var item in values)
                 {
@@ -53,19 +70,19 @@ namespace InheritAnalyzer
             var info = await ParseText(_fileProvider.GetText(path));
             if (info.Any())
             {
-                _fileMapToInfo[path] = info.Select(x => x.ClassName);
                 foreach (var item in info)
                 {
-                    _info[item.ClassName] = item;
+                    _info[new ClassSimpleInfo(item.ClassName,item.TypeParameterCount)] = item;
                 }
+                _fileMapToClassInfo[path] = info.Select(x => new ClassSimpleInfo(x.ClassName,x.TypeParameterCount));
             }
         }
 
         public void Rename(string path, string newPath)
         {
-            if (_fileMapToInfo.TryRemove(path, out var value))
+            if (_fileMapToClassInfo.TryRemove(path, out var value))
             {
-                _fileMapToInfo[newPath] = value;
+                _fileMapToClassInfo[newPath] = value;
             }
         }
 
@@ -77,28 +94,34 @@ namespace InheritAnalyzer
 
         private class FileProvider : IDisposable
         {
-            private readonly FileSystemWatcher _watch;
+            private IDisposable _disposable;
             private ClassInfoProvider _infoProvider;
-            internal string Path { get; }
+            internal string Path =>_infoProvider.Path;
             private readonly Dictionary<string, AdditionalText> _additionText;
-
+            public IEnumerable<AdditionalText> GetAllText()
+            {
+                return _additionText.Values;
+            }
             public void SetProvider(ClassInfoProvider provider)
             {
                 _infoProvider = provider;
             }
 
-            public FileProvider(string path)
+            public FileProvider(ClassInfoProvider provider)
             {
-                Path = path;
+                _infoProvider= provider;    
                 Init();
+
+            }
+            public void StartWatch()
+            {
                 var watch = new FileSystemWatcher(Path, "*.cs") { IncludeSubdirectories = false, EnableRaisingEvents = true };
                 watch.Deleted += (sender, args) => DeletedAction(sender, args);
                 watch.Renamed += (sender, args) => RenamedAction(sender, args);
                 watch.Created += (sender, args) => CreatedAction(sender, args);
                 watch.Changed += (sender, args) => ChangedAction(sender, args);
-                _watch = watch;
+                _disposable = watch;
             }
-
             private void Init()
             {
                 var fileInfo = Directory.GetFiles(Path, "*.cs", SearchOption.TopDirectoryOnly);
@@ -121,7 +144,7 @@ namespace InheritAnalyzer
 
             private void RenamedAction(object sender, RenamedEventArgs e)
             {
-                var exist = _additionText.TryGetValue(e.FullPath, out var value);
+                var exist = _additionText.TryGetValue(e.FullPath, out _);
                 if (exist)
                 {
                     _additionText.Remove(e.OldFullPath);
@@ -144,7 +167,7 @@ namespace InheritAnalyzer
 
             public void Dispose()
             {
-                _watch.Dispose();
+                _disposable?.Dispose();
             }
         }
     }
