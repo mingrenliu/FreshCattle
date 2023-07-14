@@ -11,7 +11,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace InheritAnalyzer
 {
-    public class CodeGeneratorFactory
+    public static class CodeGeneratorFactory
     {
         public static SourceText GenerateCode(ClassInfo baseClass,string rootNameSpace)
         {
@@ -22,7 +22,7 @@ namespace InheritAnalyzer
                 props.Add(CreateProperty(node));
             }
             var newClass = ClassDeclaration(baseClass.ClassNode.Identifier).WithModifiers(baseClass.ClassNode.Modifiers).WithMembers(List<MemberDeclarationSyntax>(props))
-                .WithTypeParameterList(baseClass.ClassNode.TypeParameterList).WithConstraintClauses(baseClass.ClassNode.ConstraintClauses).NormalizeWhitespace();
+                .WithTypeParameterList(baseClass.ClassNode.TypeParameterList).WithConstraintClauses(baseClass.ClassNode.ConstraintClauses).WithXml(baseClass.ClassNode).NormalizeWhitespace();
             var result = CompilationUnit().WithUsings(List(usingList)).WithMembers(
                 SingletonList<MemberDeclarationSyntax>(FileScopedNamespaceDeclaration(CreateNameSpace(rootNameSpace))
                 .WithMembers(SingletonList<MemberDeclarationSyntax>(newClass)))).NormalizeWhitespace();
@@ -75,11 +75,20 @@ namespace InheritAnalyzer
         private static PropertyDeclarationSyntax CreateProperty(PropertyDeclarationSyntax node)
         {
             return node.Initializer != null ? PropertyDeclaration(node.Type, node.Identifier).WithAccessorList(node.AccessorList)
-                    .WithModifiers(TokenList(node.Modifiers)).WithInitializer(node.Initializer).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)).NormalizeWhitespace()
+                    .WithModifiers(TokenList(node.Modifiers)).WithInitializer(node.Initializer).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)).WithXml(node).NormalizeWhitespace()
                     : PropertyDeclaration(node.Type, node.Identifier).WithAccessorList(node.AccessorList)
-                    .WithModifiers(TokenList(node.Modifiers)).NormalizeWhitespace();
+                    .WithModifiers(TokenList(node.Modifiers)).WithXml(node).NormalizeWhitespace();
         }
-
+        private static PropertyDeclarationSyntax WithXml(this PropertyDeclarationSyntax currentNode, PropertyDeclarationSyntax node)
+        {
+            var trivia = node.DescendantTrivia().FirstOrDefault(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+            return currentNode.WithLeadingTrivia(TriviaList(trivia));
+        }
+        private static ClassDeclarationSyntax WithXml(this ClassDeclarationSyntax currentNode, ClassDeclarationSyntax node)
+        {
+            var trivia = node.DescendantTrivia().FirstOrDefault(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+            return currentNode.WithLeadingTrivia(TriviaList(trivia));
+        }
         private static ClassDeclarationSyntax CreateClass(InheritInfo to, ClassInfo from)
         {
             var props = new List<PropertyDeclarationSyntax>();
@@ -96,7 +105,7 @@ namespace InheritAnalyzer
                 modifiers = modifiers.Add(Token(SyntaxKind.PartialKeyword));
             }
             return ClassDeclaration(to.ClassNode.Identifier).WithModifiers(modifiers).WithMembers(List<MemberDeclarationSyntax>(props))
-                .WithTypeParameterList(to.ClassNode.TypeParameterList).WithConstraintClauses(to.ClassNode.ConstraintClauses);
+                .WithTypeParameterList(to.ClassNode.TypeParameterList).WithConstraintClauses(to.ClassNode.ConstraintClauses).WithXml(from.ClassNode);
         }
     }
 }

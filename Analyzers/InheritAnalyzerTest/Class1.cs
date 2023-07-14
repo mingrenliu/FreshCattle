@@ -1,17 +1,20 @@
-﻿namespace InheritAnalyzerTest
+﻿global using Mapster;
+using InheritCore;
+
+namespace InheritAnalyzerTest
 {
-    public class Class1
+    [Inherit("UserConfig",true)]
+    public partial class Class1
     {
-        private readonly ITest test; 
-        public string Getstring(string name,IEnumerable<string> list)
+        void Display()
         {
-            return test.Getstring(name,list);
+            var a=new Class1();
+            Console.WriteLine(a.Config);
         }
-        //public string
     }
 
     public interface ITest
     {
-        string Getstring(string name, IEnumerable<string> list);
+        string GetString(string name, IEnumerable<string> list);
     }
 }

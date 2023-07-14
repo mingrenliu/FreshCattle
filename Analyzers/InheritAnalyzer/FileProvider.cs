@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static InheritAnalyzer.TextParseFactory;
@@ -15,9 +16,9 @@ namespace InheritAnalyzer
 {
     public class ClassInfoProvider
     {
-        public static ClassInfoProvider Create(string path)
+        public static ClassInfoProvider Create(string path,bool includeSubdir)
         {
-            var provider= new ClassInfoProvider(path);
+            var provider= new ClassInfoProvider(path,includeSubdir);
             provider.StartWatch();
             return provider;
         }
@@ -27,10 +28,10 @@ namespace InheritAnalyzer
 
         private readonly FileProvider _fileProvider;
         private string Path { get; }
-        private ClassInfoProvider(string path)
+        private ClassInfoProvider(string path,bool includeSubdir)
         {
             Path = path;
-            _fileProvider = new FileProvider(this);
+            _fileProvider = new FileProvider(this,includeSubdir);
             Load();
         }
         private async void Load()
@@ -97,7 +98,8 @@ namespace InheritAnalyzer
             private IDisposable _disposable;
             private ClassInfoProvider _infoProvider;
             internal string Path =>_infoProvider.Path;
-            private readonly Dictionary<string, AdditionalText> _additionText;
+            private bool _includeSubdir;
+            private readonly Dictionary<string, AdditionalText> _additionText=new();
             public IEnumerable<AdditionalText> GetAllText()
             {
                 return _additionText.Values;
@@ -107,15 +109,16 @@ namespace InheritAnalyzer
                 _infoProvider = provider;
             }
 
-            public FileProvider(ClassInfoProvider provider)
+            public FileProvider(ClassInfoProvider provider,bool includeSubdir)
             {
-                _infoProvider= provider;    
+                _infoProvider= provider;
+                _includeSubdir= includeSubdir;
                 Init();
 
             }
             public void StartWatch()
             {
-                var watch = new FileSystemWatcher(Path, "*.cs") { IncludeSubdirectories = false, EnableRaisingEvents = true };
+                var watch = new FileSystemWatcher(Path, "*.cs") { IncludeSubdirectories = _includeSubdir, EnableRaisingEvents = true };
                 watch.Deleted += (sender, args) => DeletedAction(sender, args);
                 watch.Renamed += (sender, args) => RenamedAction(sender, args);
                 watch.Created += (sender, args) => CreatedAction(sender, args);
@@ -124,6 +127,10 @@ namespace InheritAnalyzer
             }
             private void Init()
             {
+                if (!Directory.Exists(Path))
+                {
+                    return;
+                }
                 var fileInfo = Directory.GetFiles(Path, "*.cs", SearchOption.TopDirectoryOnly);
                 foreach (var item in fileInfo)
                 {
@@ -188,7 +195,7 @@ namespace InheritAnalyzer
         {
             if (File.Exists(Path))
             {
-                var str = SourceText.From(File.ReadAllText(Path));
+                var str = SourceText.From(File.ReadAllText(Path, UTF8Encoding.Default), UTF8Encoding.Default);
                 Interlocked.Exchange(ref _text, str);
             }
             haveInit = true;

@@ -3,15 +3,19 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ServiceNameModel>(\w+).spec</ServiceNameModel>
     <Nullable>enable</Nullable>
+    <AdditionalFilePath>..\Resources\Entities\</AdditionalFilePath>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InheritAnalyzer\InheritAnalyzer.csproj"  OutputItemType="Analyzer" ReferenceOutputItem="false"  />
+    <ProjectReference Include="..\InheritAnalyzer\InheritAnalyzer.csproj" OutputItemType="Analyzer" ReferenceOutputItem="false" />
     <ProjectReference Include="..\InheritCore\InheritCore.csproj" />
-    <CompilerVisibleProperty Include="ServiceNameModel" />
-    <AdditionalFiles Include="..\TestResources\*Entities\*.cs"></AdditionalFiles>
+    <CompilerVisibleProperty Include="AdditionalFilePath" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.3.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.9" />
   </ItemGroup>
 
 </Project>

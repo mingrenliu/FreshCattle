@@ -3,8 +3,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ServiceAnalyzer.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static InheritAnalyzer.TextParseFactory;
@@ -16,10 +18,10 @@ namespace InheritAnalyzer
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            /*            if (!Debugger.IsAttached)
-                        {
-                            Debugger.Launch();
-                        }*/
+/*            if (!Debugger.IsAttached)
+            {
+                Debugger.Launch();
+            }*/
             var rootNameSpace = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
             {
                 if (!source.GlobalOptions.TryGetValue(PropertyNameBase + RootNameSpace, out var spaceName) || string.IsNullOrWhiteSpace(spaceName))
@@ -30,16 +32,23 @@ namespace InheritAnalyzer
             });
             var classSources = context.AnalyzerConfigOptionsProvider.Select((source, token) =>
             {
-                source.GlobalOptions.TryGetValue(PropertyNameBase + ProjectDir, out var projectDir);
-                source.GlobalOptions.TryGetValue(PropertyNameBase + AdditionalFilePath, out var additionalFilePath);
+                source.GlobalOptions.TryGetValue(PropertyNameBase + ProjectDir, out string projectDir);
+                source.GlobalOptions.TryGetValue(PropertyNameBase + AdditionalFilePath, out string additionalFilePath);
+                source.GlobalOptions.TryGetValue(PropertyNameBase + IncludeSubdir, out string booleanString);
                 if (string.IsNullOrEmpty(additionalFilePath))
                 {
                     return null;
                 }
-                return ClassInfoProvider.Create(Path.Combine(additionalFilePath, projectDir));
+                bool includeSubdir = false;
+                if (!string.IsNullOrEmpty(booleanString))
+                {
+                    Boolean.TryParse(booleanString, out includeSubdir);
+                }
+                var results= ClassInfoProvider.Create(Path.Combine(projectDir,additionalFilePath),includeSubdir);
+                return results;
             });
             //深度继承
-            var inheritClassSource = context.SyntaxProvider.ForAttributeWithMetadataName(AssemblyName + InheritAttribute, (node,_) => node is ClassDeclarationSyntax, (context, token) =>
+            var inheritClassSource = context.SyntaxProvider.ForAttributeWithMetadataName(InheritAttributeQua, (node,_) => node is ClassDeclarationSyntax, (context, token) =>
             {
                 return GetInfo(context.TargetNode, context.SemanticModel);
             });
@@ -154,25 +163,6 @@ namespace InheritAnalyzer
                 data[(name, count)] = (true, value.Item2);
                 DeepSearchClass(data, value.Item2);
             }
-        }
-
-        public static bool ClassFilterByAttribute(SyntaxNode node)
-        {
-            if (node is ClassDeclarationSyntax classNode)
-            {
-                foreach (var attributeList in classNode.AttributeLists)
-                {
-                    foreach (var item in attributeList.Attributes)
-                    {
-                        var name = item.Name.ToString();
-                        if (name == Inherit)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
         }
 
         public static IEnumerable<ClassInfo> GetClassInfo(IEnumerable<ClassSimpleInfo> info, ClassInfoProvider provider)

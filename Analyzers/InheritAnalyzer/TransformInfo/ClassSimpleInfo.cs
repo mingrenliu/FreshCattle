@@ -14,7 +14,7 @@ namespace InheritAnalyzer.TransformInfo
             return obj.GetHashCode();
         }
     }
-    public struct ClassSimpleInfo : IEqualityComparer<ClassSimpleInfo>
+    public readonly struct ClassSimpleInfo : IEqualityComparer<ClassSimpleInfo>
     {
         public string ClassName { get; }
 
@@ -28,14 +28,14 @@ namespace InheritAnalyzer.TransformInfo
             ClassName = className;
             TypeParameterCount = typeParameterCount;
         }
-        public bool Equals(ClassSimpleInfo x, ClassSimpleInfo y)
+        public readonly bool Equals(ClassSimpleInfo x, ClassSimpleInfo y)
         {
             if (x.ClassName != y.ClassName) return false;
             if (x.TypeParameterCount != y.TypeParameterCount) return false;
             return true;
         }
 
-        public int GetHashCode(ClassSimpleInfo obj)
+        public readonly int GetHashCode(ClassSimpleInfo obj)
         {
             return (obj.ClassName + obj.TypeParameterCount).GetHashCode();
         }

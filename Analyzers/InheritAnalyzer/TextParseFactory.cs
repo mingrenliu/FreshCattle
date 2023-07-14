@@ -12,12 +12,14 @@ namespace InheritAnalyzer
     {
         public static readonly string Inherit = "Inherit";
         public static readonly string InheritAttribute = "InheritAttribute";
+        public static readonly string InheritAttributeQua = "InheritCore.InheritAttribute";
         public static readonly string InheritIgnore = "InheritIgnore";
         public static readonly string AssemblyName = "InheritCore";
         public const string PropertyNameBase = "build_property.";
         public const string RootNameSpace = "RootNamespace";
         public const string ProjectDir = "ProjectDir";
         public const string AdditionalFilePath = "AdditionalFilePath";
+        public const string IncludeSubdir = "IncludeSubdir";
         public static async Task<IEnumerable<ClassInfo>> ParseText(AdditionalText text)
         {
             if (text?.GetText() == null) return Enumerable.Empty<ClassInfo>();
