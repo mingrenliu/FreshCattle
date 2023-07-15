@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
+using System.Linq;
 
 namespace ControllerAnalyzer
 {
@@ -12,6 +12,7 @@ namespace ControllerAnalyzer
     public class ControllerAnalyzer : DiagnosticAnalyzer
     {
         private static readonly string _suffix = "Controller";
+        public const string FieldName = "FieldName";
 
         public const string DiagnosticId = "LY0012";
 
@@ -27,10 +28,10 @@ namespace ControllerAnalyzer
 
         public override void Initialize(AnalysisContext context)
         {
-/*            if (!Debugger.IsAttached)
-            {
-                Debugger.Launch();
-            }*/
+            /*            if (!Debugger.IsAttached)
+                        {
+                            Debugger.Launch();
+                        }*/
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(ctx => ReportControllerHints(ctx), SyntaxKind.ClassDeclaration);
@@ -42,9 +43,68 @@ namespace ControllerAnalyzer
             {
                 if (node.Identifier.ValueText.EndsWith(_suffix))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), node.Identifier.ValueText.ToString()));
+                    var serviceName = GetServiceName(node.Identifier.ValueText.ToString());
+                    var (field, fieldName) = GetField(node, serviceName);
+                    if (field == null)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), node.Identifier.ValueText.ToString()));
+                        return;
+                    }
+                    else
+                    {
+                        if (context.SemanticModel.GetSymbolInfo(field).Symbol is INamedTypeSymbol symbol)
+                        {
+                            var methods = symbol.GetMembers().OfType<IMethodSymbol>();
+                            if (!methods.Any())
+                            {
+                                return;
+                            }
+                            var implementMethods = GetMethods(GetMethods(node.DescendantNodes().OfType<MemberAccessExpressionSyntax>(), fieldName), context.SemanticModel);
+                            var unUsedMethods = methods.Except(implementMethods);
+                            if (unUsedMethods.Any())
+                            {
+                                var props = new Dictionary<string, string>() { [FieldName] = fieldName }.ToImmutableDictionary();
+                                context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), props, node.Identifier.ValueText.ToString()));
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        public static IEnumerable<IMethodSymbol> GetMethods(IEnumerable<MemberAccessExpressionSyntax> invokes, SemanticModel model)
+        {
+            foreach (var item in invokes)
+            {
+                yield return model.GetSymbolInfo(item).Symbol as IMethodSymbol;
+            }
+        }
+
+        public static IEnumerable<MemberAccessExpressionSyntax> GetMethods(IEnumerable<MemberAccessExpressionSyntax> invokes, string name)
+        {
+            foreach (var invocation in invokes)
+            {
+                var token = invocation.Expression.DescendantTokens().FirstOrDefault();
+                if (token != null && token.ValueText == name)
+                {
+                    yield return invocation;
+                }
+            }
+        }
+
+        public static string GetServiceName(string controllerName)
+        {
+            var baseName = controllerName.Substring(0, controllerName.Length - 10);
+            return "I" + baseName + "Service";
+        }
+
+        public static (TypeSyntax,string) GetField(ClassDeclarationSyntax node, string name)
+        {
+            foreach (var item in node.DescendantNodes().OfType<FieldDeclarationSyntax>())
+            {
+                if (item.Declaration.Type.ToString() == name) return (item.Declaration.Type, item.Declaration.Variables.First().Identifier.ValueText);
+            }
+            return (null,null);
         }
     }
 }
