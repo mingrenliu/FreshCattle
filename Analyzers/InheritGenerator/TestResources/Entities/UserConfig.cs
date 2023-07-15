@@ -1,7 +1,9 @@
-using Mapster;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+global using InheritCore;
+global using Mapster;
+global using Microsoft.EntityFrameworkCore;
+global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Text.Json.Serialization;
 
 namespace Cybstar.MES.Duty.DatabaseAccess.Entities;
 

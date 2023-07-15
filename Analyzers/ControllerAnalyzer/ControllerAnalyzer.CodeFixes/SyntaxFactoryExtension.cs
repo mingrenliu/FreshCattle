@@ -9,14 +9,14 @@ namespace ControllerAnalyzer
 {
     public static class SyntaxFactoryExtension
     {
-        public static MethodDeclarationSyntax WithHttpMethods(this MethodDeclarationSyntax node, HttpMethod method,SyntaxToken token)
+        public static MethodDeclarationSyntax WithHttpMethods(this MethodDeclarationSyntax node, HttpMethod method)
         {
             return node.WithAttributeLists(
                                 SingletonList(
                                     AttributeList(
                                         SingletonSeparatedList(
                                             Attribute(
-                                                IdentifierName(method.ToString())))).WithOpenBracketToken(token)));
+                                                IdentifierName(method.ToString()))))));
         }
 
         public static MethodDeclarationSyntax WithMethodModifiers(this MethodDeclarationSyntax node, bool isAsync)

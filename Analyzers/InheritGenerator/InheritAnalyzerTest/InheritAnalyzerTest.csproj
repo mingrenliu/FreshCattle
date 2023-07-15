@@ -4,7 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AdditionalFilePath>..\Resources\Entities\</AdditionalFilePath>
+    <NoWarn>8618</NoWarn>
+    <AdditionalFilePath>..\TestResources\Entities\</AdditionalFilePath>
   </PropertyGroup>
 
   <ItemGroup>

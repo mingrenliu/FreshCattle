@@ -3,15 +3,20 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Composition;
+using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace ControllerAnalyzer
@@ -19,6 +24,7 @@ namespace ControllerAnalyzer
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ControllerAnalyzerCodeFixProvider)), Shared]
     public class ControllerAnalyzerCodeFixProvider : CodeFixProvider
     {
+        private static readonly string _service = "Service";
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
             get { return ImmutableArray.Create(ControllerAnalyzer.DiagnosticId); }
@@ -26,36 +32,70 @@ namespace ControllerAnalyzer
 
         public sealed override FixAllProvider GetFixAllProvider()
         {
-            // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/FixAllProvider.md for more information on Fix All Providers
             return WellKnownFixAllProviders.BatchFixer;
         }
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics.Last();
-            diagnostic.Properties.TryGetValue("FieldName", out var fieldName);
-            diagnostic.Properties.TryGetValue("UnUsedMethods", out var methodStr);
-            diagnostic.Properties.TryGetValue("SourceCode", out var SourceCodeStr);
-            var unUsedMethods = methodStr.Split(',');
-            var sourceCode = SourceText.From(SourceCodeStr);
-            var methods=(await CSharpSyntaxTree.ParseText(sourceCode).GetRootAsync(context.CancellationToken)).DescendantNodesAndSelf()
-                .OfType<MethodDeclarationSyntax>().Where(x=>unUsedMethods.Contains(x.Identifier.ValueText));
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (ClassDeclarationSyntax)syntaxToken.Parent;
+            var serviceName= GetServiceName(target.Identifier.ValueText.ToString());
+            //get interface all methods
+            var project = context.Document.Project.Solution.Projects.FirstOrDefault(x => x.Name.EndsWith("Service"));
+            if (project == null) return;
+            var compile = await project.GetCompilationAsync(context.CancellationToken);
+            if (compile.GetSymbolsWithName(name => name == serviceName, SymbolFilter.Type).FirstOrDefault() is not INamedTypeSymbol symbol) return;
+            var methods = symbol.GetMembers().OfType<IMethodSymbol>();
+            //get methods controller have invoked
+            var field = GetFieldName(target, serviceName);
+            var implementMethods =string.IsNullOrEmpty(field)?
+                Enumerable.Empty<IMethodSymbol>()
+                : GetMethods(GetMethods(target.DescendantNodes().OfType<MemberAccessExpressionSyntax>(), field), await context.Document.GetSemanticModelAsync(context.CancellationToken));
+            var unUsedMethods = methods.Except(implementMethods);
+            if (!unUsedMethods.Any())  return;
             context.RegisterCodeFix(CodeAction.Create(CodeFixResources.MethodCodeFixTitle,
-                createChangedDocument: token => GenerateMethodsAsync(context.Document, target, fieldName, methods, token),
+                createChangedDocument: token => GenerateMethodsAsync(context.Document, target,field, unUsedMethods, token),
                 equivalenceKey: CodeFixResources.MethodCodeFixTitle), diagnostic);
+        }
+        public IEnumerable<IMethodSymbol> GetMethods(IEnumerable<MemberAccessExpressionSyntax> invokes,SemanticModel model)
+        {
+            foreach (var item in invokes)
+            {
+                yield return model.GetSymbolInfo(item).Symbol as IMethodSymbol;
+            }
+        }
+        public string GetFieldName(ClassDeclarationSyntax node,string name)
+        {
+            foreach (var item in node.DescendantNodes().OfType<FieldDeclarationSyntax>())
+            {
+                if (item.Declaration.Type.ToString()==name) return item.Declaration.Variables.First().Identifier.ValueText;
+            }
+            return null;
+        }
+        public static IEnumerable<MemberAccessExpressionSyntax> GetMethods(IEnumerable<MemberAccessExpressionSyntax> invokes, string name)
+        {
+            foreach (var invocation in invokes)
+            {
+                var token = invocation.Expression.DescendantTokens().FirstOrDefault();
+                if (token != null && token.ValueText == name)
+                {
+                    yield return invocation;
+                }
+            }
         }
         public static string GetServiceName(string controllerName)
         {
-            return "I" + controllerName.Substring(0, controllerName.Length - 10) + "Service";
+            var baseName = controllerName.Substring(0, controllerName.Length - 10);
+            return "I" + baseName + _service;
         }
         private static ConstructorDeclarationSyntax CreateCtor(ClassDeclarationSyntax target, string paraName, string serviceName, string fieldName)
         {
             return ConstructorDeclaration(
                     Identifier(target.Identifier.ValueText))
                     .WithModifiers(
-                        TokenList(XmlCreator.CreateXml(paraName,false)))
+                        TokenList(Token(SyntaxKind.PublicKeyword)))
+                    .WithLeadingTrivia(XmlCreator.CreateXml(paraName,false))
                     .WithParameterList(
                         ParameterList(
                             SingletonSeparatedList(
@@ -72,12 +112,13 @@ namespace ControllerAnalyzer
                                         IdentifierName(fieldName),
                                         IdentifierName(paraName))))));
         }
-        public static async Task<Document> GenerateMethodsAsync(Document doc, ClassDeclarationSyntax target, string fieldName, IEnumerable<MethodDeclarationSyntax> methods, CancellationToken token)
+        public static async Task<Document> GenerateMethodsAsync(Document doc, ClassDeclarationSyntax target, string fieldName, IEnumerable<IMethodSymbol> methods, CancellationToken token)
         {
+            var nodes=methods.Select(x => x.DeclaringSyntaxReferences.First().GetSyntaxAsync().GetAwaiter().GetResult() as MethodDeclarationSyntax);
             var members = new List<MemberDeclarationSyntax>();
-            var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
             if (string.IsNullOrEmpty(fieldName))
             {
+                var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
                 var paraName = serviceName[1].ToString().ToLower() + serviceName.Substring(2);
                 fieldName = "_" + paraName;
                 var field = FieldDeclaration(VariableDeclaration(IdentifierName(serviceName), SingletonSeparatedList(VariableDeclarator(Identifier(fieldName)))))
@@ -85,12 +126,13 @@ namespace ControllerAnalyzer
                 var ctor = CreateCtor(target, paraName, serviceName, fieldName);
                 members.Add(field);members.Add(ctor);
             }
-            foreach (var node in methods)
+            foreach (var node in nodes)
             {
                 var (isAsync, haveReturn) = ParseMethodReturnType(node.ReturnType);
                 var methodName = node.Identifier.ValueText.EndsWith("Async") ? node.Identifier.ValueText.Substring(0, node.Identifier.ValueText.Length - 5) : node.Identifier.ValueText;
                 var method = MethodDeclaration(node.ReturnType, Identifier(methodName))
-                    .WithHttpMethods(HttpMethod.HttpPost, XmlCreator.CreateXml(node.ParameterList.Parameters.Select(x=>x.Identifier.ValueText)))
+                    .WithHttpMethods(HttpMethod.HttpPost)
+                    .WithLeadingTrivia(TriviaList(XmlCreator.CreateXml(node.ParameterList.Parameters.Select(x => x.Identifier.ValueText))))
                     .WithMethodModifiers(isAsync)
                     .WithParameterList(node.ParameterList)
                     .WithMethodBody(fieldName, isAsync, haveReturn, node);
@@ -100,7 +142,6 @@ namespace ControllerAnalyzer
             var root = await doc.GetSyntaxRootAsync(token);
             return doc.WithSyntaxRoot(root.ReplaceNode(target, newClass));
         }
-
         public static (bool, bool) ParseMethodReturnType(TypeSyntax type)
         {
             if (type is PredefinedTypeSyntax predefinedNode && predefinedNode.Keyword.IsKind(SyntaxKind.VoidKeyword))

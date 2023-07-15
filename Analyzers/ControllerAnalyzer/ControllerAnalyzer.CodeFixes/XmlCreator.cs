@@ -10,15 +10,15 @@ namespace ControllerAnalyzer
 {
     public static class XmlCreator
     {
-        public static SyntaxToken CreateXml(IEnumerable<string> paras, bool withReturn = true)
+        public static SyntaxTriviaList CreateXml(IEnumerable<string> paras, bool withReturn = true)
         {
             return CreateXml(paras.ToArray(), withReturn);
         }
-        public static SyntaxToken CreateXml(string para, bool withReturn = true)
+        public static SyntaxTriviaList CreateXml(string para, bool withReturn = true)
         {
             return CreateXml(new string[] { para} , withReturn);
         }
-        public static SyntaxToken CreateXml(string[] paras, bool withReturn = true)
+        public static SyntaxTriviaList CreateXml(string[] paras, bool withReturn = true)
         {
             var kind = withReturn ? SyntaxKind.OpenBracketToken : SyntaxKind.PublicKeyword;
             var results = new List<XmlNodeSyntax>();
@@ -32,8 +32,7 @@ namespace ControllerAnalyzer
                 results.AddRange(CreateReturn());
             }
             results.Add(CreateNewLine());
-            return Token(
-                    TriviaList(
+            return TriviaList(
                         Trivia(
                             DocumentationCommentTrivia(
                                 SyntaxKind.SingleLineDocumentationCommentTrivia,
@@ -41,10 +40,7 @@ namespace ControllerAnalyzer
                                 Token(SyntaxKind.EndOfDocumentationCommentToken)
                                 )
                             )
-                        ),
-                    kind,
-                    TriviaList()
-                );
+                        );
         }
 
         private static XmlNodeSyntax[] CreateSummary()

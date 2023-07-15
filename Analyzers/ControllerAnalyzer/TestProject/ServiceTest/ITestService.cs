@@ -1,4 +1,5 @@
-﻿namespace ServiceTest
+﻿using System.Threading.Tasks;
+namespace ServiceTest
 {
     public interface ITestService
     {
