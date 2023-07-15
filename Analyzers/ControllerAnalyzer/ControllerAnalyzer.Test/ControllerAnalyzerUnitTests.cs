@@ -10,23 +10,23 @@ namespace ControllerAnalyzer.Test
     [TestClass]
     public class ControllerAnalyzerUnitTest
     {
-        //no work
         [TestMethod]
         public async Task TwoLocationTest_Diagnostic()
         {
             var sourceCode = @"using System.Threading.Tasks;
-namespace TestWebApi.Controllers
+namespace ControllerTest
 {
     public class {|#0:TestController|}
     {
-        private readonly string _service;
-        public TestController(string service)
+        private readonly ITestService _testService;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <paramtestService=""testService""></param>
+        public TestController(ITestService testService)
         {
-            _service = service;
-        }
-        public void Display(string message)
-        {
-            _service.ToString();
+            _testService = testService;
         }
     }
     public interface ITestService
@@ -42,18 +42,19 @@ namespace TestWebApi.Controllers
 }
 ";
             var fixedSource = @"using System.Threading.Tasks;
-namespace TestWebApi.Controllers
+namespace ControllerTest
 {
     public class {|#0:TestController|}
     {
-        private readonly ITestService _service;
-        public TestController(ITestService service)
+        private readonly ITestService _testService;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <paramtestService=""testService""></param>
+        public TestController(ITestService testService)
         {
-            _service = service;
-        }
-        public void Display(string message)
-        {
-            _service.Display(message);
+            _testService = testService;
         }
     }
     public interface ITestService

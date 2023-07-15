@@ -63,8 +63,7 @@ namespace ControllerAnalyzer
                             var unUsedMethods = methods.Except(implementMethods);
                             if (unUsedMethods.Any())
                             {
-                                var props = new Dictionary<string, string>() { [FieldName] = fieldName }.ToImmutableDictionary();
-                                context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), props, node.Identifier.ValueText.ToString()));
+                                context.ReportDiagnostic(Diagnostic.Create(Rule, node.Identifier.GetLocation(), node.Identifier.ValueText.ToString()));
                             }
                         }
                     }
@@ -98,13 +97,16 @@ namespace ControllerAnalyzer
             return "I" + baseName + "Service";
         }
 
-        public static (TypeSyntax,string) GetField(ClassDeclarationSyntax node, string name)
+        public static (TypeSyntax, string) GetField(ClassDeclarationSyntax node, string serviceName)
         {
             foreach (var item in node.DescendantNodes().OfType<FieldDeclarationSyntax>())
             {
-                if (item.Declaration.Type.ToString() == name) return (item.Declaration.Type, item.Declaration.Variables.First().Identifier.ValueText);
+                if (item.Declaration.Type.ToString() == serviceName)
+                {
+                    return (item.Declaration.Type, item.Declaration.Variables.First().Identifier.ValueText);
+                }
             }
-            return (null,null);
+            return (null, null);
         }
     }
 }

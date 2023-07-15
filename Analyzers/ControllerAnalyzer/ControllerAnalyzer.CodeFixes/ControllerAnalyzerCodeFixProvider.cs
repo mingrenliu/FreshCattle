@@ -17,8 +17,6 @@ namespace ControllerAnalyzer
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ControllerAnalyzerCodeFixProvider)), Shared]
     public class ControllerAnalyzerCodeFixProvider : CodeFixProvider
     {
-        private static readonly string _service = "Service";
-
         public override sealed ImmutableArray<string> FixableDiagnosticIds
         {
             get { return ImmutableArray.Create(ControllerAnalyzer.DiagnosticId); }
@@ -35,21 +33,32 @@ namespace ControllerAnalyzer
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (ClassDeclarationSyntax)syntaxToken.Parent;
             var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
-            //get interface all methods
-            var project = context.Document.Project.Solution.Projects.FirstOrDefault(x => x.Name.EndsWith("Service"));
-            if (project == null) return;
-            var compile = await project.GetCompilationAsync(context.CancellationToken);
-            if (compile.GetSymbolsWithName(name => name == serviceName, SymbolFilter.Type).FirstOrDefault() is not INamedTypeSymbol symbol) return;
-            var methods = symbol.GetMembers().OfType<IMethodSymbol>();
-            //get methods controller have invoked
-            diagnostic.Properties.TryGetValue(FieldName, out var field);
-            var implementMethods = string.IsNullOrEmpty(field) ?
-                Enumerable.Empty<IMethodSymbol>()
-                : GetMethods(GetMethods(target.DescendantNodes().OfType<MemberAccessExpressionSyntax>(), field), await context.Document.GetSemanticModelAsync(context.CancellationToken));
-            var unUsedMethods = methods.Except(implementMethods);
-            if (!unUsedMethods.Any()) return;
+            IEnumerable<IMethodSymbol> unUsedMethods=new List<IMethodSymbol>();
+            var (field, fieldName) = GetField(target, serviceName);
+            if (string.IsNullOrWhiteSpace(fieldName))
+            {
+                var project = context.Document.Project.Solution.Projects.FirstOrDefault(x => x.Name.EndsWith("Service"));
+                if (project !=null)
+                {
+                    var compile = await project.GetCompilationAsync(context.CancellationToken);
+                    if (compile.GetSymbolsWithName(name => name == serviceName, SymbolFilter.Type).FirstOrDefault() is INamedTypeSymbol symbol)
+                    {
+                        unUsedMethods = symbol.GetMembers().OfType<IMethodSymbol>();
+                    }
+                }
+            }
+            else
+            {
+                var model = await context.Document.GetSemanticModelAsync(context.CancellationToken);
+                var symbol = model.GetSymbolInfo(field).Symbol as INamedTypeSymbol;
+                var methods = symbol?.GetMembers().OfType<IMethodSymbol>();
+                if (methods == null || !methods.Any()) return;
+                var implementMethods = GetMethods(GetMethods(target.DescendantNodes().OfType<MemberAccessExpressionSyntax>(), fieldName), model);
+                unUsedMethods = methods.Except(implementMethods);
+                if (!unUsedMethods.Any()) return;
+            }
             context.RegisterCodeFix(CodeAction.Create(CodeFixResources.MethodCodeFixTitle,
-                createChangedDocument: token => GenerateMethodsAsync(context.Document, target, field, unUsedMethods, token),
+                createChangedDocument: token => GenerateMethodsAsync(context.Document, target, fieldName, unUsedMethods, token),
                 equivalenceKey: CodeFixResources.MethodCodeFixTitle), diagnostic);
         }
 
@@ -81,7 +90,7 @@ namespace ControllerAnalyzer
         {
             var nodes = methods.Select(x => x.DeclaringSyntaxReferences.First().GetSyntaxAsync().GetAwaiter().GetResult() as MethodDeclarationSyntax);
             var members = new List<MemberDeclarationSyntax>();
-            if (string.IsNullOrEmpty(fieldName))
+            if (string.IsNullOrWhiteSpace(fieldName))
             {
                 var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
                 var paraName = serviceName[1].ToString().ToLower() + serviceName.Substring(2);
