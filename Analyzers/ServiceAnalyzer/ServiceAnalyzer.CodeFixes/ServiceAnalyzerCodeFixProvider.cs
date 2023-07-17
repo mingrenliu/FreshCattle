@@ -31,7 +31,8 @@ namespace ServiceAnalyzer
         {
             var diagnostic = context.Diagnostics.First();
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
-            var target = (InterfaceDeclarationSyntax)syntaxToken.Parent;
+            var target =syntaxToken.Parent.AncestorsAndSelf().OfType<InterfaceDeclarationSyntax>().FirstOrDefault();
+            if (target == null ||!diagnostic.AdditionalLocations.Any()) return;
             context.RegisterCodeFix(CodeAction.Create(CodeFixResources.CodeFixTitle,
                 createChangedDocument: token => GenerateMethodsAsync(context.Document, target, diagnostic.AdditionalLocations, token),
                 equivalenceKey: CodeFixResources.CodeFixTitle),
@@ -40,13 +41,13 @@ namespace ServiceAnalyzer
 
         public static async Task<Document> GenerateMethodsAsync(Document doc, InterfaceDeclarationSyntax target, IEnumerable<Location> locations, CancellationToken token)
         {
-            var space = target.OpenBraceToken.LeadingTrivia.FirstOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
-            var leadingSpace = space == null ? TriviaList(Whitespace("    ")) : TriviaList(space, Whitespace("    "));
+            //var space = target.OpenBraceToken.LeadingTrivia.FirstOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
+            //var leadingSpace = space == null ? TriviaList(Whitespace("    ")) : TriviaList(space, Whitespace("    "));
             var methods = target.Members;
             foreach (var location in locations)
             {
                 var node = (MethodDeclarationSyntax)(await location.SourceTree.GetRootAsync()).FindToken(location.SourceSpan.Start).Parent;
-                methods = methods.Add(MethodDeclaration(node.ReturnType, node.Identifier).WithParameterList(node.ParameterList).WithLeadingTrivia(leadingSpace).WithoutTrailingTrivia().WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+                methods = methods.Add(MethodDeclaration(node.ReturnType, node.Identifier).WithParameterList(node.ParameterList).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));//.WithLeadingTrivia(leadingSpace).WithoutTrailingTrivia()
             }
             var newInterface = target.WithMembers(methods);
             var root = await doc.GetSyntaxRootAsync(token);
