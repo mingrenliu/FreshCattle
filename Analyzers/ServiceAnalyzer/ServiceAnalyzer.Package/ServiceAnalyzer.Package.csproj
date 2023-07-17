@@ -21,6 +21,7 @@
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright</Copyright>
     <PackageTags>ServiceAnalyzer, analyzers</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
 
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
