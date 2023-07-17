@@ -20,7 +20,6 @@ namespace ControllerAnalyzer
         }
         public static SyntaxTriviaList CreateXml(string[] paras, bool withReturn = true)
         {
-            var kind = withReturn ? SyntaxKind.OpenBracketToken : SyntaxKind.PublicKeyword;
             var results = new List<XmlNodeSyntax>();
             results.AddRange(CreateSummary());
             foreach (var item in paras)
@@ -119,16 +118,16 @@ namespace ControllerAnalyzer
                                 Identifier(
                                     TriviaList(),
                                     SyntaxKind.ParamKeyword,
-                                    "param",
-                                    "param",
+                                    "param ",
+                                    "param ",
                                     TriviaList())))
                         .WithAttributes(
                             SingletonList<XmlAttributeSyntax>(
                                 XmlNameAttribute(
                                     XmlName(
-                                        Identifier(name)),
+                                        Identifier("name")),
                                     Token(SyntaxKind.DoubleQuoteToken),
-                                    IdentifierName(name),
+                                    name,
                                     Token(SyntaxKind.DoubleQuoteToken)))))
                     .WithEndTag(
                         XmlElementEndTag(

@@ -23,7 +23,7 @@ namespace ControllerTest
         /// <summary>
         /// 
         /// </summary>
-        /// <paramtestService=""testService""></param>
+        /// <param name=""testService""></param>
         public TestController(ITestService testService)
         {
             _testService = testService;
@@ -51,7 +51,7 @@ namespace ControllerTest
         /// <summary>
         /// 
         /// </summary>
-        /// <paramtestService=""testService""></param>
+        /// <param name=""testService""></param>
         public TestController(ITestService testService)
         {
             _testService = testService;
