@@ -29,29 +29,29 @@ namespace ServiceAnalyzer
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var diagnostic = context.Diagnostics.First();
+            var diagnostic = context.Diagnostics.Last ();
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target =syntaxToken.Parent.AncestorsAndSelf().OfType<InterfaceDeclarationSyntax>().FirstOrDefault();
             if (target == null ||!diagnostic.AdditionalLocations.Any()) return;
             context.RegisterCodeFix(CodeAction.Create(CodeFixResources.CodeFixTitle,
                 createChangedDocument: token => GenerateMethodsAsync(context.Document, target, diagnostic.AdditionalLocations, token),
                 equivalenceKey: CodeFixResources.CodeFixTitle),
-                context.Diagnostics.First());
+                context.Diagnostics.Last());
         }
 
         public static async Task<Document> GenerateMethodsAsync(Document doc, InterfaceDeclarationSyntax target, IEnumerable<Location> locations, CancellationToken token)
         {
-            //var space = target.OpenBraceToken.LeadingTrivia.FirstOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
-            //var leadingSpace = space == null ? TriviaList(Whitespace("    ")) : TriviaList(space, Whitespace("    "));
-            var methods = target.Members;
+            var methods =new List<MemberDeclarationSyntax>();
             foreach (var location in locations)
             {
-                var node = (MethodDeclarationSyntax)(await location.SourceTree.GetRootAsync()).FindToken(location.SourceSpan.Start).Parent;
-                methods = methods.Add(MethodDeclaration(node.ReturnType, node.Identifier).WithParameterList(node.ParameterList).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));//.WithLeadingTrivia(leadingSpace).WithoutTrailingTrivia()
+                var node =(await location.SourceTree.GetRootAsync()).FindToken(location.SourceSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+                if (node == null) continue;
+                var temp = MethodDeclaration(node.ReturnType, node.Identifier).WithParameterList(node.ParameterList).WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+                methods.Add(temp);
             }
-            var newInterface = target.WithMembers(methods);
+            var newInterface = target.AddMembers(methods.ToArray());
             var root = await doc.GetSyntaxRootAsync(token);
-            return doc.WithSyntaxRoot(root.ReplaceNode(target, newInterface));
+            return doc.WithSyntaxRoot(root.ReplaceNode(target, newInterface).NormalizeWhitespace());
         }
     }
 }
