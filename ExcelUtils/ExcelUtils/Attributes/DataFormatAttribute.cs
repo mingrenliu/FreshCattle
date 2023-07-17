@@ -3,11 +3,6 @@
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class DataFormatAttribute : Attribute
 {
-    /// <summary>
-    /// Weight
-    /// </summary>
-    public int Order { get; set; }
-
     public ExcelConverter? Converter => _converter;
 
     /// <summary>
