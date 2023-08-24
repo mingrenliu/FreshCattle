@@ -2,9 +2,9 @@
 using DatabaseHandler.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DatabaseHandler.Extensions
+namespace DatabaseHandler..DbContexts
 {
-    public class ScopeDbContextFactory<T>:IDbContextFactory<T> where T : BaseDbContext
+    public class ScopeDbContextFactory<T>:IDbContextFactory<T> where T : DbContext<T>
     {
         private readonly ICurrentUser _currentUser;
         private readonly IDbContextFactory<T> _factory;

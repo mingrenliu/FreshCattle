@@ -5,7 +5,7 @@ namespace DatabaseHandler.ValueGenerators
 {
     internal class SnowflakeGenerator : ValueGenerator
     {
-        private readonly SnowflakeAlgorithm _snowflakeId = new();
+        private readonly Snowflake _snowflakeId = new();
         public override bool GeneratesTemporaryValues => false;
 
         protected override object? NextValue(EntityEntry entry)

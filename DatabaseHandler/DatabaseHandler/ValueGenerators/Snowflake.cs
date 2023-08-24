@@ -7,7 +7,7 @@ namespace DatabaseHandler.ValueGenerators;
 /// Twitter_Snowflake
 /// SnowFlake的结构如下(每部分用-分开)
 /// 0 - 0000000000 0000000000 0000000000 0000000000 0 - 00000 - 00000 - 000000000000
-/// 1位标识，由于long基本类型在Java中是带符号的，最高位是符号位，正数是0，负数是1，所以id一般是正数，最高位是0
+/// 1位标识，由于Long基本类型在Java中是带符号的，最高位是符号位，正数是0，负数是1，所以id一般是正数，最高位是0
 /// 41位时间戳(毫秒级)，注意，41位时间戳不是存储当前时间的时间戳，而是存储时间戳的差值（当前时间戳 - 开始时间戳)得到的值），
 /// 41位的时间戳，可以使用69年，年T = (1L << 41) / (1000L * 60 * 60 * 24 * 365) = 69
 /// 这里的的开始时间戳，一般是我们的id生成器开始使用的时间，由我们程序来指定的（如下下面程序IdWorker类的startTime属性）。
@@ -17,7 +17,7 @@ namespace DatabaseHandler.ValueGenerators;
 /// SnowFlake的优点是，整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞(由数据中心ID和机器ID作区分)，
 /// 并且效率较高，经测试，SnowFlake单机每秒都能够产生出极限4,096,000个ID来
 /// </summary>
-public class SnowflakeAlgorithm
+public class Snowflake
 {
     // 开始时间戳 (new DateTime(2020, 1, 1).ToUniversalTime() - Jan1st1970).TotalMilliseconds
     private const long twepoch = 1577808000000L;
@@ -46,14 +46,14 @@ public class SnowflakeAlgorithm
     // 时间戳向左移22位(5+5+12)
     private const int timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
 
-    // 生成序列的掩码，这里为4095 (0b111111111111=0xfff=4095)
+    // 生成序列的掩码，这里为4095 (0b111111111111= 0xfff =4095)
     private const long sequenceMask = -1L ^ (-1L << sequenceBits);
 
     // 数据中心ID(0~31)
-    private long datacenterId;
+    private readonly long datacenterId;
 
     // 工作机器ID(0~31)
-    private long workerId;
+    private readonly long workerId;
 
     // 毫秒内序列(0~4095)
     private long sequence;
@@ -66,7 +66,7 @@ public class SnowflakeAlgorithm
     /// </summary>
     /// <param name="datacenterId">数据中心ID</param>
     /// <param name="workerId">工作机器ID</param>
-    public SnowflakeAlgorithm(long datacenterId = 0, long workerId = 0)
+    public Snowflake(long datacenterId = 0, long workerId = 0)
     {
         if (datacenterId > maxDatacenterId || datacenterId < 0)
         {
@@ -134,7 +134,7 @@ public class SnowflakeAlgorithm
     /// <returns></returns>
     public static string AnalyzeId(long Id)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
 
         var timestamp = (Id >> timestampLeftShift);
         var time = Jan1st1970.AddMilliseconds(timestamp + twepoch);
@@ -176,5 +176,5 @@ public class SnowflakeAlgorithm
         return (long)(DateTime.UtcNow - Jan1st1970).TotalMilliseconds;
     }
 
-    private static readonly DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime Jan1st1970 = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 }
