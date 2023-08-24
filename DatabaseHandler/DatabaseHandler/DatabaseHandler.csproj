@@ -11,7 +11,7 @@
     <PackageTags>DatabaseHandler</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.0.3</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
     <Description>EFCore DatabaseHandler</Description>
