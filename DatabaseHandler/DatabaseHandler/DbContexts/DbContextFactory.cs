@@ -2,7 +2,7 @@
 using DatabaseHandler.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DatabaseHandler..DbContexts
+namespace DatabaseHandler.DbContexts
 {
     public class ScopeDbContextFactory<T>:IDbContextFactory<T> where T : DbContext<T>
     {

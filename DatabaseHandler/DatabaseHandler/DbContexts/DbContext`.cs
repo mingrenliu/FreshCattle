@@ -1,7 +1,10 @@
-﻿using DatabaseHandler.Entities;
+﻿using DatabaseHandler.Conventions;
+using DatabaseHandler.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DatabaseHandler.DbContexts;
 
@@ -44,7 +47,8 @@ public class DbContext<TContext> : DbContext where TContext : DbContext
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-
+        configurationBuilder.Conventions.Add(sp => new DefaultValueConversion(sp.GetRequiredService<ProviderConventionSetBuilderDependencies>()));
+        configurationBuilder.Conventions.Add(sp => new EntityFilterByContextConvention(sp.GetRequiredService<ProviderConventionSetBuilderDependencies>()));
         base.ConfigureConventions(configurationBuilder);
     }
 }
