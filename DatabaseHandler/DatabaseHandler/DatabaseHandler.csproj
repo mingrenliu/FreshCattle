@@ -4,7 +4,6 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>YangCode.DatabaseHandler</PackageId>
@@ -20,6 +19,13 @@
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright</Copyright>
     <PackageTags>EntityFramworkCore,Orm</PackageTags>
+    
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+    
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
@@ -30,9 +36,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.10" />
-    <PackageReference Include="Oracle.EntityFrameworkCore" Version="7.21.11" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="7.21.11" />
   </ItemGroup>
+    <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\DbSetGenerator.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\DatabaseHandler.dll" PackagePath="lib/net7.0" />
+    </ItemGroup>
+  </Target>  
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -41,5 +53,13 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+    <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+  </ItemGroup>  
+  <ItemGroup>
+    <ProjectReference Include="..\DbSetGenerator\DbSetGenerator.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 </Project>

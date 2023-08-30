@@ -20,7 +20,6 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
 
   </PropertyGroup>

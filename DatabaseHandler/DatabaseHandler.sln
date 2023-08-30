@@ -5,6 +5,10 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseHandler", "DatabaseHandler\DatabaseHandler.csproj", "{33ADA02D-9ABC-498C-AE73-9265B672C5D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbSetGenerator", "DbSetGenerator\DbSetGenerator.csproj", "{D54FB831-1454-4AFC-ADD4-C603EF25CDAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbHandlerTest", "DbHandlerTest\DbHandlerTest.csproj", "{97D4DF1C-E385-4DFC-9811-9954A3D22BFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{33ADA02D-9ABC-498C-AE73-9265B672C5D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33ADA02D-9ABC-498C-AE73-9265B672C5D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33ADA02D-9ABC-498C-AE73-9265B672C5D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D54FB831-1454-4AFC-ADD4-C603EF25CDAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54FB831-1454-4AFC-ADD4-C603EF25CDAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54FB831-1454-4AFC-ADD4-C603EF25CDAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54FB831-1454-4AFC-ADD4-C603EF25CDAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D4DF1C-E385-4DFC-9811-9954A3D22BFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97D4DF1C-E385-4DFC-9811-9954A3D22BFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97D4DF1C-E385-4DFC-9811-9954A3D22BFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97D4DF1C-E385-4DFC-9811-9954A3D22BFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
