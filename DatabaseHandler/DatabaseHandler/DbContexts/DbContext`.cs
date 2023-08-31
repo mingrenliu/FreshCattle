@@ -11,9 +11,11 @@ namespace DatabaseHandler.DbContexts;
 public class DbContext<TContext> : DbContext where TContext : DbContext
 {
     public ICurrentUser? CurrentUser { get; set; }
+
     public DbContext(DbContextOptions<TContext> options) : base(options)
     {
     }
+
     protected override sealed void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TContext).Assembly);
@@ -36,6 +38,7 @@ public class DbContext<TContext> : DbContext where TContext : DbContext
         AfterOnModelCreating(modelBuilder);
         base.OnModelCreating(modelBuilder);
     }
+
     internal static DbType GetDbType(DatabaseFacade database)
     {
         return database.IsMySql() ? DbType.MySql : database.IsOracle() ? DbType.Oracle : DbType.Undefined;

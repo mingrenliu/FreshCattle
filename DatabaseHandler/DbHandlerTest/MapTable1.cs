@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DbHandlerTest.Entity
 {
     [Table("MapTable1")]
+    [DbContext(typeof(TestDbContext))]
     public class MapTable1
     {
         [StringLength(50)]

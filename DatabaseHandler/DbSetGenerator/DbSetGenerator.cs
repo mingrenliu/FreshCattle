@@ -21,11 +21,11 @@ public class DbSetGenerator : IIncrementalGenerator
         }*/
         var entityNames = context.SyntaxProvider.ForAttributeWithMetadataName("System.ComponentModel.DataAnnotations.Schema.TableAttribute", NotAbstract, EntityName).Collect();
         var dbInfo= context.CompilationProvider.Select((ctx, token) => ctx.GetSymbolsWithName(x => x.EndsWith("DbContext", StringComparison.OrdinalIgnoreCase), SymbolFilter.Type, token)
-        .OfType<INamedTypeSymbol>().Where(x => !x.IsAbstract && !x.IsGenericType).Where(x => IsDbContext(x)).Select(x=>new ClassInfo() {Name=x.Name,NameSpace=x.ContainingNamespace.Name})).SelectMany((x,_)=>x.ToImmutableArray());
+        .OfType<INamedTypeSymbol>().Where(x => !x.IsAbstract && !x.IsGenericType).Where(x => IsDbContext(x)).Select(x=> new ClassInfo() { Name = x.Name, NameSpace = x.ContainingNamespace.Name })).SelectMany((x,_)=>x.ToImmutableArray());
         var combine=dbInfo.Combine(entityNames);
         context.RegisterSourceOutput(combine, GenerateFile);
     }
-    public static void GenerateFile(SourceProductionContext context,(ClassInfo,ImmutableArray<ClassInfo>) source)
+    public static void GenerateFile(SourceProductionContext context,(ClassInfo,ImmutableArray<EntityInfo>) source)
     {
         if (!string.IsNullOrEmpty(source.Item1?.Name))
         {
@@ -63,9 +63,9 @@ public class DbSetGenerator : IIncrementalGenerator
         return true;
     }
 
-    public static ClassInfo EntityName(GeneratorAttributeSyntaxContext context, CancellationToken token)
+    public static EntityInfo EntityName(GeneratorAttributeSyntaxContext context, CancellationToken token)
     {
-        var result = new ClassInfo();
+        var result = new EntityInfo();
         if (context.TargetNode is ClassDeclarationSyntax node)
         {
             result.Name= node.Identifier.ValueText;
@@ -81,6 +81,22 @@ public class DbSetGenerator : IIncrementalGenerator
                     result.NameSpace = space.Name.ToString();
                     break;
                 }
+            }
+            //获取所属的DbContext
+            foreach (var item in node.AttributeLists)
+            {
+                foreach (var attr in item.Attributes)
+                {
+                    if (attr.Name.ToString() == "DbContext" && attr.ArgumentList.Arguments.Count>0)
+                    {
+                        var type = attr.ArgumentList.Arguments.First().ChildNodes().OfType<TypeOfExpressionSyntax>().FirstOrDefault();
+                        if (type !=null)
+                        {
+                            result.DbContexts.Add(type.Type.ToString().Split('.').Last());
+                        }
+                    }
+                }
+
             }
         }
         return result;

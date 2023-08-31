@@ -13,12 +13,9 @@ namespace DatabaseHandler.Conventions
 
         protected override void ProcessEntityTypeAdded(IConventionEntityTypeBuilder entityTypeBuilder, DbContextAttribute attribute, IConventionContext<IConventionEntityTypeBuilder> context)
         {
-            if (attribute.ContextType != Dependencies.ContextType)
+            if (attribute.ContextType != Dependencies.ContextType && entityTypeBuilder.ModelBuilder.Ignore(entityTypeBuilder.Metadata.Name, fromDataAnnotation: true) != null)
             {
-                if (entityTypeBuilder.ModelBuilder.Ignore(entityTypeBuilder.Metadata.Name, fromDataAnnotation: false) != null)
-                {
-                    context.StopProcessing();
-                }
+                context.StopProcessing();
             }
         }
     }
