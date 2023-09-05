@@ -12,7 +12,7 @@ jobs:
               with:
                 directories: ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer
                 token: ${{github.token}}
-                ignore: ''
+                ignore: "**.md"
             - name: display changed directories
               run:
                 echo ${{steps.changefile.outputs}}
