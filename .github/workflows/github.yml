@@ -10,7 +10,7 @@ jobs:
               id: changefile
               uses: mingrenliu/TSGithubAction@v1.1
               with:
-                directories: "ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer"
+                directories: ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer
                 token: ${{github.token}}
             - name: display changed directories
               run:
