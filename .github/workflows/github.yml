@@ -7,12 +7,10 @@ jobs:
             - name: checkout
               uses: actions/checkout@v3
             - name: get changed directories
-              id: changefile
-              uses: mingrenliu/TSGithubAction@v1.3
+              uses: mingrenliu/dir-monitor@v1
               with:
-                directories: 'ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer'
+                directories: "ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer"
                 token: '${{github.token}}'
-                ignore: '**.md'
             - name: display changed directories
               run:
                 echo ${{steps.changefile.outputs}}
