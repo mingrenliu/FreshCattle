@@ -1,4 +1,6 @@
-﻿namespace ExcelTest;
+﻿using ExcelUtileTest.Entities;
+
+namespace ExcelTest;
 
 [TestFixture]
 [Order(1)]
@@ -22,7 +24,15 @@ internal class ImportTest
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(40));
     }
-
+    [TestCase("product")]
+    public void Excel_Import_Product_Test(string filename)
+    {
+        var timer = StartTimer();
+        var workBook = GetWorkBook(filename);
+        var lst = ExcelHelper.Import<Product>(workBook);
+        Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
+        Assert.That(lst.Count(), Is.AtLeast(1));
+    }
     private static XSSFWorkbook GetWorkBook(string filename)
     {
         var location = LocationHelper.GetImportResourcesPath();

@@ -1,4 +1,6 @@
-﻿namespace ExcelUtile.ExcelCore
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace ExcelUtile.ExcelCore
 {
     internal class ExcelReader<T> where T : class
     {
@@ -26,7 +28,7 @@
         }
 
         /// <summary>
-        /// 每次切换sheet重新解析标题行
+        /// 每次切换Sheet重新解析标题行
         /// </summary>
         /// <param name="sheetNum"></param>
         /// <returns></returns>
@@ -35,9 +37,11 @@
             _currentSheetIndex++;
             if (NumberOfSheets <= _currentSheetIndex) return false;
             _currentSheet = _workbook.GetSheetAt(_currentSheetIndex);
+            if (_currentSheet == null) return false;
             if (_currentSheet.LastRowNum < _option.HeaderLineIndex) return false;
             if (_option.StartLineIndex > _currentSheet.LastRowNum) return false;
             var row = _currentSheet.GetRow(_option.HeaderLineIndex);
+            if (row == null) return false;
             var header = new SortedWrapper<HeaderInfo>();
             foreach (var cell in row.Cells)
             {
@@ -75,7 +79,7 @@
         {
             if (_currentSheet!.LastRowNum == _currentRow!.RowNum) return false;
             _currentRow = _currentSheet.GetRow(_currentRow.RowNum + 1);
-            return true;
+            return _currentRow != null;
         }
 
         public Dictionary<string, IEnumerable<T>> ReadMultiSheet()
@@ -116,7 +120,7 @@
             {
                 var cell = _currentRow!.GetCell(item.Order);
                 var prop = _info[item.Name];
-                if (prop != null)
+                if (prop != null && cell !=null)
                 {
                     var converter = prop.GetConverter(_factory);
                     if (converter != null)
