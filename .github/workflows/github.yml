@@ -1,0 +1,18 @@
+name: test action write by myself
+on: push
+jobs:
+    changedfile:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@v3
+            - name: get changed directories
+              id: changefile
+              uses: mingrenliu/TSGithubAction@v1.1
+              with:
+                directories: "ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer"
+                token: ${{github.token}}
+            - name: display changed directories
+              run:
+                echo ${{steps.changefile.outputs}}
+
