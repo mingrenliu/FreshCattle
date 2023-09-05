@@ -7,8 +7,9 @@ jobs:
             - name: checkout
               uses: actions/checkout@v3
             - name: get changed directories
+              id: changefile
               uses: mingrenliu/dir-monitor@v1
-              with:
+              with: 
                 directories: "ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer"
                 token: '${{github.token}}'
             - name: display changed directories
