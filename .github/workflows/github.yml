@@ -8,7 +8,7 @@ jobs:
               uses: actions/checkout@v3
             - name: get changed directories
               id: changefile
-              uses: mingrenliu/TSGithubAction@v1.2
+              uses: mingrenliu/TSGithubAction@v1.3
               with:
                 directories: "ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer"
                 token: "${{github.token}}"
