@@ -10,9 +10,9 @@ jobs:
               id: changefile
               uses: mingrenliu/TSGithubAction@v1.3
               with:
-                directories: "ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer"
-                token: "${{github.token}}"
-                ignore: "**.md"
+                directories: 'ConfigurationCenter;ExcelUtils;dns;DatabaseHandler;Analyzers/ControllerAnalyzer;Analyzers/InheritGenerator;Analyzers/ServiceAnalyzer'
+                token: '${{github.token}}'
+                ignore: '**.md'
             - name: display changed directories
               run:
                 echo ${{steps.changefile.outputs}}
