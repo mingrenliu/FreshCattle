@@ -1,0 +1,36 @@
+name: build and test library
+on:
+  push:
+    branches: [main]
+    paths:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: setup .net
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          7.0.x
+          6.0.x
+        cache: true
+    - name: restore dependences
+      run: dotnet restore
+    - name: build
+      run: dotnet build --no-restore -c Release
+    - name: test
+      run: dotnet test --no-build --verbosity normal -c Release
+
+
+
+
+
+
+
+
+
