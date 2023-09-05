@@ -61,7 +61,7 @@ namespace AttributeAnalyzer {
         }
         
         /// <summary>
-        ///   查找类似 DataFormat argument type should inherit form ExcelConverter&lt;T&gt; 的本地化字符串。
+        ///   查找类似 DataFormat argument type should inherit form ExcelConverter&lt;T&gt;. 的本地化字符串。
         /// </summary>
         internal static string AnalyzerDescription {
             get {
