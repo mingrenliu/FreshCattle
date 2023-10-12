@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+
+    <PackageId>YangCode.NSwagApi</PackageId>
+    <PackageTags>NSwagApi</PackageTags>
+    <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
+    <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
+    <PackageVersion>1.0.1</PackageVersion>
+    <Company>YangCode</Company>
+    <Authors>LiuYang</Authors>
+    <Description>NSwag Swagger</Description>
+    <PackageIcon>L.png</PackageIcon>
+    <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>NSwag Swagger</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\L.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NSwag.AspNetCore" Version="13.19.0" />
+    <PackageReference Include="NSwag.CodeGeneration.TypeScript" Version="13.20.0" />
+  </ItemGroup>
+</Project>

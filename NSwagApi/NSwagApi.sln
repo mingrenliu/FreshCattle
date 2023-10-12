@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSwagApi", "NSwagApi.csproj", "{4D566E1D-FED5-40F5-970C-A4DE87DC9DAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D566E1D-FED5-40F5-970C-A4DE87DC9DAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D566E1D-FED5-40F5-970C-A4DE87DC9DAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D566E1D-FED5-40F5-970C-A4DE87DC9DAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D566E1D-FED5-40F5-970C-A4DE87DC9DAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {80B6B59E-A89B-44EF-87E4-DE97D248E9A9}
+	EndGlobalSection
+EndGlobal
