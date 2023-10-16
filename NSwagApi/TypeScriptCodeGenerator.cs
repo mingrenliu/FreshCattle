@@ -46,7 +46,7 @@ public class TypeScriptCodeGenerator
                 stringBuilder.AppendLine(Open);
                 foreach (var prop in item.Value.ActualProperties)
                 {
-                    stringBuilder.AppendLine(Property(prop.Key, Type(prop.Value, schemas), prop.Value.IsRequired));
+                    stringBuilder.AppendLine(Property(prop.Key, Type(prop.Value.ActualSchema, schemas), prop.Value.IsRequired));
                 }
             }
             stringBuilder.AppendLine(Close);
