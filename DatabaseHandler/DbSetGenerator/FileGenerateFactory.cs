@@ -42,12 +42,12 @@ public class FileGenerateFactory
 
     private static string DisableWarning()
     {
-        return "# pragma warning disable IDE0051,CS8618";
+        return "# pragma warning disable CS1591";
     }
 
     private static string RestoreWarning()
     {
-        return "# pragma warning restore IDE0051,CS8618";
+        return "# pragma warning restore CS1591";
     }
 
     private static string GenerateUsing(string name)
@@ -67,7 +67,7 @@ public class FileGenerateFactory
 
     private static string GenerateProperty(string name)
     {
-        return $"    private DbSet<{name}> {name}" + "s { get; set; }";
+        return $"    public DbSet<{name}> {name}" + " { get; set; }";
     }
 
     private static string GenerateBracket(bool isLeft = false)
