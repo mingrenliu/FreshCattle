@@ -10,6 +10,7 @@ namespace DatabaseHandler.DbContexts;
 
 public class DbContext<TContext> : DbContext where TContext : DbContext
 {
+    protected virtual string TablePrefix { get; } = string.Empty;
     public ICurrentUser? CurrentUser { get; set; }
 
     public DbContext(DbContextOptions<TContext> options) : base(options)
@@ -22,7 +23,7 @@ public class DbContext<TContext> : DbContext where TContext : DbContext
         var nameConversion = NameConversionFactory.Create(GetDbType(Database));
         foreach (var type in modelBuilder.Model.GetEntityTypes())
         {
-            type.SetTableName(nameConversion.TableName(type.GetTableName()));
+            type.SetTableName(nameConversion.TableName(TablePrefix + type.GetTableName()));
             foreach (var prop in type.GetProperties())
             {
                 prop.SetColumnName(nameConversion.ColumnName(prop.GetColumnName()));
@@ -51,7 +52,6 @@ public class DbContext<TContext> : DbContext where TContext : DbContext
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Conventions.Add(sp => new DefaultValueConversion(sp.GetRequiredService<ProviderConventionSetBuilderDependencies>()));
-        configurationBuilder.Conventions.Add(sp => new EntityFilterByContextConvention(sp.GetRequiredService<ProviderConventionSetBuilderDependencies>()));
         base.ConfigureConventions(configurationBuilder);
     }
 }

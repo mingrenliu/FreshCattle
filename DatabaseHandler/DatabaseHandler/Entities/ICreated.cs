@@ -8,11 +8,11 @@
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// 创建用户id
         /// </summary>
-        public string? CreateUserId { get; set; }
+        public string? CreatedBy { get; set; }
     }
 }

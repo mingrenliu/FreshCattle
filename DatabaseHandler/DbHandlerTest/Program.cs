@@ -1,4 +1,4 @@
-
+global using Test.DbHandlerTest;
 using DatabaseHandler.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +28,6 @@ namespace DbHandlerTest
             }
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
