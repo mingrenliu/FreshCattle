@@ -1,9 +1,11 @@
 ﻿using DatabaseHandler.DbContexts;
 using DatabaseHandler.Entities;
+using DatabaseHandler.Services;
 using DatabaseHandler.Utils;
 using DatabaseHandler.ValueGenerators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -42,6 +44,7 @@ namespace DatabaseHandler.Extensions
             services.AddPooledDbContextFactory<T>(config =>
             {
                 config.ReplaceService<IValueGeneratorSelector, CustomValueGeneratorSelector>();
+                config.ReplaceService<IMigrationsAssembly, CustomMigrationsAssembly>();
                 optionBuilder(config);
             }, poolSize);
             services.AddScoped(typeof(ScopeDbContextFactory<>));
