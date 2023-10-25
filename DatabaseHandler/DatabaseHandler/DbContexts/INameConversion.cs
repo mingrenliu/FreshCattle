@@ -48,7 +48,7 @@ internal class NameConversionFactory
 
 internal enum DbType
 {
-    Undefined=0,
+    Undefined = 0,
     MySql = 1,
     Oracle = 2
 }

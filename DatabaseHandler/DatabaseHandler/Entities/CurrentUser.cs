@@ -5,7 +5,7 @@
     /// </summary>
     public class CurrentUser : ICurrentUser
     {
-        private static readonly string _defaultTenantId = "global";
+        protected virtual string DefaultTenantId { get; } = "global";
 
         /// <summary>
         /// 租户id
@@ -26,7 +26,7 @@
         {
             UserId = userId;
             UserName = userName;
-            TenantId = string.IsNullOrWhiteSpace(tenantId) ? _defaultTenantId : tenantId;
+            TenantId = string.IsNullOrWhiteSpace(tenantId) ? DefaultTenantId : tenantId;
         }
 
         public string? GetUserName() => UserName;
