@@ -1,11 +1,13 @@
-﻿namespace ExcelUtile.ExcelCore
+﻿using NPOI.XSSF.UserModel;
+
+namespace ExcelUtile.ExcelCore
 {
     internal class ExcelWriter<T> where T : class
     {
         private const int WidthFactor = 256;
         private const int HeightFactor = 20;
         private readonly Dictionary<string, IEnumerable<T>> _data;
-        private readonly IWorkbook workbook;
+        private readonly XSSFWorkbook workbook;
         private ISheet? _currentSheet;
         private IRow? _currentRow;
         private int _rowIndex = 0;
@@ -30,7 +32,7 @@
             _info = _option.PropertySelector.Invoke(typeof(T)).OrderBy(x => x.Order).ToList();
         }
 
-        public IWorkbook Write()
+        public XSSFWorkbook Write()
         {
             foreach (var item in _data)
             {

@@ -1,10 +1,11 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NPOI.XSSF.UserModel;
 
 namespace ExcelUtile.ExcelCore
 {
     internal class ExcelReader<T> where T : class
     {
-        private readonly IWorkbook _workbook;
+        private readonly XSSFWorkbook _workbook;
         private ExcelSerializeOptions _option;
         private readonly KeyValueWrapper<PropertyTypeInfo> _info;
         private readonly Type _type;
@@ -15,7 +16,7 @@ namespace ExcelUtile.ExcelCore
         private DefaultConverterFactory _factory = new();
         private int NumberOfSheets => _workbook.NumberOfSheets;
 
-        public ExcelReader(IWorkbook? workbook, ExcelSerializeOptions? option = null)
+        public ExcelReader(XSSFWorkbook? workbook, ExcelSerializeOptions? option = null)
         {
             if (workbook == null)
             {
@@ -120,7 +121,7 @@ namespace ExcelUtile.ExcelCore
             {
                 var cell = _currentRow!.GetCell(item.Order);
                 var prop = _info[item.Name];
-                if (prop != null && cell !=null)
+                if (prop != null && cell != null)
                 {
                     var converter = prop.GetConverter(_factory);
                     if (converter != null)

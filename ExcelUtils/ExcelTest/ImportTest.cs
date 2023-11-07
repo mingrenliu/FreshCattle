@@ -1,4 +1,5 @@
 ﻿using ExcelUtileTest.Entities;
+using NPOI.SS.UserModel;
 
 namespace ExcelTest;
 
@@ -15,6 +16,7 @@ internal class ImportTest
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(40));
     }
+
     [TestCase("record")]
     public void Excel_Import_Record_Test(string filename)
     {
@@ -24,6 +26,7 @@ internal class ImportTest
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(40));
     }
+
     [TestCase("product")]
     public void Excel_Import_Product_Test(string filename)
     {
@@ -33,6 +36,7 @@ internal class ImportTest
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(1));
     }
+
     private static XSSFWorkbook GetWorkBook(string filename)
     {
         var location = LocationHelper.GetImportResourcesPath();
