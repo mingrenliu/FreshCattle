@@ -5,7 +5,7 @@ namespace ExcelUtile.ExcelCore
 {
     internal class ExcelReader<T> where T : class
     {
-        private readonly XSSFWorkbook _workbook;
+        private readonly IWorkbook _workbook;
         private ExcelSerializeOptions _option;
         private readonly KeyValueWrapper<PropertyTypeInfo> _info;
         private readonly Type _type;
@@ -16,7 +16,7 @@ namespace ExcelUtile.ExcelCore
         private DefaultConverterFactory _factory = new();
         private int NumberOfSheets => _workbook.NumberOfSheets;
 
-        public ExcelReader(XSSFWorkbook? workbook, ExcelSerializeOptions? option = null)
+        public ExcelReader(IWorkbook? workbook, ExcelSerializeOptions? option = null)
         {
             if (workbook == null)
             {

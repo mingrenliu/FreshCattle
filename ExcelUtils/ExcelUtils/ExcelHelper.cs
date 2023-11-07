@@ -9,12 +9,12 @@ namespace ExcelUtile
 
         public static Dictionary<string, IEnumerable<T>> ImportAll<T>(Stream stream, ExcelSerializeOptions? option = null) where T : class => ImportAll<T>(stream.CreateWorkBook(), option);
 
-        public static IEnumerable<T> Import<T>(XSSFWorkbook workbook, ExcelSerializeOptions? option = null) where T : class
+        public static IEnumerable<T> Import<T>(IWorkbook workbook, ExcelSerializeOptions? option = null) where T : class
         {
             return new ExcelReader<T>(workbook, option).ReadOneSheet();
         }
 
-        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(XSSFWorkbook workbook, ExcelSerializeOptions? option = null) where T : class
+        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(IWorkbook workbook, ExcelSerializeOptions? option = null) where T : class
         {
             return new ExcelReader<T>(workbook, option).ReadMultiSheet();
         }

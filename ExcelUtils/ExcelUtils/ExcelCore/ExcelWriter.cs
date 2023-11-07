@@ -7,7 +7,7 @@ namespace ExcelUtile.ExcelCore
         private const int WidthFactor = 256;
         private const int HeightFactor = 20;
         private readonly Dictionary<string, IEnumerable<T>> _data;
-        private readonly XSSFWorkbook workbook;
+        private readonly IWorkbook workbook;
         private ISheet? _currentSheet;
         private IRow? _currentRow;
         private int _rowIndex = 0;
@@ -32,7 +32,7 @@ namespace ExcelUtile.ExcelCore
             _info = _option.PropertySelector.Invoke(typeof(T)).OrderBy(x => x.Order).ToList();
         }
 
-        public XSSFWorkbook Write()
+        public IWorkbook Write()
         {
             foreach (var item in _data)
             {

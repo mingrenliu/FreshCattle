@@ -37,7 +37,7 @@ internal class ImportTest
         Assert.That(lst.Count(), Is.AtLeast(1));
     }
 
-    private static XSSFWorkbook GetWorkBook(string filename)
+    private static IWorkbook GetWorkBook(string filename)
     {
         var location = LocationHelper.GetImportResourcesPath();
         var fileStream = new FileStream(Path.Combine(location, filename + ".xlsx"), FileMode.Open);

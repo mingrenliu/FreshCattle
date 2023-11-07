@@ -16,14 +16,17 @@ public class HeaderInfo
         _order = order;
     }
 }
+
 public class KeyValueWrapper<T> where T : class
 {
     private readonly Dictionary<string, T> _dic;
+
     public KeyValueWrapper()
     {
         _dic = new();
     }
-    public KeyValueWrapper(IEnumerable<T> data,Func<T,string> selector)
+
+    public KeyValueWrapper(IEnumerable<T> data, Func<T, string> selector)
     {
         _dic = new();
         foreach (var item in data)
@@ -31,31 +34,39 @@ public class KeyValueWrapper<T> where T : class
             _dic[selector.Invoke(item)] = item;
         }
     }
+
     public IEnumerable<T> Values => _dic.Values;
+
     public void Add(string key, T value)
     {
         _dic[key] = value;
     }
+
     public void Remove(string key)
     {
         _dic.Remove(key);
     }
+
     public bool ContainKey(string key)
     {
         return _dic.ContainsKey(key);
     }
+
     public T? this[string name]
     {
-        get { return _dic.TryGetValue(name, out T? value) ? value : null ; } 
+        get { return _dic.TryGetValue(name, out T? value) ? value : null; }
     }
 }
-public class SortedWrapper<T> :IEnumerable<T> where T : class
+
+public class SortedWrapper<T> : IEnumerable<T> where T : class
 {
-    private readonly SortedList<int,T> _list;
+    private readonly SortedList<int, T> _list;
+
     public SortedWrapper()
     {
         _list = new();
     }
+
     public SortedWrapper(IEnumerable<T> data, Func<T, int> selector)
     {
         _list = new();
@@ -64,14 +75,17 @@ public class SortedWrapper<T> :IEnumerable<T> where T : class
             Add(selector.Invoke(item), item);
         }
     }
-    public void Add(int order,T item)
+
+    public void Add(int order, T item)
     {
-        _list.TryAdd(order,item);
+        _list.TryAdd(order, item);
     }
+
     public void Remove(int order)
     {
         _list.Remove(order);
     }
+
     public IEnumerator<T> GetEnumerator()
     {
         foreach (var item in _list)

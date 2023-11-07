@@ -4,17 +4,17 @@ namespace ExcelUtile;
 
 public static class ExcelFactory
 {
-    public static XSSFWorkbook CreateWorkBook()
+    public static IWorkbook CreateWorkBook()
     {
         return new XSSFWorkbook();
     }
 
-    public static XSSFWorkbook CreateWorkBook(this Stream stream)
+    public static IWorkbook CreateWorkBook(this Stream stream)
     {
         return new XSSFWorkbook(stream);
     }
 
-    public static byte[] ToBytes(this XSSFWorkbook workbook)
+    public static byte[] ToBytes(this IWorkbook workbook)
     {
         using var stream = new MemoryStream();
         workbook.Write(stream, true);
