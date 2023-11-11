@@ -17,13 +17,14 @@ public class PropertyTypeInfo
     private readonly PropertyInfo _info;
     public DataFormatAttribute? DataFormat { get; private set; }
 
-    protected PropertyTypeInfo(PropertyInfo info, string name)
+    public PropertyTypeInfo(PropertyInfo info, string name)
     {
         _info = info;
         _name = name;
         BaseType = Nullable.GetUnderlyingType(_info.PropertyType) ?? info.PropertyType;
-        DataFormat=Info.GetCustomAttribute<DataFormatAttribute>();
+        DataFormat = Info.GetCustomAttribute<DataFormatAttribute>();
     }
+
     internal ExcelConverter? GetConverter(DefaultConverterFactory _factory)
     {
         if (DataFormat != null) return DataFormat.Converter;
