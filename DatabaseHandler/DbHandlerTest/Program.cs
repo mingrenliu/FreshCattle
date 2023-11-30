@@ -1,5 +1,6 @@
 global using Test.DbHandlerTest;
 using DatabaseHandler.Extensions;
+using DatabaseHandler.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace DbHandlerTest
@@ -11,7 +12,6 @@ namespace DbHandlerTest
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
             builder.Services.AddEntityFramework<TestDbContext>(option => option.UseMySql("", MySqlServerVersion.LatestSupportedServerVersion));
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

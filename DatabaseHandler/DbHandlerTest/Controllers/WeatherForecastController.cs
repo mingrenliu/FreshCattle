@@ -1,9 +1,10 @@
+using DatabaseHandler.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DbHandlerTest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -28,6 +29,12 @@ namespace DbHandlerTest.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet]
+        public void Generate(string afe)
+        {
+            MigrationFactory.Generate<TestDbContext>("test", "DbHandlerTest");
         }
     }
 }

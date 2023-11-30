@@ -3,34 +3,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations.Design;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DatabaseHandler.Services;
 
-public class CustomDesignTimeServices : IDesignTimeServices
-{
-    public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddSingleton<IMigrationsCodeGenerator, CustomCSharpMigrationsGenerator>();
-        serviceCollection.AddSingleton<IMigrationsScaffolder, CustomMigrationsScaffolder>();
-
-    }
-}
-public class CustomMigrationsScaffolder : MigrationsScaffolder
-{
-    public CustomMigrationsScaffolder(MigrationsScaffolderDependencies dependencies) : base(dependencies)
-    {
-    }
-    protected override string GetDirectory(string projectDir, string? siblingFileName, string subnamespace)
-    {
-        return Path.Combine(projectDir, Path.Combine(subnamespace.Split('.')));
-    }
-}
 public class CustomCSharpMigrationsGenerator : MigrationsCodeGenerator
 {
     private readonly IDbContextOptions _dbContextOptions;
@@ -189,7 +164,7 @@ public class CustomCSharpMigrationsGenerator : MigrationsCodeGenerator
             "Microsoft.EntityFrameworkCore.Infrastructure",
             "Microsoft.EntityFrameworkCore.Migrations",
             "Microsoft.EntityFrameworkCore.Storage.ValueConversion",
-            "DatabaseHandler.Services;"
+            "DatabaseHandler.Services"
         };
         if (!string.IsNullOrEmpty(contextType.Namespace))
         {
@@ -223,7 +198,7 @@ public class CustomCSharpMigrationsGenerator : MigrationsCodeGenerator
         var extension = GetExtension();
         if (!string.IsNullOrWhiteSpace(extension))
         {
-            builder.Append("[Extension(").Append(Code.Literal(GetExtension())).AppendLine(")]");
+            builder.Append("[Provider(").Append(Code.Literal(GetExtension())).AppendLine(")]");
         }
         builder.Append("partial class ").AppendLine(Code.Identifier(migrationName))
             .AppendLine("{");
@@ -289,7 +264,7 @@ public class CustomCSharpMigrationsGenerator : MigrationsCodeGenerator
             "Microsoft.EntityFrameworkCore",
             "Microsoft.EntityFrameworkCore.Infrastructure",
             "Microsoft.EntityFrameworkCore.Storage.ValueConversion",
-            "DatabaseHandler.Services;"
+            "DatabaseHandler.Services"
         };
         if (!string.IsNullOrEmpty(contextType.Namespace))
         {
@@ -324,7 +299,7 @@ public class CustomCSharpMigrationsGenerator : MigrationsCodeGenerator
         var extension = GetExtension();
         if (!string.IsNullOrWhiteSpace(extension))
         {
-            builder.Append("[Extension(").Append(Code.Literal(GetExtension())).AppendLine(")]");
+            builder.Append("[Provider(").Append(Code.Literal(GetExtension())).AppendLine(")]");
         }
         builder.Append("partial class ").Append(Code.Identifier(modelSnapshotName)).AppendLine(" : ModelSnapshot")
             .AppendLine("{");

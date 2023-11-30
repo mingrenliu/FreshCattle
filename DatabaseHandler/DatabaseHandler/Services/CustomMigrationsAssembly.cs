@@ -57,7 +57,7 @@ public class CustomMigrationsAssembly : IMigrationsAssembly
                     = from t in Assembly.GetConstructibleTypes()
                       where t.IsSubclassOf(typeof(Migration))
                           && t.GetCustomAttribute<DbContextAttribute>()?.ContextType == _contextType
-                          && (t.GetCustomAttribute<ExtensionAttribute>() == null || _options.Extensions.Select(x => x.GetType().Name).Contains(t.GetCustomAttribute<ExtensionAttribute>()?.ExtensionName))
+                          && (t.GetCustomAttribute<ProviderAttribute>() == null || _options.Extensions.Select(x => x.GetType().Name).Contains(t.GetCustomAttribute<ProviderAttribute>()?.ProviderName))
                       let id = t.GetCustomAttribute<MigrationAttribute>()?.Id
                       orderby id
                       select (id, t);
@@ -89,7 +89,7 @@ public class CustomMigrationsAssembly : IMigrationsAssembly
             ??= (from t in Assembly.GetConstructibleTypes()
                  where t.IsSubclassOf(typeof(ModelSnapshot))
                      && t.GetCustomAttribute<DbContextAttribute>()?.ContextType == _contextType
-                          && (t.GetCustomAttribute<ExtensionAttribute>() == null || _options.Extensions.Select(x => x.GetType().Name).Contains(t.GetCustomAttribute<ExtensionAttribute>()?.ExtensionName))
+                          && (t.GetCustomAttribute<ProviderAttribute>() == null || _options.Extensions.Select(x => x.GetType().Name).Contains(t.GetCustomAttribute<ProviderAttribute>()?.ProviderName))
                  select (ModelSnapshot)Activator.CreateInstance(t.AsType())!)
             .FirstOrDefault();
 

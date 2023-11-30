@@ -55,7 +55,7 @@ public class TypeScriptCodeGenerator
         if (document.Paths.Any())
         {
             stringBuilder.AppendLine("//#region \"api\"");
-            stringBuilder.AppendLine("import { Result, request } from \"./request\"\r\nconst pattern: RegExp = /\\(w+\\)/g");
+            stringBuilder.AppendLine("import { request } from \"./request\"\r\nconst pattern: RegExp = /\\(w+\\)/g");
             foreach (var pathItem in document.Paths)
             {
                 if (pathItem.Value.ActualPathItem.Count > 0)
@@ -188,7 +188,7 @@ public class TypeScriptCodeGenerator
     private static string Function(string function, string returnType, IEnumerable<Parameter> para)
     {
         string p = string.Join(",", para.Select(x => $"{x.Name}{RequiredMark(x.IsRequired)}: {x.Type}"));
-        return $"export async function {function}({p}) : Promise<Result<{returnType}>>" + Open;
+        return $"export async function {function}({p}) : Promise<{returnType}>" + Open;
     }
 
     private static string Request(string query, Parameter body, string returnType)

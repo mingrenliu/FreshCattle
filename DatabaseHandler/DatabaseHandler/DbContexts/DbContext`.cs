@@ -19,7 +19,7 @@ public class DbContext<TContext> : DbContext where TContext : DbContext
 
     protected override sealed void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TContext).Assembly);
+        BeforeOnModelCreating(modelBuilder);
         var nameConversion = NameConversionFactory.Create(GetDbType(Database));
         foreach (var type in modelBuilder.Model.GetEntityTypes())
         {
@@ -46,6 +46,10 @@ public class DbContext<TContext> : DbContext where TContext : DbContext
     }
 
     public virtual void AfterOnModelCreating(ModelBuilder modelBuilder)
+    {
+    }
+
+    public virtual void BeforeOnModelCreating(ModelBuilder modelBuilder)
     {
     }
 

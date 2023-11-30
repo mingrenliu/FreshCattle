@@ -5,9 +5,9 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseHandler", "DatabaseHandler\DatabaseHandler.csproj", "{33ADA02D-9ABC-498C-AE73-9265B672C5D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbSetGenerator", "DbSetGenerator\DbSetGenerator.csproj", "{D54FB831-1454-4AFC-ADD4-C603EF25CDAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbSetGenerator", "DbSetGenerator\DbSetGenerator.csproj", "{D54FB831-1454-4AFC-ADD4-C603EF25CDAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbHandlerTest", "DbHandlerTest\DbHandlerTest.csproj", "{97D4DF1C-E385-4DFC-9811-9954A3D22BFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbHandlerTest", "DbHandlerTest\DbHandlerTest.csproj", "{97D4DF1C-E385-4DFC-9811-9954A3D22BFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
