@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,8 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CodeFixTitle" xml:space="preserve">
-    <value>Add Attribute For Entity</value>
-    <comment>The title of the code fix.</comment>
+  <data name="AnalyzerDescription" xml:space="preserve">
+    <value>Can Add Comment According Comment Attribute.</value>
+    <comment>An optional longer localizable description of the diagnostic.</comment>
+  </data>
+  <data name="AnalyzerMessageFormat" xml:space="preserve">
+    <value>Class Or Perperty {0} Can Add Commnet According Entity Comment Attribute</value>
+    <comment>The format-able message the diagnostic displays.</comment>
+  </data>
+  <data name="AnalyzerTitle" xml:space="preserve">
+    <value>Entity/Property Should Add Comment</value>
+    <comment>The title of the diagnostic.</comment>
   </data>
 </root>

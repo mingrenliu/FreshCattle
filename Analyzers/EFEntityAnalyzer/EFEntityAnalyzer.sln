@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFEntityAnalyzer", "EFEntityAnalyzer\EFEntityAnalyzer.csproj", "{914BF0A3-CF00-4BDE-82C5-11F40355176A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFEntityAnalyzer", "EFEntityAnalyzer\EFEntityAnalyzer.csproj", "{914BF0A3-CF00-4BDE-82C5-11F40355176A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFEntityAnalyzer.CodeFixes", "EFEntityAnalyzer.CodeFixes\EFEntityAnalyzer.CodeFixes.csproj", "{7F25B7AF-FB9A-4CA2-9E64-92D067BCA97D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFEntityAnalyzer.CodeFixes", "EFEntityAnalyzer.CodeFixes\EFEntityAnalyzer.CodeFixes.csproj", "{7F25B7AF-FB9A-4CA2-9E64-92D067BCA97D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFEntityAnalyzer.Package", "EFEntityAnalyzer.Package\EFEntityAnalyzer.Package.csproj", "{D2414345-EF5C-4404-B8D3-771C0A71A088}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFEntityAnalyzer.Package", "EFEntityAnalyzer.Package\EFEntityAnalyzer.Package.csproj", "{D2414345-EF5C-4404-B8D3-771C0A71A088}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFEntityAnalyzer.Test", "EFEntityAnalyzer.Test\EFEntityAnalyzer.Test.csproj", "{EF7F6D58-8A6C-4619-9471-308F2844EB84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFEntityAnalyzer.Test", "EFEntityAnalyzer.Test\EFEntityAnalyzer.Test.csproj", "{EF7F6D58-8A6C-4619-9471-308F2844EB84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFEntityAnalyzer.Vsix", "EFEntityAnalyzer.Vsix\EFEntityAnalyzer.Vsix.csproj", "{ED4DACA3-7BCD-4DA1-BD95-51C846EC9BDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFEntityAnalyzer.Vsix", "EFEntityAnalyzer.Vsix\EFEntityAnalyzer.Vsix.csproj", "{ED4DACA3-7BCD-4DA1-BD95-51C846EC9BDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFEntityAnalyzerPractice", "EFEntityAnalyzerPractice\EFEntityAnalyzerPractice.csproj", "{E10A1113-C127-4958-8924-889B5F4BE8FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{ED4DACA3-7BCD-4DA1-BD95-51C846EC9BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED4DACA3-7BCD-4DA1-BD95-51C846EC9BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED4DACA3-7BCD-4DA1-BD95-51C846EC9BDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E10A1113-C127-4958-8924-889B5F4BE8FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E10A1113-C127-4958-8924-889B5F4BE8FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E10A1113-C127-4958-8924-889B5F4BE8FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E10A1113-C127-4958-8924-889B5F4BE8FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
