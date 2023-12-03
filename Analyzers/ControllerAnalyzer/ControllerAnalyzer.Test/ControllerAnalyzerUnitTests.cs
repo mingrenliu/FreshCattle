@@ -13,7 +13,8 @@ namespace ControllerAnalyzer.Test
         [TestMethod]
         public async Task TwoLocationTest_Diagnostic()
         {
-            var sourceCode = @"using System.Threading.Tasks;
+            var sourceCode = @"#nullable enable
+using System.Threading.Tasks;
 namespace ControllerTest
 {
     public class {|#0:TestController|}
@@ -31,7 +32,7 @@ namespace ControllerTest
     }
     public interface ITestService
     {
-        Task DeleteAsync(string id);
+        Task DeleteAsync(string? id);
 
         Task<string> Get(string id);
 
@@ -41,7 +42,8 @@ namespace ControllerTest
     }
 }
 ";
-            var fixedSource = @"using System.Threading.Tasks;
+            var fixedSource = @"#nullable enable
+using System.Threading.Tasks;
 namespace ControllerTest
 {
     public class {|#0:TestController|}
@@ -59,7 +61,7 @@ namespace ControllerTest
     }
     public interface ITestService
     {
-        Task DeleteAsync(string id);
+        Task DeleteAsync(string? id);
 
         Task<string> Get(string id);
 

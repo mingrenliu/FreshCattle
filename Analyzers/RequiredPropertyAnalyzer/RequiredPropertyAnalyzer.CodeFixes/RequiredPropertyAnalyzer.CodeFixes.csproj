@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>RequiredPropertyAnalyzer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RequiredPropertyAnalyzer\RequiredPropertyAnalyzer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="RemoveReuiredCodeFixResource.Designer.cs">
+      <DependentUpon>RemoveReuiredCodeFixResource.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="AddReuiredCodeFixResources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="AddReuiredCodeFixResources.resx" />
+    <EmbeddedResource Update="RemoveReuiredCodeFixResource.resx">
+      <LastGenOutput>RemoveReuiredCodeFixResource.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="AddReuiredCodeFixResources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="AddReuiredCodeFixResources.Designer.cs" />
+  </ItemGroup>
+
+</Project>

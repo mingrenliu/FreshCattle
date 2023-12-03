@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RequiredPropertyAnalyzer.CodeFixes\RequiredPropertyAnalyzer.CodeFixes.csproj"  ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\RequiredPropertyAnalyzer\RequiredPropertyAnalyzer.csproj"  ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+  </ItemGroup>
+</Project>

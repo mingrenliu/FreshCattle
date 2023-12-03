@@ -108,7 +108,7 @@ namespace ControllerAnalyzer
                     .WithHttpMethods(HttpMethod.HttpPost)
                     .WithLeadingTrivia(TriviaList(XmlCreator.CreateXml(node.ParameterList.Parameters.Select(x => x.Identifier.ValueText))))
                     .WithMethodModifiers(isAsync)
-                    .WithParameterList(node.ParameterList)
+                    .WithParameterList(GetParameterList(node.ParameterList))
                     .WithMethodBody(fieldName, isAsync, haveReturn, node);
                 members.Add(method);
             }
@@ -116,7 +116,36 @@ namespace ControllerAnalyzer
             var root = await doc.GetSyntaxRootAsync(token);
             return doc.WithSyntaxRoot(root.ReplaceNode(target, newClass));
         }
-
+        public static ParameterListSyntax GetParameterList(ParameterListSyntax paras)
+        {
+            var required = new List<ParameterSyntax>();
+            foreach (var para in paras.Parameters)
+            {
+                if (para.Type is NullableTypeSyntax)
+                {
+                    continue;
+                }
+                if (!ExistAttribute(para.AttributeLists, "Required"))
+                {
+                    required.Add(para);
+                }
+            }
+            if (required.Any())
+            {
+                return paras.ReplaceNodes(required, (oldNode, newNode) =>
+                {
+                    return newNode.AddAttributeLists(AttributeList(SingletonSeparatedList(Attribute(IdentifierName("Required")))));
+                });
+            }
+            else
+            {
+                return paras;
+            }
+        }
+        public static bool ExistAttribute(SyntaxList<AttributeListSyntax> attributeLists, string attributeName)
+        {
+            return attributeLists.SelectMany(x => x.Attributes).Any(x => x.Name.ToString() == attributeName);
+        }
         public static (bool, bool) ParseMethodReturnType(TypeSyntax type)
         {
             if (type is PredefinedTypeSyntax predefinedNode && predefinedNode.Keyword.IsKind(SyntaxKind.VoidKeyword))
