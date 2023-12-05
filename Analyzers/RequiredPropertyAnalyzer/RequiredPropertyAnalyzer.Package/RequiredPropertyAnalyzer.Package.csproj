@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,23 +8,30 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>RequiredPropertyAnalyzer</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <Authors>lyj90</Authors>
-    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
-    <PackageProjectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</PackageProjectUrl>
-    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
-    <RepositoryUrl>http://REPOSITORY_URL_HERE_OR_DELETE_THIS_LINE</RepositoryUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>RequiredPropertyAnalyzer</Description>
-    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <PackageId>YangCode.RequiredPropertyAnalyzer</PackageId>
+    <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
+    <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Company>YangCode</Company>
+    <Authors>LiuYang</Authors>
+    <Description>RequiredProperty Analyzer</Description>
+    <PackageIcon>L.png</PackageIcon>
+    <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <Copyright>Copyright</Copyright>
-    <PackageTags>RequiredPropertyAnalyzer, analyzers</PackageTags>
+    <PackageTags>Required, analyzers</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
 
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\L.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RequiredPropertyAnalyzer.CodeFixes\RequiredPropertyAnalyzer.CodeFixes.csproj" />
