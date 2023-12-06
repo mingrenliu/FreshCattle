@@ -19,8 +19,6 @@ namespace EFEntityAnalyzer
         public const string ClassPrefix = "class_";
         public const string PropPrefix = "prop_";
 
-        // You can change these strings in the CommentResource.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
-        // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
         private static readonly LocalizableString Title = new LocalizableResourceString(nameof(CommentResource.AnalyzerTitle), CommentResource.ResourceManager, typeof(CommentResource));
 
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(CommentResource.AnalyzerMessageFormat), CommentResource.ResourceManager, typeof(CommentResource));
@@ -35,8 +33,6 @@ namespace EFEntityAnalyzer
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
-            // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyzeComment, SyntaxKind.ClassDeclaration);
         }
 

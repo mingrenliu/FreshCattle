@@ -36,7 +36,7 @@ namespace RequiredPropertyAnalyzer
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            if (!context.Document.Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue("build_property.RequiredAttributeName",out var attributeName)|| string.IsNullOrWhiteSpace(attributeName))
+            if (!context.Document.Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue("build_property.RequiredAttributeName", out var attributeName) || string.IsNullOrWhiteSpace(attributeName))
             {
                 attributeName = "Required";
             }
@@ -44,27 +44,27 @@ namespace RequiredPropertyAnalyzer
             var syntaxToken = root.FindToken(diagnostic.Location.SourceSpan.Start);
             var target = syntaxToken.Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault();
             if (target == null || !diagnostic.AdditionalLocations.Any()) return;
-            if (diagnostic.Descriptor.Id==RequiredPropertyAnalyzer.Rule.Id)
+            if (diagnostic.Descriptor.Id == RequiredPropertyAnalyzer.Rule.Id)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         title: AddReuiredCodeFixResources.CodeFixTitle,
-                        createChangedDocument: c => AddAttributesAsync(root, context.Document,target,attributeName, diagnostic.AdditionalLocations, c),
+                        createChangedDocument: c => AddAttributesAsync(root, context.Document, target, attributeName, diagnostic.AdditionalLocations),
                         equivalenceKey: AddReuiredCodeFixResources.CodeFixTitle),
                     diagnostic);
             }
-            else if(diagnostic.Descriptor.Id == RequiredPropertyAnalyzer.RemoveRule.Id)
+            else if (diagnostic.Descriptor.Id == RequiredPropertyAnalyzer.RemoveRule.Id)
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         title: RemoveReuiredCodeFixResource.CodeFixTitle,
-                        createChangedDocument: c => RemoveAttributesAsync(root,context.Document, target,attributeName, diagnostic.AdditionalLocations, c),
+                        createChangedDocument: c => RemoveAttributesAsync(root, context.Document, target, attributeName, diagnostic.AdditionalLocations),
                         equivalenceKey: RemoveReuiredCodeFixResource.CodeFixTitle),
                     diagnostic);
             }
-
         }
-        public static async Task<Document> AddAttributesAsync(SyntaxNode root, Document doc, ClassDeclarationSyntax target,string requiredName, IReadOnlyList<Location> locations, CancellationToken token)
+
+        public static Task<Document> AddAttributesAsync(SyntaxNode root, Document doc, ClassDeclarationSyntax target, string requiredName, IReadOnlyList<Location> locations)
         {
             var old = target;
             var nodes = new List<PropertyDeclarationSyntax>();
@@ -78,9 +78,10 @@ namespace RequiredPropertyAnalyzer
             {
                 target = target.ReplaceNodes(nodes, (oldNode, newNode) => oldNode.AddAttributeLists(CreateRequiredAttribute(requiredName)));
             }
-            return doc.WithSyntaxRoot(root.ReplaceNode(old, target).NormalizeWhitespace());
+            return Task.FromResult(doc.WithSyntaxRoot(root.ReplaceNode(old, target).NormalizeWhitespace()));
         }
-        public static async Task<Document> RemoveAttributesAsync(SyntaxNode root,Document doc, ClassDeclarationSyntax target, string requiredName, IReadOnlyList<Location> locations, CancellationToken token)
+
+        public static Task<Document> RemoveAttributesAsync(SyntaxNode root, Document doc, ClassDeclarationSyntax target, string requiredName, IReadOnlyList<Location> locations)
         {
             var old = target;
             var nodes = new List<PropertyDeclarationSyntax>();
@@ -92,18 +93,20 @@ namespace RequiredPropertyAnalyzer
             }
             if (nodes.Any())
             {
-                var required = requiredName== "Required"?new string[] { requiredName} : new string[] { requiredName, "Required" };
+                var required = requiredName == "Required" ? new string[] { requiredName } : new string[] { requiredName, "Required" };
                 target = target.ReplaceNodes(nodes, (oldNode, newNode) => oldNode.WithAttributeLists(RemoveAttribute(oldNode.AttributeLists, required)));
             }
-            return doc.WithSyntaxRoot(root.ReplaceNode(old, target).NormalizeWhitespace());
+            return Task.FromResult(doc.WithSyntaxRoot(root.ReplaceNode(old, target).NormalizeWhitespace()));
         }
+
         public static SyntaxList<AttributeListSyntax> RemoveAttribute(SyntaxList<AttributeListSyntax> attributeLists, IEnumerable<string> attributeName)
         {
             return List(attributeLists.Where(x => x.Attributes.All(y => !attributeName.Contains(y.Name.ToString()))));
         }
+
         public static AttributeListSyntax CreateRequiredAttribute(string name)
-        {   
-            if (string.Equals( name, "Required",StringComparison.OrdinalIgnoreCase))
+        {
+            if (string.Equals(name, "Required", StringComparison.OrdinalIgnoreCase))
             {
                 return CreateAttributeWithNoPara(name);
             }
@@ -112,13 +115,15 @@ namespace RequiredPropertyAnalyzer
                 return CreateAttribute(name, WithArguments(""));
             }
         }
+
         public static AttributeListSyntax CreateAttributeWithNoPara(string name)
         {
-            return   AttributeList(
+            return AttributeList(
                                SingletonSeparatedList(
                                                       Attribute(
-                                                                IdentifierName(name),null)));
+                                                                IdentifierName(name), null)));
         }
+
         private static AttributeArgumentListSyntax WithArguments(string value)
         {
             return AttributeArgumentList(
@@ -126,6 +131,7 @@ namespace RequiredPropertyAnalyzer
                                                                 AttributeArgument(
                                                                                   LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value)))));
         }
+
         private static AttributeListSyntax CreateAttribute(string name, AttributeArgumentListSyntax args)
         {
             return AttributeList(

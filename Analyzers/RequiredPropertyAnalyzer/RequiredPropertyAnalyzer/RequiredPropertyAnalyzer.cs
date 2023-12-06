@@ -20,8 +20,6 @@ namespace RequiredPropertyAnalyzer
 
         public const string DiagnosticId = "LY0031";
 
-        // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
-        // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
         private static readonly LocalizableString Title = new LocalizableResourceString(nameof(AddRequiredResources.AnalyzerTitle), AddRequiredResources.ResourceManager, typeof(AddRequiredResources));
 
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(AddRequiredResources.AnalyzerMessageFormat), AddRequiredResources.ResourceManager, typeof(AddRequiredResources));
@@ -36,8 +34,6 @@ namespace RequiredPropertyAnalyzer
 
         public const string RemoveDiagnosticId = "LY0032";
 
-        // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
-        // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
         private static readonly LocalizableString RemoveTitle = new LocalizableResourceString(nameof(RemoveRequiredResources.AnalyzerTitle), RemoveRequiredResources.ResourceManager, typeof(RemoveRequiredResources));
 
         private static readonly LocalizableString RemoveMessageFormat = new LocalizableResourceString(nameof(RemoveRequiredResources.AnalyzerMessageFormat), RemoveRequiredResources.ResourceManager, typeof(RemoveRequiredResources));
