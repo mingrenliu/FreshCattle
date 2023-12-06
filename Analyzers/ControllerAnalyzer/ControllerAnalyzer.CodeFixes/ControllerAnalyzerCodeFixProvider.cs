@@ -33,12 +33,12 @@ namespace ControllerAnalyzer
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (ClassDeclarationSyntax)syntaxToken.Parent;
             var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
-            IEnumerable<IMethodSymbol> unUsedMethods=new List<IMethodSymbol>();
+            IEnumerable<IMethodSymbol> unUsedMethods = new List<IMethodSymbol>();
             var (field, fieldName) = GetField(target, serviceName);
             if (string.IsNullOrWhiteSpace(fieldName))
             {
                 var project = context.Document.Project.Solution.Projects.FirstOrDefault(x => x.Name.EndsWith("Service"));
-                if (project !=null)
+                if (project != null)
                 {
                     var compile = await project.GetCompilationAsync(context.CancellationToken);
                     if (compile.GetSymbolsWithName(name => name == serviceName, SymbolFilter.Type).FirstOrDefault() is INamedTypeSymbol symbol)
@@ -114,8 +114,9 @@ namespace ControllerAnalyzer
             }
             var newClass = target.AddMembers(members.ToArray());
             var root = await doc.GetSyntaxRootAsync(token);
-            return doc.WithSyntaxRoot(root.ReplaceNode(target, newClass));
+            return doc.WithSyntaxRoot(root.ReplaceNode(target, newClass).NormalizeWhitespace());
         }
+
         public static ParameterListSyntax GetParameterList(ParameterListSyntax paras)
         {
             var required = new List<ParameterSyntax>();
@@ -142,10 +143,12 @@ namespace ControllerAnalyzer
                 return paras;
             }
         }
+
         public static bool ExistAttribute(SyntaxList<AttributeListSyntax> attributeLists, string attributeName)
         {
             return attributeLists.SelectMany(x => x.Attributes).Any(x => x.Name.ToString() == attributeName);
         }
+
         public static (bool, bool) ParseMethodReturnType(TypeSyntax type)
         {
             if (type is PredefinedTypeSyntax predefinedNode && predefinedNode.Keyword.IsKind(SyntaxKind.VoidKeyword))

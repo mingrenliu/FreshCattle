@@ -14,10 +14,12 @@ namespace ControllerAnalyzer
         {
             return CreateXml(paras.ToArray(), withReturn);
         }
+
         public static SyntaxTriviaList CreateXml(string para, bool withReturn = true)
         {
-            return CreateXml(new string[] { para} , withReturn);
+            return CreateXml(new string[] { para }, withReturn);
         }
+
         public static SyntaxTriviaList CreateXml(string[] paras, bool withReturn = true)
         {
             var results = new List<XmlNodeSyntax>();
@@ -67,9 +69,9 @@ namespace ControllerAnalyzer
                                             TriviaList()),
                                         XmlTextLiteral(
                                             TriviaList(
-                                                DocumentationCommentExterior("        ///")),
-                                            " ",
-                                            " ",
+                                                DocumentationCommentExterior("///")),
+                                            "",
+                                            "",
                                             TriviaList()),
                                         XmlTextNewLine(
                                             TriviaList(),
@@ -78,7 +80,7 @@ namespace ControllerAnalyzer
                                             TriviaList()),
                                         XmlTextLiteral(
                                             TriviaList(
-                                                DocumentationCommentExterior("        ///")),
+                                                DocumentationCommentExterior("///")),
                                             " ",
                                             " ",
                                             TriviaList())}))))
@@ -107,7 +109,7 @@ namespace ControllerAnalyzer
                                     TriviaList()),
                                 XmlTextLiteral(
                                     TriviaList(
-                                        DocumentationCommentExterior("        ///")),
+                                        DocumentationCommentExterior("///")),
                                     " ",
                                     " ",
                                     TriviaList())})),
@@ -118,8 +120,8 @@ namespace ControllerAnalyzer
                                 Identifier(
                                     TriviaList(),
                                     SyntaxKind.ParamKeyword,
-                                    "param ",
-                                    "param ",
+                                    "param",
+                                    "param",
                                     TriviaList())))
                         .WithAttributes(
                             SingletonList<XmlAttributeSyntax>(
@@ -156,7 +158,7 @@ namespace ControllerAnalyzer
                                     TriviaList()),
                                 XmlTextLiteral(
                                     TriviaList(
-                                        DocumentationCommentExterior("        ///")),
+                                        DocumentationCommentExterior("///")),
                                     " ",
                                     " ",
                                     TriviaList())})),
