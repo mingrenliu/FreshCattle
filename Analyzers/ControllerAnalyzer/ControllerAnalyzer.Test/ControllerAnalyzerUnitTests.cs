@@ -36,9 +36,9 @@ namespace ControllerTest
     {
         Task DeleteAsync(string? id);
 
-        Task<string> Get(string id);
+        Task<string> Get(TimeSpan id);
 
-        void Display(string name);
+        void Display(Uri name);
 
         string GetName(string name);
     }
@@ -49,6 +49,16 @@ namespace ControllerTest
 
     [AttributeUsage(AttributeTargets.Method)]
     public class HttpPostAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class HttpDeleteAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class HttpGetAttribute : Attribute
     {
     }
 }
@@ -76,7 +86,7 @@ namespace ControllerTest
         /// </summary>
         /// <param name = ""id""></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpDelete]
         public async Task Delete(string? id)
         {
             await _testService.DeleteAsync(id);
@@ -88,7 +98,7 @@ namespace ControllerTest
         /// <param name = ""id""></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<string> Get([Required] string id)
+        public async Task<string> Get([Required] TimeSpan id)
         {
             return await _testService.Get(id);
         }
@@ -98,8 +108,8 @@ namespace ControllerTest
         /// </summary>
         /// <param name = ""name""></param>
         /// <returns></returns>
-        [HttpPost]
-        public void Display([Required] string name)
+        [HttpGet]
+        public void Display([Required] Uri name)
         {
             _testService.Display(name);
         }
@@ -109,7 +119,7 @@ namespace ControllerTest
         /// </summary>
         /// <param name = ""name""></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         public string GetName([Required] string name)
         {
             return _testService.GetName(name);
@@ -119,8 +129,8 @@ namespace ControllerTest
     public interface ITestService
     {
         Task DeleteAsync(string? id);
-        Task<string> Get(string id);
-        void Display(string name);
+        Task<string> Get(TimeSpan id);
+        void Display(Uri name);
         string GetName(string name);
     }
 
@@ -131,6 +141,16 @@ namespace ControllerTest
 
     [AttributeUsage(AttributeTargets.Method)]
     public class HttpPostAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class HttpDeleteAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class HttpGetAttribute : Attribute
     {
     }
 }";
