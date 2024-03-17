@@ -2,11 +2,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 
 namespace ServiceAnalyzer
 {
@@ -16,9 +14,8 @@ namespace ServiceAnalyzer
         private static readonly string _suffix = "Service";
         public const string DiagnosticId = "LY0011";
 
-        // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
-        // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
         private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
+
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
         private const string Category = "ServiceHint";
@@ -32,17 +29,16 @@ namespace ServiceAnalyzer
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
-            // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
-            // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(ServiceHints, SyntaxKind.InterfaceDeclaration);
         }
+
         public static void ServiceHints(SyntaxNodeAnalysisContext context)
         {
             if (context.Node is InterfaceDeclarationSyntax node && node.Identifier.ValueText.EndsWith(_suffix))
             {
-                var interfaceSymbol = context.SemanticModel.GetDeclaredSymbol(node) as INamedTypeSymbol;
-                var classSymbol = context.Compilation.GetSymbolsWithName(x => x == node.Identifier.ValueText.Substring(1),SymbolFilter.Type).FirstOrDefault() as INamedTypeSymbol;
-                if (classSymbol !=null)
+                var interfaceSymbol = context.SemanticModel.GetDeclaredSymbol(node);
+                var symbol = context.Compilation.GetSymbolsWithName(x => x == node.Identifier.ValueText.Substring(1), SymbolFilter.Type).FirstOrDefault();
+                if (symbol != null && symbol is INamedTypeSymbol classSymbol && classSymbol.AllInterfaces.Contains(interfaceSymbol))
                 {
                     var methods = FindMethodsInClass(classSymbol);
                     var implementedMethods = FindImplementedMethods(classSymbol, FindMethodsInInterface(interfaceSymbol));
@@ -82,14 +78,13 @@ namespace ServiceAnalyzer
 
         public static IEnumerable<IMethodSymbol> FindMethodsInClass(INamedTypeSymbol symbol)
         {
-            var methods = symbol.GetMembers().OfType<IMethodSymbol>().Except(symbol.Constructors);
-            foreach (var method in methods)
+            foreach (var method in symbol.GetMembers().OfType<IMethodSymbol>())
             {
                 if (method.IsStatic || method.IsGenericMethod)
                 {
                     continue;
                 }
-                if (method.DeclaredAccessibility == Accessibility.Internal || method.DeclaredAccessibility == Accessibility.Public)
+                if ((method.DeclaredAccessibility == Accessibility.Internal || method.DeclaredAccessibility == Accessibility.Public) && method.MethodKind == MethodKind.Ordinary)
                 {
                     yield return method;
                 }

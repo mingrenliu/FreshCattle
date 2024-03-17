@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -33,12 +34,12 @@ namespace ControllerAnalyzer
             var syntaxToken = (await diagnostic.Location.SourceTree.GetRootAsync()).FindToken(diagnostic.Location.SourceSpan.Start);
             var target = (ClassDeclarationSyntax)syntaxToken.Parent;
             var serviceName = GetServiceName(target.Identifier.ValueText.ToString());
-            IEnumerable<IMethodSymbol> unUsedMethods=new List<IMethodSymbol>();
+            IEnumerable<IMethodSymbol> unUsedMethods = new List<IMethodSymbol>();
             var (field, fieldName) = GetField(target, serviceName);
             if (string.IsNullOrWhiteSpace(fieldName))
             {
                 var project = context.Document.Project.Solution.Projects.FirstOrDefault(x => x.Name.EndsWith("Service"));
-                if (project !=null)
+                if (project != null)
                 {
                     var compile = await project.GetCompilationAsync(context.CancellationToken);
                     if (compile.GetSymbolsWithName(name => name == serviceName, SymbolFilter.Type).FirstOrDefault() is INamedTypeSymbol symbol)
@@ -88,7 +89,6 @@ namespace ControllerAnalyzer
 
         public static async Task<Document> GenerateMethodsAsync(Document doc, ClassDeclarationSyntax target, string fieldName, IEnumerable<IMethodSymbol> methods, CancellationToken token)
         {
-            var nodes = methods.Select(x => x.DeclaringSyntaxReferences.First().GetSyntaxAsync().GetAwaiter().GetResult() as MethodDeclarationSyntax);
             var members = new List<MemberDeclarationSyntax>();
             if (string.IsNullOrWhiteSpace(fieldName))
             {
@@ -100,12 +100,13 @@ namespace ControllerAnalyzer
                 var ctor = CreateCtor(target, paraName, serviceName, fieldName);
                 members.Add(field); members.Add(ctor);
             }
-            foreach (var node in nodes)
+            foreach (var methodSymbol in methods)
             {
+                var node = methodSymbol.DeclaringSyntaxReferences.First().GetSyntaxAsync().GetAwaiter().GetResult() as MethodDeclarationSyntax;
                 var (isAsync, haveReturn) = ParseMethodReturnType(node.ReturnType);
                 var methodName = node.Identifier.ValueText.EndsWith("Async") ? node.Identifier.ValueText.Substring(0, node.Identifier.ValueText.Length - 5) : node.Identifier.ValueText;
                 var method = MethodDeclaration(node.ReturnType, Identifier(methodName))
-                    .WithHttpMethods(HttpMethod.HttpPost)
+                    .WithHttpMethods(GetMethod(methodSymbol))
                     .WithLeadingTrivia(TriviaList(XmlCreator.CreateXml(node.ParameterList.Parameters.Select(x => x.Identifier.ValueText))))
                     .WithMethodModifiers(isAsync)
                     .WithParameterList(GetParameterList(node.ParameterList))
@@ -114,8 +115,9 @@ namespace ControllerAnalyzer
             }
             var newClass = target.AddMembers(members.ToArray());
             var root = await doc.GetSyntaxRootAsync(token);
-            return doc.WithSyntaxRoot(root.ReplaceNode(target, newClass));
+            return doc.WithSyntaxRoot(root.ReplaceNode(target, newClass).NormalizeWhitespace());
         }
+
         public static ParameterListSyntax GetParameterList(ParameterListSyntax paras)
         {
             var required = new List<ParameterSyntax>();
@@ -142,10 +144,53 @@ namespace ControllerAnalyzer
                 return paras;
             }
         }
+
+        static HttpMethod GetMethod(IMethodSymbol symbol)
+        {
+            var paras = symbol.Parameters;
+            var containDelete = symbol.Name.Contains("Delete") || symbol.Name.Contains("delete");
+            if (paras.Length == 0)
+            {
+                return containDelete ? HttpMethod.HttpDelete : HttpMethod.HttpGet;
+            }
+            else
+            {
+                foreach (var item in symbol.Parameters)
+                {
+                    if (item.Type.TypeKind == TypeKind.Array)
+                    {
+                        return HttpMethod.HttpPost;
+                    }
+                    else if (item.Type.TypeKind == TypeKind.Interface)
+                    {
+                        return HttpMethod.HttpPost;
+                    }
+                    else if (item.Type.TypeKind == TypeKind.Class)
+                    {
+                        var name = item.Type.ToDisplayString(NullableFlowState.NotNull);
+                        if (name == "System.Uri" || name == "string")
+                        {
+                            continue;
+                        }
+                        return HttpMethod.HttpPost;
+                    }
+                    else if (item.Type.TypeKind == TypeKind.Struct || item.Type.TypeKind == TypeKind.Structure)
+                    {
+                        if (item.Type.ToDisplayString(NullableFlowState.NotNull) == "System.TimeSpan")
+                        {
+                            return HttpMethod.HttpPost;
+                        }
+                    }
+                }
+                return containDelete ? HttpMethod.HttpDelete : HttpMethod.HttpGet;
+            }
+        }
+
         public static bool ExistAttribute(SyntaxList<AttributeListSyntax> attributeLists, string attributeName)
         {
             return attributeLists.SelectMany(x => x.Attributes).Any(x => x.Name.ToString() == attributeName);
         }
+
         public static (bool, bool) ParseMethodReturnType(TypeSyntax type)
         {
             if (type is PredefinedTypeSyntax predefinedNode && predefinedNode.Keyword.IsKind(SyntaxKind.VoidKeyword))
