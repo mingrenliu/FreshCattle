@@ -44,7 +44,7 @@ namespace ExcelUtile.ExcelCore
             var row = _currentSheet.GetRow(_option.HeaderLineIndex);
             if (row == null) return false;
             var header = new SortedWrapper<HeaderInfo>();
-            foreach (var cell in row.Cells)
+            foreach (var cell in MergedHeaders().Concat(row.Cells))
             {
                 var str = cell.StringCellValue;
                 if (string.IsNullOrWhiteSpace(str) || !_info.ContainKey(str)) continue;
@@ -58,6 +58,22 @@ namespace ExcelUtile.ExcelCore
                 Validate();
             }
             return true;
+        }
+
+        public IEnumerable<ICell> MergedHeaders()
+        {
+            foreach (var item in _currentSheet!.MergedRegions.Where(x => x.ContainsRow(_option.HeaderLineIndex)))
+            {
+                var mergedRow = _currentSheet.GetRow(item.FirstRow);
+                if (mergedRow != null)
+                {
+                    var mergedCell = mergedRow.GetCell(item.FirstColumn);
+                    if (mergedCell != null)
+                    {
+                        yield return mergedCell;
+                    }
+                }
+            }
         }
 
         private void Validate()
@@ -117,9 +133,13 @@ namespace ExcelUtile.ExcelCore
         {
             if (_headers == null) return null;
             var obj = Activator.CreateInstance(typeof(T));
+            var mergedAreas = _currentSheet!.MergedRegions.Where(x => x.ContainsRow(_currentRow!.RowNum)).ToList();
             foreach (var item in _headers)
             {
-                var cell = _currentRow!.GetCell(item.Order);
+                //先查找合单元格
+                var mergedArea = mergedAreas.FirstOrDefault(x => x.MinColumn <= item.Order && x.MaxColumn >= item.Order);
+                var cell = mergedArea != null ? _currentSheet.GetRow(mergedArea.FirstRow)?.GetCell(mergedArea.FirstColumn) : null;
+                cell ??= _currentRow!.GetCell(item.Order);
                 var prop = _info[item.Name];
                 if (prop != null && cell != null)
                 {

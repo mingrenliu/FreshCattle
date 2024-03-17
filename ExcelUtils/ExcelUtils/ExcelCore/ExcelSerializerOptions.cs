@@ -25,6 +25,11 @@ public class ExcelSerializeOptions
     public int StartLineIndex { get => Math.Max(startLine, HeaderLineIndex + 1); set => startLine = value; }
 
     /// <summary>
+    /// 合并区域(导出时使用)
+    /// </summary>
+    public IEnumerable<MergedRegion>? MergedRegions { get; set; }
+
+    /// <summary>
     /// 字段筛选
     /// </summary>
 

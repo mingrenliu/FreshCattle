@@ -2,6 +2,16 @@
 {
     public static class CellParseExtension
     {
+        public static IRow GetOrCreateRow(this ISheet sheet, int row)
+        {
+            return sheet.GetRow(row) ?? sheet.CreateRow(row);
+        }
+
+        public static ICell GetOrCreateCell(this IRow row, int cell)
+        {
+            return row.GetCell(cell) ?? row.CreateCell(cell);
+        }
+
         public static bool? GetBoolean(this ICell cell)
         {
             if (IsBoolean(cell)) return cell.BooleanCellValue;
@@ -34,12 +44,14 @@
             if (!value.HasValue || value.Value > int.MaxValue || value.Value < int.MinValue) return null;
             return (int?)GetDouble(cell);
         }
+
         public static short? GetShort(this ICell cell)
         {
             var value = GetDouble(cell);
             if (!value.HasValue || value.Value > short.MaxValue || value.Value < short.MinValue) return null;
             return (short?)GetDouble(cell);
         }
+
         public static long? GetLong(this ICell cell)
         {
             var value = GetDouble(cell);
@@ -89,21 +101,25 @@
             if (string.IsNullOrWhiteSpace(str) || !DateTime.TryParse(str, out var value)) return null;
             return value;
         }
+
         public static TimeSpan? GetTimeSpanFromMinutes(this ICell cell)
         {
             var value = cell.GetDouble();
             return value.HasValue ? TimeSpan.FromMinutes(value.Value) : null;
         }
+
         public static TimeSpan? GetTimeSpanFromHours(this ICell cell)
         {
             var value = cell.GetDouble();
             return value.HasValue ? TimeSpan.FromHours(value.Value) : null;
         }
+
         public static TimeSpan? GetTimeSpanFromDateTime(this ICell cell)
         {
             var value = cell.GetDateTime();
             return value.HasValue ? value.Value.TimeOfDay : null;
         }
+
         public static TimeSpan? GetTimeSpan(this ICell cell)
         {
             if (IsInValid(cell)) return null;
