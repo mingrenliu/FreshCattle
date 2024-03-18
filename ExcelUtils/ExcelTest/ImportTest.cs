@@ -1,4 +1,5 @@
-﻿using ExcelUtileTest.Entities;
+﻿using ExcelUtile.ExcelCore;
+using ExcelUtileTest.Entities;
 using NPOI.SS.UserModel;
 
 namespace ExcelTest;
@@ -12,7 +13,7 @@ internal class ImportTest
     {
         var timer = StartTimer();
         var workBook = GetWorkBook(filename);
-        var lst = ExcelHelper.Import<Person>(workBook);
+        var lst = ExcelHelper.Import<Person>(workBook, new ExcelSerializeOptions() { HeaderLineIndex = 1 });
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(40));
     }

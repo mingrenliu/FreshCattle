@@ -18,7 +18,7 @@
             var str = GetString(cell);
             if (string.IsNullOrWhiteSpace(str)) return null;
             if (string.Equals(str, "true", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "是", StringComparison.OrdinalIgnoreCase)) return true;
-            if (string.Equals(str, "false", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "否", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(str, "false", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "否", StringComparison.OrdinalIgnoreCase)) return false;
             return null;
         }
 

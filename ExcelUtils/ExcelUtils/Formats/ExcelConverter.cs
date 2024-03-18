@@ -37,6 +37,11 @@ public abstract class ExcelConverter
         var style = cell.Sheet.Workbook.CreateCellStyle();
         style.Alignment = HorizontalAlignment.Center;
         style.VerticalAlignment = VerticalAlignment.Center;
+        style.BorderBottom = BorderStyle.Thin;
+        style.BorderLeft = BorderStyle.Thin;
+        style.BorderRight = BorderStyle.Thin;
+        style.BorderTop = BorderStyle.Thin;
+        style.WrapText = true;
         if (!string.IsNullOrWhiteSpace(_format))
         {
             var format = cell.Sheet.Workbook.CreateDataFormat();

@@ -94,6 +94,7 @@ namespace ExcelUtile.ExcelCore
             _columnIndex = 0;
             _rowIndex = row ?? _rowIndex;
             _currentRow = _currentSheet!.CreateRow(_rowIndex++);
+            _currentRow.HeightInPoints = 20;
         }
 
         private ICell NextCell()
