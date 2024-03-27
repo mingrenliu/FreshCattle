@@ -2,13 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class DateTimeOffsetFormat : ExcelConverter<DateTimeOffset>
+public class DateTimeOffsetFormat : ExcelStructConverter<DateTimeOffset>
 {
-    protected override string? _format => "yyyy-mm-dd";
+    protected override string? Format => "yyyy-mm-dd";
 
-    public override DateTimeOffset? Read(ICell cell, Type type)
+    public override DateTimeOffset? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetDateTimeOffset();
         }

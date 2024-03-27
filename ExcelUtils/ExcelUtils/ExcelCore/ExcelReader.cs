@@ -1,38 +1,43 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using NPOI.XSSF.UserModel;
-
-namespace ExcelUtile.ExcelCore
+﻿namespace ExcelUtile.ExcelCore
 {
-    internal class ExcelReader<T> where T : class
+    internal class ExcelReader<T> where T : class, new()
     {
         private readonly IWorkbook _workbook;
-        private ExcelSerializeOptions _option;
-        private readonly KeyValueWrapper<PropertyTypeInfo> _info;
-        private readonly Type _type;
+        private readonly ExcelImportOption<T> _option;
+        private readonly KeyValueWrapper<IImportCellHandler<T>> _info;
         private int _currentSheetIndex = -1;
         private ISheet? _currentSheet;
         private IRow? _currentRow;
         private SortedWrapper<HeaderInfo>? _headers;
-        private DefaultConverterFactory _factory = new();
+        private readonly IConverterFactory _factory = new DefaultConverterFactory();
         private int NumberOfSheets => _workbook.NumberOfSheets;
 
-        public ExcelReader(IWorkbook? workbook, ExcelSerializeOptions? option = null)
+        public ExcelReader(IWorkbook? workbook, ExcelImportOption<T>? option = null)
         {
             if (workbook == null)
             {
                 throw new Exception("导入的不存在");
             }
             _workbook = workbook!;
-            _type = typeof(T);
-            _option = option ?? new ExcelSerializeOptions();
-            _info = new KeyValueWrapper<PropertyTypeInfo>(_option.PropertySelector.Invoke(_type), x => x.Name);
+            _option = option ?? new ExcelImportOption<T>();
+            _info = CreateInfo(_option);
+        }
+
+        static KeyValueWrapper<IImportCellHandler<T>> CreateInfo(ExcelImportOption<T> option)
+        {
+            IEnumerable<IImportCellHandler<T>> handlers = option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x));
+            if (option.DynamicImport != null)
+            {
+                handlers = handlers.Concat(DynamicImportCellHandler<T>.Create(option.DynamicImport));
+            }
+            return new KeyValueWrapper<IImportCellHandler<T>>(handlers, x => x.Info.Name);
         }
 
         /// <summary>
         /// 每次切换Sheet重新解析标题行
         /// </summary>
-        /// <param name="sheetNum"></param>
-        /// <returns></returns>
+        /// <param name="sheetNum"> </param>
+        /// <returns> </returns>
         private bool SwitchSheet()
         {
             _currentSheetIndex++;
@@ -78,7 +83,7 @@ namespace ExcelUtile.ExcelCore
 
         private void Validate()
         {
-            foreach (var info in _info.Values.Where(x => x.IsRequired))
+            foreach (var info in _info.Values.Select(x => x.Info).Where(x => x.IsRequired))
             {
                 if (_headers!.Any(x => x.Name == info.Name))
                 {
@@ -91,7 +96,7 @@ namespace ExcelUtile.ExcelCore
         /// <summary>
         /// 后续合并行时,多行推进
         /// </summary>
-        /// <returns></returns>
+        /// <returns> </returns>
         private bool SwitchRow()
         {
             if (_currentSheet!.LastRowNum == _currentRow!.RowNum) return false;
@@ -132,7 +137,7 @@ namespace ExcelUtile.ExcelCore
         private T? ReadLine()
         {
             if (_headers == null) return null;
-            var obj = Activator.CreateInstance(typeof(T));
+            if (Activator.CreateInstance(typeof(T)) is not T obj) throw new Exception("无法通过Activator创建实例对象");
             var mergedAreas = _currentSheet!.MergedRegions.Where(x => x.ContainsRow(_currentRow!.RowNum)).ToList();
             foreach (var item in _headers)
             {
@@ -140,35 +145,13 @@ namespace ExcelUtile.ExcelCore
                 var mergedArea = mergedAreas.FirstOrDefault(x => x.MinColumn <= item.Order && x.MaxColumn >= item.Order);
                 var cell = mergedArea != null ? _currentSheet.GetRow(mergedArea.FirstRow)?.GetCell(mergedArea.FirstColumn) : null;
                 cell ??= _currentRow!.GetCell(item.Order);
-                var prop = _info[item.Name];
-                if (prop != null && cell != null)
+                var handler = _info[item.Name];
+                if (cell != null)
                 {
-                    var converter = prop.GetConverter(_factory);
-                    if (converter != null)
-                    {
-                        var value = converter.ReadFromCell(cell);
-                        if (value != null)
-                        {
-                            prop.Info.SetValue(obj, value);
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var str = cell.ToString();
-                            if (str != null)
-                            {
-                                prop.Info.SetValue(obj, Convert.ChangeType(str, prop.BaseType));
-                            }
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
+                    handler?.ReadFromCell(cell, obj, _factory);
                 }
             }
-            return (T?)obj;
+            return obj;
         }
     }
 }

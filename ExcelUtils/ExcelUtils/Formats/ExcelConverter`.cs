@@ -1,33 +1,67 @@
-﻿namespace ExcelUtile.Formats
+﻿namespace ExcelUtile.Formats;
+
+public abstract class ExcelConverter<T> : ExcelConverter where T : notnull
 {
-    public abstract class ExcelConverter<T> : ExcelConverter where T : struct
+    public bool CanConvert() => CanConvert(typeof(T));
+
+    protected ExcelConverter() : base(typeof(T))
     {
+    }
+}
 
-        protected ExcelConverter() : base(typeof(T))
+public interface IConverter<T>
+{
+    public void Write(ICell cell, T? value);
+
+    public T? Read(ICell cell);
+}
+
+public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter<T?> where T : class
+{
+    public override void WriteAsObject(ICell cell, object? obj)
+    {
+        if (obj == null) return;
+        if (obj is T value)
         {
+            Write(cell, value);
         }
-
-        public abstract T? Read(ICell cell, Type type);
-
-        public override object? ReadFromCell(ICell cell)
+        else
         {
-            return Read(cell,_type);
+            base.WriteAsObject(cell, obj);
         }
+    }
 
-        //todo：修改参数和逻辑
-        public abstract void Write(ICell cell, T? value);
+    public abstract void Write(ICell cell, T? value);
 
-        public override void WriteAsObject(ICell cell, object? obj)
+    public abstract T? Read(ICell cell);
+
+    public override object? ReadFromCell(ICell cell)
+    {
+        return Read(cell);
+    }
+}
+
+public abstract class ExcelStructConverter<T> : ExcelConverter<T>, IConverter<T?> where T : struct
+{
+    public override void WriteAsObject(ICell cell, object? obj)
+    {
+        if (obj == null) return;
+        if (obj is T value)
         {
-            if (obj == null) return;
-            if (obj is T value)
-            {
-                Write(cell, value);
-            }
-            else
-            {
-                base.WriteAsObject(cell, obj);
-            }
+            Write(cell, value);
         }
+        else
+        {
+            base.WriteAsObject(cell, obj);
+        }
+    }
+
+    public abstract void Write(ICell cell, T? value);
+
+    public abstract T? Read(ICell cell);
+
+    public override object? ReadFromCell(ICell cell)
+    {
+        return Read(cell);
     }
 }

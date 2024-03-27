@@ -55,7 +55,7 @@ namespace ExcelTest
             var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
             var timer = StartTimer();
             var dic = new Dictionary<string, string>() { ["Name"] = "名称", ["Mass"] = "质量" };
-            var bytes = ExcelHelper.Export(records, CreateOption(dic, true));
+            var bytes = ExcelHelper.Export(records, CreateOption<Record>(dic, true));
             Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds() + ";条数:" + records.Count());
             File.WriteAllBytes(path, bytes);
             Assume.That(bytes.Length, Is.AtLeast(2000));
@@ -69,16 +69,15 @@ namespace ExcelTest
             var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
             var timer = StartTimer();
             var dic = new Dictionary<string, string>() { ["Name"] = "名称", ["Mass"] = "质量" };
-            var bytes = ExcelHelper.Export(records, CreateOption(dic, false));
+            var bytes = ExcelHelper.Export(records, CreateOption<Record>(dic, false));
             Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds() + ";条数:" + records.Count());
             File.WriteAllBytes(path, bytes);
             Assume.That(bytes.Length, Is.AtLeast(2000));
         }
 
-        private static ExcelSerializeOptions CreateOption(Dictionary<string, string> map, bool strict = true)
+        private static ExcelExportOption<T> CreateOption<T>(Dictionary<string, string> map, bool strict = true) where T : class, new()
         {
-            var result = new ExcelSerializeOptions();
-            result.SetProperty(type => new MapOverridePropertySelector(map, strict).GetTypeInfo(type));
+            var result = new ExcelExportOption<T>() { Selector = () => new MapOverridePropertySelector(map, strict).GetTypeInfo(typeof(T)) };
             return result;
         }
 

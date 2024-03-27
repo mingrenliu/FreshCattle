@@ -2,7 +2,7 @@
 
 public class LongTimeFormat : DateTimeFormat
 {
-    protected override string? _format => "yyyy-mm-dd hh:mm:ss";
+    protected override string? Format => "yyyy-mm-dd hh:mm:ss";
     public override void Write(ICell cell, DateTime? value)
     {
         if (value != null)

@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class LongFormat : ExcelConverter<long>
+public class LongFormat : ExcelStructConverter<long>
 {
-    protected override string? _format => "0";
-    public override long? Read(ICell cell, Type type)
+    protected override string? Format => "0";
+
+    public override long? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetLong();
         }

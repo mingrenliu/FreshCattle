@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class DecimalFormat : ExcelConverter<decimal>
+public class DecimalFormat : ExcelStructConverter<decimal>
 {
-    protected override string? _format => "0.00";
-    public override decimal? Read(ICell cell, Type type)
+    protected override string? Format => "0.00";
+
+    public override decimal? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetDecimal();
         }

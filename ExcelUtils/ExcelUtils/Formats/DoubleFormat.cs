@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class DoubleFormat : ExcelConverter<double>
+public class DoubleFormat : ExcelStructConverter<double>
 {
-    protected override string? _format => "0.00";
-    public override double? Read(ICell cell, Type type)
+    protected override string? Format => "0.00";
+
+    public override double? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetDouble();
         }

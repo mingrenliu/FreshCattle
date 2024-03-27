@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class ShortFormat : ExcelConverter<short>
+public class ShortFormat : ExcelStructConverter<short>
 {
-    protected override string? _format => "0";
-    public override short? Read(ICell cell, Type type)
+    protected override string? Format => "0";
+
+    public override short? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetShort();
         }

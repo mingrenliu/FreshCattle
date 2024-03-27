@@ -2,14 +2,15 @@
 
 namespace ExcelUtile.Formats;
 
-public class StringFormat : ExcelConverter
+public class StringFormat : ExcelReferenceConverter<string>
 {
-    public StringFormat() : base(typeof(string))
-    {
-    }
+    public override string? Read(ICell cell) => cell.GetString();
 
-    public override object? ReadFromCell(ICell cell)
+    public override void Write(ICell cell, string? value)
     {
-        return cell.GetString();
+        if (string.IsNullOrWhiteSpace(value) is false)
+        {
+            cell.SetCellValue(value);
+        }
     }
 }

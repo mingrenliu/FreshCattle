@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class DateOnlyFormat : ExcelConverter<DateOnly>
+public class DateOnlyFormat : ExcelStructConverter<DateOnly>
 {
-    protected override string? _format => "yyyy-mm-dd";
-    public override DateOnly? Read(ICell cell, Type type)
+    protected override string? Format => "yyyy-mm-dd";
+
+    public override DateOnly? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetDate();
         }

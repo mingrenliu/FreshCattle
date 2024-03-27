@@ -2,23 +2,45 @@
 
 namespace ExcelUtile.ExcelCore;
 
-internal class DefaultConverterFactory
+/// <summary>
+/// 类型转化器
+/// </summary>
+public interface IConverterFactory
+{
+    public ExcelConverter? GetDefaultConverter(Type type);
+
+    public IConverter<T>? GetDefaultConverter<T>() where T : notnull;
+
+    public ExcelConverter? GetDefaultConverter(string type);
+}
+
+public class DefaultConverterFactory : IConverterFactory
 {
     private readonly Dictionary<string, ExcelConverter> _defaultConverters = new();
 
-    internal ExcelConverter? GetDefaultConverter(Type type)
+    public ExcelConverter? GetDefaultConverter(Type type)
     {
         if (_defaultConverters.TryGetValue(type.Name, out ExcelConverter? value)) return value;
         return Add(type);
     }
 
-    internal ExcelConverter? GetDefaultConverter(string type)
+    public IConverter<T>? GetDefaultConverter<T>() where T : notnull
+    {
+        var type = typeof(T);
+        if (!_defaultConverters.TryGetValue(type.Name, out ExcelConverter? value))
+        {
+            value = Add(type);
+        }
+        return value == null ? null : value as IConverter<T>;
+    }
+
+    public ExcelConverter? GetDefaultConverter(string type)
     {
         if (_defaultConverters.TryGetValue(type, out ExcelConverter? value)) return value;
         return Add(type);
     }
-    //同步解析，不存在冲突
-    internal ExcelConverter? Add(string type)
+
+    ExcelConverter? Add(string type)
     {
         if (defaultConverterMap.ContainsKey(type))
         {
@@ -31,12 +53,12 @@ internal class DefaultConverterFactory
         return null;
     }
 
-    internal ExcelConverter? Add(Type type)
+    ExcelConverter? Add(Type type)
     {
         return Add(type.Name);
     }
 
-    private static readonly Dictionary<string, Type> defaultConverterMap = new()
+    static readonly Dictionary<string, Type> defaultConverterMap = new()
     {
         [nameof(Double)] = typeof(DoubleFormat),
         [nameof(Int32)] = typeof(IntFormat),

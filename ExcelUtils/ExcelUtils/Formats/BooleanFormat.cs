@@ -2,22 +2,22 @@
 
 namespace ExcelUtile.Formats;
 
-public class BooleanFormat : ExcelConverter<bool>
+public class BooleanFormat : ExcelStructConverter<bool>
 {
-    public override bool? Read(ICell cell, Type type)
+    public override bool? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert(typeof(bool)))
         {
             return cell.GetBoolean();
         }
-        return default;
+        return null;
     }
 
     public override void Write(ICell cell, bool? value)
     {
         if (value.HasValue)
         {
-            cell.SetCellValue(value.Value?"是":"否");//待定
+            cell.SetCellValue(value.Value ? "是" : "否");//待定
         }
     }
 }

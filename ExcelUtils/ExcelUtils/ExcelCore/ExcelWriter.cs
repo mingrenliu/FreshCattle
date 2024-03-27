@@ -3,7 +3,7 @@ using NPOI.SS.Util;
 
 namespace ExcelUtile.ExcelCore
 {
-    internal class ExcelWriter<T> where T : class
+    internal class ExcelWriter<T> where T : class, new()
     {
         private const int WidthFactor = 256;
         private const int HeightFactor = 20;
@@ -13,32 +13,42 @@ namespace ExcelUtile.ExcelCore
         private IRow? _currentRow;
         private int _rowIndex = 0;
         private int _columnIndex = 0;
-        private ExcelSerializeOptions _option;
-        private readonly IEnumerable<PropertyTypeInfo> _info;
-        private readonly DefaultConverterFactory _factory = new();
+        private readonly ExcelExportOption<T> _option;
+        private readonly IEnumerable<IExportCellHandler<T>> _info;
+        private readonly IConverterFactory _factory = new DefaultConverterFactory();
 
-        public ExcelWriter(IEnumerable<T> data, ExcelSerializeOptions? option = null, IEnumerable<MergedRegion>? region = null)
+        public ExcelWriter(IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? region = null)
         {
             _data = new List<KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>>() { new("sheet", new(data, region)) };
             workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelSerializeOptions();
-            _info = _option.PropertySelector.Invoke(typeof(T)).OrderBy(x => x.Order).ToList();
+            _option = option ?? new ExcelExportOption<T>();
+            _info = CreateInfo(_option).ToList();
         }
 
-        public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelSerializeOptions? option = null)
+        static IEnumerable<IExportCellHandler<T>> CreateInfo(ExcelExportOption<T> option)
+        {
+            IEnumerable<IExportCellHandler<T>> handlers = option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x));
+            if (option.DynamicExport != null)
+            {
+                handlers = handlers.Concat(DynamicExportCellHandler<T>.Create(option.DynamicExport));
+            }
+            return handlers;
+        }
+
+        public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null)
         {
             _data = data;
             workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelSerializeOptions();
-            _info = _option.PropertySelector.Invoke(typeof(T)).OrderBy(x => x.Order).ToList();
+            _option = option ?? new ExcelExportOption<T>();
+            _info = _option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x)).OrderBy(x => x.Info.Order).ToList();
         }
 
-        public ExcelWriter(Dictionary<string, IEnumerable<T>> data, ExcelSerializeOptions? option = null)
+        public ExcelWriter(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null)
         {
             _data = data.Select(x => new KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>(x.Key, new(x.Value, null)));
             workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelSerializeOptions();
-            _info = _option.PropertySelector.Invoke(typeof(T)).OrderBy(x => x.Order).ToList();
+            _option = option ?? new ExcelExportOption<T>();
+            _info = _option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x)).OrderBy(x => x.Info.Order).ToList();
         }
 
         public IWorkbook Write()
@@ -63,7 +73,7 @@ namespace ExcelUtile.ExcelCore
                 {
                     var cell = _currentSheet!.GetOrCreateRow(item.RowStartIndex).GetOrCreateCell(item.ColumnStartIndex);
                     var converter = _factory.GetDefaultConverter(item.Value.GetType());
-                    WriteCell(converter, cell, item.Value);
+                    converter.WriteCell(cell, item.Value);
                 }
                 if (item.ColumnEndIndex != item.ColumnStartIndex || item.RowEndIndex != item.RowStartIndex)
                 {
@@ -77,7 +87,7 @@ namespace ExcelUtile.ExcelCore
             CreateSheet(name);
             WriteHeader();
             _rowIndex = _option.StartLineIndex;
-            foreach (var item in data)
+            foreach (var item in data.Where(x => x != null))
             {
                 WriteOneLine(item);
             }
@@ -105,7 +115,7 @@ namespace ExcelUtile.ExcelCore
         private void WriteHeader()
         {
             NextRow(_option.HeaderLineIndex);
-            foreach (var item in _info)
+            foreach (var item in _info.Select(x => x.Info))
             {
                 var cell = NextCell();
                 _factory.GetDefaultConverter(nameof(String))!.WriteToCell(cell, item.Name);
@@ -119,25 +129,7 @@ namespace ExcelUtile.ExcelCore
             foreach (var item in _info)
             {
                 var cell = NextCell();
-                var value = item.Info.GetValue(data);
-                var converter = item.GetConverter(_factory);
-                WriteCell(converter, cell, value);
-            }
-        }
-
-        private static void WriteCell(ExcelConverter? converter, ICell cell, object? value)
-        {
-            if (converter != null)
-            {
-                converter.WriteToCell(cell, value);
-            }
-            else
-            {
-                var str = value?.ToString();
-                if (!string.IsNullOrEmpty(str))
-                {
-                    cell.SetCellValue(str);
-                }
+                item.WriteToCell(cell, data, _factory);
             }
         }
     }

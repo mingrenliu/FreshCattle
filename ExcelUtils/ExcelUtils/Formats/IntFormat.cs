@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class IntFormat : ExcelConverter<int>
+public class IntFormat : ExcelStructConverter<int>
 {
-    protected override string? _format => "0";
-    public override int? Read(ICell cell, Type type)
+    protected override string? Format => "0";
+
+    public override int? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetInt();
         }

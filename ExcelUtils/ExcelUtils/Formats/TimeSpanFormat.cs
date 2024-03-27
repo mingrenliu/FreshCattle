@@ -2,11 +2,11 @@
 
 namespace ExcelUtile.Formats;
 
-public class TimeSpanFormat : ExcelConverter<TimeSpan>
+public class TimeSpanFormat : ExcelStructConverter<TimeSpan>
 {
-    public override TimeSpan? Read(ICell cell, Type type)
+    public override TimeSpan? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetTimeSpan();
         }

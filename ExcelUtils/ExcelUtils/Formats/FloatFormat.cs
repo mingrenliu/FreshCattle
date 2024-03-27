@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class FloatFormat : ExcelConverter<float>
+public class FloatFormat : ExcelStructConverter<float>
 {
-    protected override string? _format => "0.00";
-    public override float? Read(ICell cell, Type type)
+    protected override string? Format => "0.00";
+
+    public override float? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetFloat();
         }

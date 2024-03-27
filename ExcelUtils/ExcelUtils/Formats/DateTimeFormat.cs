@@ -2,14 +2,14 @@
 
 namespace ExcelUtile.Formats;
 
-public abstract class DateTimeFormat : ExcelConverter<DateTime>
+public abstract class DateTimeFormat : ExcelStructConverter<DateTime>
 {
-    public override DateTime? Read(ICell cell, Type type)
+    public override DateTime? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetDateTime();
         }
-        return null ;
+        return null;
     }
 }

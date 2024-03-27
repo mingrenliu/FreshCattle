@@ -2,12 +2,13 @@
 
 namespace ExcelUtile.Formats;
 
-public class TimeOnlyFormat : ExcelConverter<TimeOnly>
+public class TimeOnlyFormat : ExcelStructConverter<TimeOnly>
 {
-    protected override string? _format => "hh:mm:ss";
-    public override TimeOnly? Read(ICell cell, Type type)
+    protected override string? Format => "hh:mm:ss";
+
+    public override TimeOnly? Read(ICell cell)
     {
-        if (CanConvert(type))
+        if (CanConvert())
         {
             return cell.GetTime();
         }

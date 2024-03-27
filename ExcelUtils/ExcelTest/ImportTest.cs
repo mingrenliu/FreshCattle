@@ -13,7 +13,7 @@ internal class ImportTest
     {
         var timer = StartTimer();
         var workBook = GetWorkBook(filename);
-        var lst = ExcelHelper.Import<Person>(workBook, new ExcelSerializeOptions() { HeaderLineIndex = 1 });
+        var lst = ExcelHelper.Import<Person>(workBook, new ExcelImportOption<Person>() { HeaderLineIndex = 1 });
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(40));
     }
