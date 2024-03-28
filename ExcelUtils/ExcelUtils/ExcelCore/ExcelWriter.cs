@@ -134,7 +134,9 @@ namespace ExcelUtile.ExcelCore
 
         private ICell NextCell()
         {
-            return _currentRow!.CreateCell(_columnIndex++);
+            var cell = _currentRow!.CreateCell(_columnIndex++);
+            cell.CellStyle = DefaultCellStyle;
+            return cell;
         }
 
         private void WriteHeader()

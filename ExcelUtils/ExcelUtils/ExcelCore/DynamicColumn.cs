@@ -131,6 +131,10 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDyn
                 var value = values[index];
                 _columns[index].GetConverter(factory).WriteCell(cell, value);
             }
+            else
+            {
+                _columns[index].GetConverter(factory).WriteCell(cell, null);
+            }
         }
     }
 }
@@ -179,9 +183,16 @@ public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImp
     public void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory)
     {
         var values = _selector.Invoke(obj);
-        if (values.TryGetValue(field, out var value) && _dic.TryGetValue(field, out var info))
+        if (_dic.TryGetValue(field, out var info))
         {
-            info.GetConverter(factory).WriteCell(cell, value);
+            if (values.TryGetValue(field, out var value))
+            {
+                info.GetConverter(factory).WriteCell(cell, value);
+            }
+            else
+            {
+                info.GetConverter(factory).WriteCell(cell, null);
+            }
         }
     }
 }
