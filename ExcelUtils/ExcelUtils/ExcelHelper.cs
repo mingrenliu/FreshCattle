@@ -18,47 +18,47 @@ namespace ExcelUtile
             return new ExcelReader<T>(workbook, option).ReadMultiSheet();
         }
 
-        public static void Export<T>(Stream stream, IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? regions = null) where T : class, new()
+        public static void Export<T>(Stream stream, IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? regions = null) where T : class
         {
             new ExcelWriter<T>(data, option, regions).Write().Write(stream, true);
         }
 
-        public static void Export<T>(Stream stream, Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class, new()
+        public static void Export<T>(Stream stream, Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
         {
             new ExcelWriter<T>(data, option).Write().Write(stream, true);
         }
 
-        public static void Export<T>(Stream stream, Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null) where T : class, new()
+        public static void Export<T>(Stream stream, Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null) where T : class
         {
             new ExcelWriter<T>(data, option).Write().Write(stream, true);
         }
 
-        public static byte[] Export<T>(IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? regions = null) where T : class, new()
+        public static byte[] Export<T>(IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? regions = null) where T : class
         {
             return new ExcelWriter<T>(data, option, regions).Write().ToBytes();
         }
 
-        public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class, new()
+        public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(data, option).Write().ToBytes();
         }
 
-        public static byte[] Export<T>(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null) where T : class, new()
+        public static byte[] Export<T>(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(data, option).Write().ToBytes();
         }
 
-        public static byte[] ExportTemplate<T>(ExcelExportOption<T>? option = null) where T : class, new()
+        public static byte[] ExportTemplate<T>(ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().ToBytes();
         }
 
-        public static void ExportTemplate<T>(Stream stream, ExcelExportOption<T>? option = null) where T : class, new()
+        public static void ExportTemplate<T>(Stream stream, ExcelExportOption<T>? option = null) where T : class
         {
             new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().Write(stream, true);
         }
 
-        public static void Export<T>(Stream stream, ExcelExportOption<T>? option = null) where T : class, new()
+        public static void Export<T>(Stream stream, ExcelExportOption<T>? option = null) where T : class
         {
             new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().Write(stream, true);
         }

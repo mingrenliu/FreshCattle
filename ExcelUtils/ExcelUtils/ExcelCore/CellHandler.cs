@@ -5,17 +5,17 @@ public interface IColumnBaseInfo
     ColumnInfo Info { get; }
 }
 
-public interface IExportCellHandler<T> : IColumnBaseInfo where T : class, new()
+public interface IExportCellHandler<T> : IColumnBaseInfo where T : class
 {
     void WriteToCell(ICell cell, T value, IConverterFactory factory);
 }
 
-public interface IImportCellHandler<T> : IColumnBaseInfo where T : class, new()
+public interface IImportCellHandler<T> : IColumnBaseInfo where T : class
 {
     void ReadFromCell(ICell cell, T value, IConverterFactory factory);
 }
 
-public class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class, new()
+public class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
     private readonly IExportDynamicWrite<T> _export;
@@ -40,7 +40,7 @@ public class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
     }
 }
 
-public class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class, new()
+public class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
     private readonly IImportDynamicRead<T> _import;
@@ -65,7 +65,7 @@ public class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class
     }
 }
 
-public class PropertyCellHandler<T> : IExportCellHandler<T>, IImportCellHandler<T> where T : class, new()
+public class PropertyCellHandler<T> : IExportCellHandler<T>, IImportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get => _info; }
     private readonly PropertyTypeInfo _info;

@@ -105,7 +105,7 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDyn
             {
                 for (int i = 0; i < _columns.Count; i++)
                 {
-                    values.Add(default(Element));
+                    values.Add(default);
                 }
             }
             if (value != null && values.Count > index)

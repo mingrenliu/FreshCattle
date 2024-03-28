@@ -5,7 +5,7 @@ using NPOI.XSSF.UserModel;
 
 namespace ExcelUtile.ExcelCore
 {
-    internal class ExcelWriter<T> where T : class, new()
+    internal class ExcelWriter<T> where T : class
     {
         private readonly ICellStyle DefaultCellStyle;
         private const int WidthFactor = 256;

@@ -19,7 +19,7 @@ public class ExcelOption
     public int StartLineIndex { get => Math.Max(startLine, HeaderLineIndex + 1); set => startLine = value; }
 }
 
-public class ExcelOption<T> : ExcelOption where T : class, new()
+public class ExcelOption<T> : ExcelOption where T : class
 {
     /// <summary>
     /// 属性选择器
@@ -32,7 +32,7 @@ public class ExcelOption<T> : ExcelOption where T : class, new()
     public Func<IEnumerable<PropertyTypeInfo>> Selector { get => _selector ?? (() => DefaultPropertySelector.GetTypeInfo<T>()); set => _selector = value; }
 }
 
-public class ExcelExportOption<T> : ExcelOption<T> where T : class, new()
+public class ExcelExportOption<T> : ExcelOption<T> where T : class
 {
     /// <summary>
     /// 默认列宽
@@ -50,7 +50,7 @@ public class ExcelExportOption<T> : ExcelOption<T> where T : class, new()
     public IExportDynamicWrite<T>? DynamicExport { get; set; }
 }
 
-public class ExcelImportOption<T> : ExcelOption<T> where T : class, new()
+public class ExcelImportOption<T> : ExcelOption<T> where T : class
 {
     /// <summary>
     /// 校验导入字段
