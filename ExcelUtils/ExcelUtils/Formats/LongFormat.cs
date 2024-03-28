@@ -15,7 +15,7 @@ public class LongFormat : ExcelStructConverter<long>
         return default;
     }
 
-    public override void Write(ICell cell, long? value)
+    protected override void WriteValue(ICell cell, long? value)
     {
         if (value.HasValue)
         {

@@ -18,6 +18,23 @@ internal class ImportTest
         Assert.That(lst.Count(), Is.AtLeast(40));
     }
 
+    [TestCase("DynamicImport")]
+    public void Excel_DynamicImport_Person_Test(string filename)
+    {
+        var timer = StartTimer();
+        var workBook = GetWorkBook(filename);
+        var option = new ExcelImportOption<Person>()
+        {
+            DynamicImport = new ListDynamicHandler<Person, decimal?>(new ColumnInfo[] {
+                new("扩展行1",typeof(decimal?),10), new("扩展行2", typeof(decimal?), 10) }, p => p.Data),
+            HeaderLineIndex = 1,
+            StartLineIndex = 3,
+        };
+        var lst = ExcelHelper.Import<Person>(workBook, option);
+        Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
+        Assert.That(lst.Count(), Is.AtLeast(40));
+    }
+
     [TestCase("record")]
     public void Excel_Import_Record_Test(string filename)
     {

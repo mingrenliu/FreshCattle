@@ -48,4 +48,10 @@ internal class Person
     /// 备注
     /// </summary>
     public string? Remark { get; set; }
+
+    /// <summary>
+    /// 动态数组
+    /// </summary>
+
+    public List<decimal?> Data { get; set; } = new();
 }

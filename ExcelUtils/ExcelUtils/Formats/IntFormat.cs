@@ -15,7 +15,7 @@ public class IntFormat : ExcelStructConverter<int>
         return default;
     }
 
-    public override void Write(ICell cell, int? value)
+    protected override void WriteValue(ICell cell, int? value)
     {
         if (value.HasValue)
         {

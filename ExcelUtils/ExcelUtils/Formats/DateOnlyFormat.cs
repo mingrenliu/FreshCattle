@@ -15,7 +15,7 @@ public class DateOnlyFormat : ExcelStructConverter<DateOnly>
         return default;
     }
 
-    public override void Write(ICell cell, DateOnly? value)
+    protected override void WriteValue(ICell cell, DateOnly? value)
     {
         if (value.HasValue)
         {

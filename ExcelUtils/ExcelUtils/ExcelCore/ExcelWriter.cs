@@ -1,10 +1,13 @@
-﻿using ExcelUtile.Formats;
+﻿using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
 
 namespace ExcelUtile.ExcelCore
 {
     internal class ExcelWriter<T> where T : class, new()
     {
+        private readonly ICellStyle DefaultCellStyle;
         private const int WidthFactor = 256;
         private const int HeightFactor = 20;
         private readonly IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>> _data;
@@ -23,6 +26,20 @@ namespace ExcelUtile.ExcelCore
             workbook = ExcelFactory.CreateWorkBook();
             _option = option ?? new ExcelExportOption<T>();
             _info = CreateInfo(_option).ToList();
+            DefaultCellStyle = CreateDefaultCellStyle(workbook);
+        }
+
+        static ICellStyle CreateDefaultCellStyle(IWorkbook book)
+        {
+            var style = book.CreateCellStyle();
+            style.Alignment = HorizontalAlignment.Center;
+            style.VerticalAlignment = VerticalAlignment.Center;
+            style.BorderBottom = BorderStyle.Thin;
+            style.BorderLeft = BorderStyle.Thin;
+            style.BorderRight = BorderStyle.Thin;
+            style.BorderTop = BorderStyle.Thin;
+            style.WrapText = true;
+            return style;
         }
 
         static IEnumerable<IExportCellHandler<T>> CreateInfo(ExcelExportOption<T> option)
@@ -41,6 +58,7 @@ namespace ExcelUtile.ExcelCore
             workbook = ExcelFactory.CreateWorkBook();
             _option = option ?? new ExcelExportOption<T>();
             _info = _option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x)).OrderBy(x => x.Info.Order).ToList();
+            DefaultCellStyle = CreateDefaultCellStyle(workbook);
         }
 
         public ExcelWriter(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null)
@@ -49,6 +67,7 @@ namespace ExcelUtile.ExcelCore
             workbook = ExcelFactory.CreateWorkBook();
             _option = option ?? new ExcelExportOption<T>();
             _info = _option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x)).OrderBy(x => x.Info.Order).ToList();
+            DefaultCellStyle = CreateDefaultCellStyle(workbook);
         }
 
         public IWorkbook Write()
@@ -56,6 +75,7 @@ namespace ExcelUtile.ExcelCore
             foreach (var item in _data)
             {
                 WriteSheet(item.Key, item.Value.Item1);
+                WriteMergedRegion(_option.MergedRegions);
                 WriteMergedRegion(item.Value.Item2);
             }
             return workbook;
@@ -71,13 +91,18 @@ namespace ExcelUtile.ExcelCore
             {
                 if (item.Value != null)
                 {
-                    var cell = _currentSheet!.GetOrCreateRow(item.RowStartIndex).GetOrCreateCell(item.ColumnStartIndex);
+                    var cell = _currentSheet!.GetOrCreateRow(item.RowStartIndex).GetOrCreateCell(item.ColumnStartIndex, DefaultCellStyle);
                     var converter = _factory.GetDefaultConverter(item.Value.GetType());
                     converter.WriteCell(cell, item.Value);
                 }
                 if (item.ColumnEndIndex != item.ColumnStartIndex || item.RowEndIndex != item.RowStartIndex)
                 {
-                    _currentSheet!.AddMergedRegion(new CellRangeAddress(item.RowStartIndex, item.RowEndIndex, item.ColumnStartIndex, item.ColumnEndIndex));
+                    var region = new CellRangeAddress(item.RowStartIndex, item.RowEndIndex, item.ColumnStartIndex, item.ColumnEndIndex);
+                    RegionUtil.SetBorderBottom(((int)BorderStyle.Thin), region, _currentSheet);
+                    RegionUtil.SetBorderRight(((int)BorderStyle.Thin), region, _currentSheet);
+                    RegionUtil.SetBorderLeft(((int)BorderStyle.Thin), region, _currentSheet);
+                    RegionUtil.SetBorderTop(((int)BorderStyle.Thin), region, _currentSheet);
+                    _currentSheet!.AddMergedRegion(region);
                 }
             }
         }

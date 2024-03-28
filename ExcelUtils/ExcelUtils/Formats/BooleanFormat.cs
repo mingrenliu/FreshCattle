@@ -13,7 +13,7 @@ public class BooleanFormat : ExcelStructConverter<bool>
         return null;
     }
 
-    public override void Write(ICell cell, bool? value)
+    protected override void WriteValue(ICell cell, bool? value)
     {
         if (value.HasValue)
         {

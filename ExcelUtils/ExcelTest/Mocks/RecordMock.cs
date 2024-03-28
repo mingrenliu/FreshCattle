@@ -4,7 +4,7 @@ namespace ExcelUtileTest.Mocks
 {
     internal class RecordMock
     {
-        public static IEnumerable<Record> Records()
+        public static IEnumerable<Record> Records(int rows = 0)
         {
             var faker = new Faker<Record>("en");
             faker.RuleFor(x => x.IsEnable, faker => faker.PickRandomParam(true, false))
@@ -13,10 +13,14 @@ namespace ExcelUtileTest.Mocks
                 .RuleFor(x => x.CreatedTime, faker => faker.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
                 .RuleFor(x => x.Mass, faker => faker.Random.Double(1000, 450000))
                 .RuleFor(x => x.Volume, faker => faker.Random.Decimal(100, 450000).OrNull(faker))
-                .RuleFor(x => x.Spans, faker =>faker.Date.Timespan(new TimeSpan(50,15,25)).OrNull(faker))
-                .RuleFor(x=>x.Date,faker=>faker.Date.BetweenDateOnly(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddYears(1))))
-                .RuleFor(x=>x.Time,faker=>faker.Date.BetweenTimeOnly(TimeOnly.FromDateTime(DateTime.Now.Date),TimeOnly.FromDateTime(DateTime.Now.Date.AddSeconds(-1))))
+                .RuleFor(x => x.Spans, faker => faker.Date.Timespan(new TimeSpan(50, 15, 25)).OrNull(faker))
+                .RuleFor(x => x.Date, faker => faker.Date.BetweenDateOnly(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddYears(1))))
+                .RuleFor(x => x.Time, faker => faker.Date.BetweenTimeOnly(TimeOnly.FromDateTime(DateTime.Now.Date), TimeOnly.FromDateTime(DateTime.Now.Date.AddSeconds(-1))))
                 .RuleFor(x => x.TimeOffset, faker => faker.Date.FutureOffset());
+            if (rows > 0)
+            {
+                return faker.Generate(rows);
+            }
             return faker.GenerateBetween(2000, 2000);
         }
     }

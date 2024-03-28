@@ -32,7 +32,7 @@ public abstract class ExcelConverter
     public void WriteToCell(ICell cell, object? obj)
     {
         WriteAsObject(cell, obj);
-        cell.CellStyle = _cellStyle ?? CreateCellType(cell);
+        FormatCell(cell);
     }
 
     /// <summary>
@@ -40,12 +40,20 @@ public abstract class ExcelConverter
     /// </summary>
     /// <param name="cell"> </param>
     /// <param name="obj"> </param>
-    public virtual void WriteAsObject(ICell cell, object? obj)
+    protected virtual void WriteAsObject(ICell cell, object? obj)
     {
-        cell.SetCellValue(obj?.ToString());
+        if (obj != null)
+        {
+            cell.SetCellValue(obj.ToString());
+        }
     }
 
-    public virtual ICellStyle? CreateCellType(ICell cell)
+    protected void FormatCell(ICell cell)
+    {
+        cell.CellStyle = _cellStyle ?? DefaultCellStyle(cell);
+    }
+
+    public virtual ICellStyle DefaultCellStyle(ICell cell)
     {
         var style = cell.Sheet.Workbook.CreateCellStyle();
         style.Alignment = HorizontalAlignment.Center;

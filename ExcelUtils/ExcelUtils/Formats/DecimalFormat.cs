@@ -15,7 +15,7 @@ public class DecimalFormat : ExcelStructConverter<decimal>
         return default;
     }
 
-    public override void Write(ICell cell, decimal? value)
+    protected override void WriteValue(ICell cell, decimal? value)
     {
         if (value.HasValue)
         {

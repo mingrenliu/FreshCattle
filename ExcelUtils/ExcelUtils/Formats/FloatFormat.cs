@@ -15,7 +15,7 @@ public class FloatFormat : ExcelStructConverter<float>
         return default;
     }
 
-    public override void Write(ICell cell, float? value)
+    protected override void WriteValue(ICell cell, float? value)
     {
         if (value.HasValue)
         {

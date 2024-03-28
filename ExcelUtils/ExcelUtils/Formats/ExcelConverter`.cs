@@ -18,12 +18,12 @@ public interface IConverter<T>
 
 public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter<T?> where T : class
 {
-    public override void WriteAsObject(ICell cell, object? obj)
+    protected override void WriteAsObject(ICell cell, object? obj)
     {
         if (obj == null) return;
         if (obj is T value)
         {
-            Write(cell, value);
+            WriteValue(cell, value);
         }
         else
         {
@@ -31,24 +31,30 @@ public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter
         }
     }
 
-    public abstract void Write(ICell cell, T? value);
+    protected abstract void WriteValue(ICell cell, T? value);
 
     public abstract T? Read(ICell cell);
 
     public override object? ReadFromCell(ICell cell)
     {
         return Read(cell);
+    }
+
+    public void Write(ICell cell, T? value)
+    {
+        FormatCell(cell);
+        WriteValue(cell, value);
     }
 }
 
 public abstract class ExcelStructConverter<T> : ExcelConverter<T>, IConverter<T?> where T : struct
 {
-    public override void WriteAsObject(ICell cell, object? obj)
+    protected override void WriteAsObject(ICell cell, object? obj)
     {
         if (obj == null) return;
         if (obj is T value)
         {
-            Write(cell, value);
+            WriteValue(cell, value);
         }
         else
         {
@@ -56,12 +62,18 @@ public abstract class ExcelStructConverter<T> : ExcelConverter<T>, IConverter<T?
         }
     }
 
-    public abstract void Write(ICell cell, T? value);
+    protected abstract void WriteValue(ICell cell, T? value);
 
     public abstract T? Read(ICell cell);
 
     public override object? ReadFromCell(ICell cell)
     {
         return Read(cell);
+    }
+
+    public void Write(ICell cell, T? value)
+    {
+        FormatCell(cell);
+        WriteValue(cell, value);
     }
 }

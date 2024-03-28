@@ -1,5 +1,4 @@
 ﻿using ExcelUtile.Formats;
-using NPOI.SS.Formula.Functions;
 
 namespace ExcelUtile.ExcelCore;
 
@@ -33,14 +32,29 @@ public static class CellParseExtension
         }
     }
 
-    public static IRow GetOrCreateRow(this ISheet sheet, int row)
+    public static IRow GetOrCreateRow(this ISheet sheet, int rowNum, int height = 20)
     {
-        return sheet.GetRow(row) ?? sheet.CreateRow(row);
+        var row = sheet.GetRow(rowNum);
+        if (row == null)
+        {
+            row = sheet.CreateRow(rowNum);
+            row.HeightInPoints = height < 0 ? 20 : height;
+        }
+        return row;
     }
 
-    public static ICell GetOrCreateCell(this IRow row, int cell)
+    public static ICell GetOrCreateCell(this IRow row, int cellNum, ICellStyle? style = null)
     {
-        return row.GetCell(cell) ?? row.CreateCell(cell);
+        var cell = row.GetCell(cellNum);
+        if (cell == null)
+        {
+            cell = row.CreateCell(cellNum);
+            if (style != null)
+            {
+                cell.CellStyle = style;
+            }
+        }
+        return cell;
     }
 
     public static bool? GetBoolean(this ICell cell)

@@ -15,7 +15,7 @@ public class DateTimeOffsetFormat : ExcelStructConverter<DateTimeOffset>
         return default;
     }
 
-    public override void Write(ICell cell, DateTimeOffset? value)
+    protected override void WriteValue(ICell cell, DateTimeOffset? value)
     {
         if (value.HasValue)
         {

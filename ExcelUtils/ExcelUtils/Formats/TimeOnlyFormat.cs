@@ -15,7 +15,7 @@ public class TimeOnlyFormat : ExcelStructConverter<TimeOnly>
         return default;
     }
 
-    public override void Write(ICell cell, TimeOnly? value)
+    protected override void WriteValue(ICell cell, TimeOnly? value)
     {
         if (value.HasValue)
         {

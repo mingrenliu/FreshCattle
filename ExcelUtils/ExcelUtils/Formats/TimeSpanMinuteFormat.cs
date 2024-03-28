@@ -15,7 +15,7 @@ public class TimeSpanMinuteFormat : ExcelStructConverter<TimeSpan>
         return default;
     }
 
-    public override void Write(ICell cell, TimeSpan? value)
+    protected override void WriteValue(ICell cell, TimeSpan? value)
     {
         if (value.HasValue)
         {

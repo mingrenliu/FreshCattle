@@ -3,7 +3,8 @@
 public class OnlyTimeFormat : DateTimeFormat
 {
     protected override string? Format => "hh:mm:ss";
-    public override void Write(ICell cell, DateTime? value)
+
+    protected override void WriteValue(ICell cell, DateTime? value)
     {
         if (value != null)
         {

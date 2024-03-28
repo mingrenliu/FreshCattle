@@ -15,7 +15,7 @@ public class DoubleFormat : ExcelStructConverter<double>
         return default;
     }
 
-    public override void Write(ICell cell, double? value)
+    protected override void WriteValue(ICell cell, double? value)
     {
         if (value.HasValue)
         {

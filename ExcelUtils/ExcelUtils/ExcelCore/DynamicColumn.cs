@@ -1,4 +1,7 @@
-﻿namespace ExcelUtile.ExcelCore;
+﻿using ExcelUtile.Formats;
+using NPOI.OpenXmlFormats.Spreadsheet;
+
+namespace ExcelUtile.ExcelCore;
 
 /// <summary>
 /// 列信息
@@ -23,16 +26,33 @@ public class ColumnInfo
     public virtual int Order { get; }
 
     /// <summary>
+    /// 基础类型
+    /// </summary>
+    public Type BaseType { get; private set; }
+
+    /// <summary>
     /// 字段是必须的(导入时没有该字段,会报错)
     /// </summary>
     public virtual bool IsRequired { get; }
 
-    public ColumnInfo(string name, int order = 0, bool isRequired = true, int width = 0)
+    /// <summary>
+    /// 自定义类型转换器
+    /// </summary>
+
+    public ExcelConverter? Converter { get; set; }
+
+    public ColumnInfo(string name, Type type, int order = 0, bool isRequired = true, int width = 0)
     {
+        BaseType = Nullable.GetUnderlyingType(type) ?? type;
         Name = name;
         IsRequired = isRequired;
         Order = order;
         Width = width;
+    }
+
+    public ExcelConverter? GetConverter(IConverterFactory _factory)
+    {
+        return Converter ?? _factory.GetDefaultConverter(BaseType);
     }
 }
 
@@ -51,26 +71,24 @@ public interface IExportDynamicWrite<T> : IDynamicHeader<T>
     void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory);
 }
 
-public class ArrayDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDynamicRead<T>
+public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDynamicRead<T>
 {
-    private readonly Dictionary<string, uint> _dic = new();
-    private readonly IEnumerable<ColumnInfo> _columns;
-    private readonly Func<T, Element[]> _selector;
-    private readonly Type _baseType;
+    private readonly Dictionary<string, int> _dic = new();
+    private readonly List<ColumnInfo> _columns;
+    private readonly Func<T, List<Element>> _selector;
 
-    public ArrayDynamicHandler(IEnumerable<ColumnInfo> columns, Func<T, Element[]> selector)
+    public ListDynamicHandler(IEnumerable<ColumnInfo> columns, Func<T, List<Element>> selector)
     {
-        _baseType = Nullable.GetUnderlyingType(typeof(Element)) ?? typeof(Element);
         _selector = selector;
-        _columns = columns;
-        uint i = 0;
-        foreach (var item in columns)
+        _columns = columns.ToList();
+        for (int i = 0; i < _columns.Count; i++)
         {
+            var item = _columns[i];
             if (_dic.ContainsKey(item.Name))
             {
                 throw new Exception("动态列名称存在重复");
             }
-            _dic[item.Name] = i++;
+            _dic[item.Name] = i;
         }
     }
 
@@ -78,15 +96,23 @@ public class ArrayDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDy
 
     public void ReadFromCell(T obj, ICell cell, string field, IConverterFactory factory)
     {
-        if (_dic.TryGetValue(field, out uint index))
+        if (_dic.TryGetValue(field, out int index))
         {
-            var value = factory.GetDefaultConverter(_baseType).ReadCell(cell);
-            Element[] values = _selector.Invoke(obj);
-            if (value != null && values.Length > index)
+            var info = _columns[index];
+            var value = info.GetConverter(factory).ReadCell(cell);
+            List<Element> values = _selector.Invoke(obj);
+            if (values.Count == 0)
+            {
+                for (int i = 0; i < _columns.Count; i++)
+                {
+                    values.Add(default(Element));
+                }
+            }
+            if (value != null && values.Count > index)
             {
                 try
                 {
-                    values[index] = (Element)Convert.ChangeType(value, _baseType);
+                    values[index] = (Element)Convert.ChangeType(value, info.BaseType);
                 }
                 catch (Exception)
                 {
@@ -97,13 +123,13 @@ public class ArrayDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDy
 
     public void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory)
     {
-        if (_dic.TryGetValue(field, out uint index))
+        if (_dic.TryGetValue(field, out int index))
         {
             var values = _selector.Invoke(obj);
-            if (index < values.Length)
+            if (index < values.Count)
             {
                 var value = values[index];
-                factory.GetDefaultConverter(_baseType)?.WriteCell(cell, value);
+                _columns[index].GetConverter(factory).WriteCell(cell, value);
             }
         }
     }
@@ -113,17 +139,15 @@ public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImp
 {
     private readonly IEnumerable<ColumnInfo> _columns;
     private readonly Func<T, Dictionary<string, Element>> _selector;
-    private readonly Type _baseType;
+    private readonly Dictionary<string, ColumnInfo> _dic = new();
 
     public DictionaryDynamicHandler(IEnumerable<ColumnInfo> columns, Func<T, Dictionary<string, Element>> selector)
     {
-        _baseType = Nullable.GetUnderlyingType(typeof(Element)) ?? typeof(Element);
         _selector = selector;
         _columns = columns;
-        var names = new HashSet<string>();
         foreach (var item in columns)
         {
-            if (names.Add(item.Name) is false)
+            if (_dic.TryAdd(item.Name, item) is false)
             {
                 throw new Exception("动态列名称存在重复");
             }
@@ -134,13 +158,17 @@ public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImp
 
     public void ReadFromCell(T obj, ICell cell, string field, IConverterFactory factory)
     {
-        var value = factory.GetDefaultConverter(_baseType).ReadCell(cell);
+        if (_dic.TryGetValue(field, out var info) is false)
+        {
+            return;
+        }
+        var value = info.GetConverter(factory).ReadCell(cell);
         var values = _selector.Invoke(obj);
         if (value != null)
         {
             try
             {
-                values[field] = (Element)Convert.ChangeType(value, _baseType);
+                values[field] = (Element)Convert.ChangeType(value, info.BaseType);
             }
             catch (Exception)
             {
@@ -151,9 +179,9 @@ public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImp
     public void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory)
     {
         var values = _selector.Invoke(obj);
-        if (values.TryGetValue(field, out var value))
+        if (values.TryGetValue(field, out var value) && _dic.TryGetValue(field, out var info))
         {
-            factory.GetDefaultConverter(_baseType)?.WriteCell(cell, value);
+            info.GetConverter(factory).WriteCell(cell, value);
         }
     }
 }

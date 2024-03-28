@@ -15,7 +15,7 @@ public class ShortFormat : ExcelStructConverter<short>
         return default;
     }
 
-    public override void Write(ICell cell, short? value)
+    protected override void WriteValue(ICell cell, short? value)
     {
         if (value.HasValue)
         {
