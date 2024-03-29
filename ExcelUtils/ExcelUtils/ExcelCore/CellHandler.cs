@@ -7,6 +7,8 @@ public interface IColumnBaseInfo
 
 public interface IExportCellHandler<T> : IColumnBaseInfo where T : class
 {
+    public int Order { get; }
+
     void WriteToCell(ICell cell, T value, IConverterFactory factory);
 }
 
@@ -18,6 +20,9 @@ public interface IImportCellHandler<T> : IColumnBaseInfo where T : class
 public class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
+
+    public int Order => Info.Order;
+
     private readonly IExportDynamicWrite<T> _export;
 
     public DynamicExportCellHandler(IExportDynamicWrite<T> export, ColumnInfo info)
@@ -68,6 +73,9 @@ public class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class
 public class PropertyCellHandler<T> : IExportCellHandler<T>, IImportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get => _info; }
+
+    public int Order => Info.Order;
+
     private readonly PropertyTypeInfo _info;
 
     public PropertyCellHandler(PropertyTypeInfo info)

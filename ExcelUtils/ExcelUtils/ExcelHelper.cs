@@ -38,12 +38,22 @@ namespace ExcelUtile
             return new ExcelWriter<T>(data, option, regions).Write().ToBytes();
         }
 
+        public static byte[] Export<T>(ExcelExportSheetOption<T> sheetOption, IEnumerable<T> data, ExcelExportOption<T>? option = null) where T : class
+        {
+            return new ExcelWriter<T>(sheetOption, data, option).Write().ToBytes();
+        }
+
         public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(data, option).Write().ToBytes();
         }
 
         public static byte[] Export<T>(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null) where T : class
+        {
+            return new ExcelWriter<T>(data, option).Write().ToBytes();
+        }
+
+        public static byte[] Export<T>(Dictionary<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>> data, ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(data, option).Write().ToBytes();
         }

@@ -48,6 +48,29 @@ public class ExcelExportOption<T> : ExcelOption<T> where T : class
     /// 动态导出
     /// </summary>
     public IExportDynamicWrite<T>? DynamicExport { get; set; }
+
+    /// <summary>
+    /// 多个动态导出
+    /// </summary>
+    public IEnumerable<IExportDynamicWrite<T>>? DynamicExports { get; set; }
+}
+
+public class ExcelExportSheetOption<T> where T : class
+{
+    /// <summary>
+    /// 合并区域(导出时使用)
+    /// </summary>
+    public IEnumerable<MergedRegion>? MergedRegions { get; set; }
+
+    /// <summary>
+    /// 动态导出
+    /// </summary>
+    public IExportDynamicWrite<T>? DynamicExport { get; set; }
+
+    /// <summary>
+    /// 多个动态导出
+    /// </summary>
+    public IEnumerable<IExportDynamicWrite<T>>? DynamicExports { get; set; }
 }
 
 public class ExcelImportOption<T> : ExcelOption<T> where T : class
