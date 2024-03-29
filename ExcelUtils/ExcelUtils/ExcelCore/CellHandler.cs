@@ -86,12 +86,12 @@ public class PropertyCellHandler<T> : IExportCellHandler<T>, IImportCellHandler<
     public void WriteToCell(ICell cell, T value, IConverterFactory factory)
     {
         var propertyValue = _info.Info.GetValue(value);
-        factory.GetDefaultConverter(_info.BaseType)?.WriteCell(cell, propertyValue);
+        Info.GetConverter(factory)?.WriteCell(cell, propertyValue);
     }
 
     public void ReadFromCell(ICell cell, T value, IConverterFactory factory)
     {
-        var propertyValue = factory.GetDefaultConverter(_info.BaseType).ReadCell(cell);
+        var propertyValue = Info.GetConverter(factory).ReadCell(cell);
         if (propertyValue != null)
         {
             try

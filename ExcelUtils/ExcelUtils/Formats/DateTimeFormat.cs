@@ -12,4 +12,12 @@ public abstract class DateTimeFormat : ExcelStructConverter<DateTime>
         }
         return null;
     }
+
+    protected override void WriteValue(ICell cell, DateTime? value)
+    {
+        if (value != null)
+        {
+            cell.SetCellValue(value.Value);
+        }
+    }
 }

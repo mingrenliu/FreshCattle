@@ -1,4 +1,6 @@
-﻿namespace ExcelTest.Entities;
+﻿using ExcelUtile.Formats;
+
+namespace ExcelTest.Entities;
 
 internal class Person
 {
@@ -30,6 +32,7 @@ internal class Person
     /// 生日
     /// </summary>
     [Display("生日", 4)]
+    [DataFormat(typeof(OnlyTimeFormat))]
     public DateTime Birthday { get; set; }
 
     /// <summary>
