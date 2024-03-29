@@ -1,5 +1,4 @@
 ﻿using ExcelUtile.Formats;
-using NPOI.OpenXmlFormats.Spreadsheet;
 
 namespace ExcelUtile.ExcelCore;
 
@@ -56,9 +55,14 @@ public class ColumnInfo
     }
 }
 
-public interface IDynamicHeader<T>
+public interface IExactHeader<T> : IDynamicHeader<T>
 {
     IEnumerable<ColumnInfo> Headers();
+}
+
+public interface IDynamicHeader<T>
+{
+    bool Match(string field);
 }
 
 public interface IImportDynamicRead<T> : IDynamicHeader<T>
@@ -66,12 +70,16 @@ public interface IImportDynamicRead<T> : IDynamicHeader<T>
     void ReadFromCell(T obj, ICell cell, string field, IConverterFactory factory);
 }
 
-public interface IExportDynamicWrite<T> : IDynamicHeader<T>
+public interface IImportExactRead<T> : IExactHeader<T>, IImportDynamicRead<T>
+{
+}
+
+public interface IExportDynamicWrite<T> : IExactHeader<T>
 {
     void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory);
 }
 
-public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDynamicRead<T>
+public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExactRead<T>
 {
     private readonly Dictionary<string, int> _dic = new();
     private readonly List<ColumnInfo> _columns;
@@ -94,6 +102,8 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDyn
 
     public IEnumerable<ColumnInfo> Headers() => _columns;
 
+    public bool Match(string field) => _dic.ContainsKey(field);
+
     public void ReadFromCell(T obj, ICell cell, string field, IConverterFactory factory)
     {
         if (_dic.TryGetValue(field, out int index))
@@ -103,9 +113,9 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDyn
             List<Element> values = _selector.Invoke(obj);
             if (values.Count == 0)
             {
-                for (int i = 0; i < _columns.Count; i++)
+                for (int i = 0; i < _columns.Count; i++)//create same lentgh list
                 {
-                    values.Add(default);
+                    values.Add(default!);
                 }
             }
             if (value != null && values.Count > index)
@@ -139,7 +149,36 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDyn
     }
 }
 
-public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportDynamicRead<T>
+public class DictionaryDynamicImportHandler<T, Element> : IImportDynamicRead<T>
+{
+    private readonly Func<T, Dictionary<string, Element>> _selector;
+    private readonly Type _type = typeof(Element);
+
+    public DictionaryDynamicImportHandler(Func<T, Dictionary<string, Element>> selector)
+    {
+        _selector = selector;
+    }
+
+    public bool Match(string field) => true;
+
+    public void ReadFromCell(T obj, ICell cell, string field, IConverterFactory factory)
+    {
+        var value = factory.GetDefaultConverter(_type)?.ReadCell(cell);
+        var values = _selector.Invoke(obj);
+        if (value != null)
+        {
+            try
+            {
+                values[field] = (Element)Convert.ChangeType(value, _type);
+            }
+            catch (Exception)
+            {
+            }
+        }
+    }
+}
+
+public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExactRead<T>
 {
     private readonly IEnumerable<ColumnInfo> _columns;
     private readonly Func<T, Dictionary<string, Element>> _selector;
@@ -159,6 +198,8 @@ public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImp
     }
 
     public IEnumerable<ColumnInfo> Headers() => _columns;
+
+    public bool Match(string field) => _dic.ContainsKey(field);
 
     public void ReadFromCell(T obj, ICell cell, string field, IConverterFactory factory)
     {

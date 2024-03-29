@@ -121,20 +121,34 @@ public static class CellParseExtension
         return cell.CellType == CellType.Numeric || cell.CellType == CellType.Formula && cell.CachedFormulaResultType == CellType.Numeric;
     }
 
+    public static bool IsString(this ICell cell)
+    {
+        return cell.CellType == CellType.String || cell.CellType == CellType.Formula && cell.CachedFormulaResultType == CellType.String;
+    }
+
     public static bool IsBoolean(this ICell cell)
     {
         return cell.CellType == CellType.Boolean || cell.CellType == CellType.Formula && cell.CachedFormulaResultType == CellType.Boolean;
     }
 
+    public static object? GetObject(this ICell cell)
+    {
+        if (IsInValid(cell)) return null;
+        if (IsNumeric(cell)) return cell.NumericCellValue;
+        if (IsBoolean(cell)) return cell.BooleanCellValue;
+        return GetString(cell);
+    }
+
     public static string? GetString(this ICell cell)
     {
+        if (IsString(cell)) return cell.StringCellValue;
         var str = cell.ToString()?.Trim();
         return string.IsNullOrWhiteSpace(str) ? null : str;
     }
 
     private static string? GetStringForDateTime(this ICell cell)
     {
-        var str = cell.ToString()?.Replace("：", ":").Trim();
+        var str = cell.GetString()?.Replace("：", ":").Trim();
         return string.IsNullOrWhiteSpace(str) ? null : str;
     }
 

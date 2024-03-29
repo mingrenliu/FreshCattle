@@ -1,205 +1,203 @@
 ﻿using NPOI.SS.Util;
 
-namespace ExcelUtile.ExcelCore
+namespace ExcelUtile.ExcelCore;
+
+internal class ExcelWriter<T> where T : class
 {
-    internal class ExcelWriter<T> where T : class
+    private readonly ICellStyle DefaultCellStyle;
+    private const int WidthFactor = 256;
+    private const int HeightFactor = 20;
+    private readonly IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>> _data;
+    private readonly IWorkbook workbook;
+    private ISheet? _currentSheet;
+    private IRow? _currentRow;
+    private int _rowIndex = 0;
+    private int _columnIndex = 0;
+    private readonly ExcelExportOption<T> _option;
+    private readonly IEnumerable<IExportCellHandler<T>> _workbookHandlers;
+    private IEnumerable<IExportCellHandler<T>>? _handlers;
+    private IEnumerable<IExportCellHandler<T>> Info => _handlers ?? Enumerable.Empty<IExportCellHandler<T>>();
+    private readonly IConverterFactory _factory = new DefaultConverterFactory();
+
+    public ExcelWriter(ExcelExportSheetOption<T> sheetOption, IEnumerable<T> data, ExcelExportOption<T>? option = null)
     {
-        private readonly ICellStyle DefaultCellStyle;
-        private const int WidthFactor = 256;
-        private const int HeightFactor = 20;
-        private readonly IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>> _data;
-        private readonly IWorkbook workbook;
-        private ISheet? _currentSheet;
-        private IRow? _currentRow;
-        private int _rowIndex = 0;
-        private int _columnIndex = 0;
-        private readonly ExcelExportOption<T> _option;
-        private readonly IEnumerable<IExportCellHandler<T>> _workbookHandlers;
-        private readonly IEnumerable<IExportCellHandler<T>>? _sheetHandlers;
-        private IEnumerable<IExportCellHandler<T>>? _handlers;
-        private IEnumerable<IExportCellHandler<T>> Info => _handlers ?? Enumerable.Empty<IExportCellHandler<T>>();
-        private readonly IConverterFactory _factory = new DefaultConverterFactory();
+        _data = new List<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>>() { new("sheet", new(data, sheetOption)) };
+        workbook = ExcelFactory.CreateWorkBook();
+        _option = option ?? new ExcelExportOption<T>();
+        _workbookHandlers = CreateHandler(_option);
+        DefaultCellStyle = CreateDefaultCellStyle(workbook);
+    }
 
-        public ExcelWriter(ExcelExportSheetOption<T> sheetOption, IEnumerable<T> data, ExcelExportOption<T>? option = null)
+    public ExcelWriter(IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? region = null)
+    {
+        _data = new List<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>>() { new("sheet", new(data, new ExcelExportSheetOption<T>() { MergedRegions = region })) };
+        workbook = ExcelFactory.CreateWorkBook();
+        _option = option ?? new ExcelExportOption<T>();
+        _workbookHandlers = CreateHandler(_option);
+        DefaultCellStyle = CreateDefaultCellStyle(workbook);
+    }
+
+    public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null)
+    {
+        _data = data.Select(x => new KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>(x.Key, new Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>(x.Value.Item1, new ExcelExportSheetOption<T>() { MergedRegions = x.Value.Item2 })));
+        workbook = ExcelFactory.CreateWorkBook();
+        _option = option ?? new ExcelExportOption<T>();
+        _workbookHandlers = CreateHandler(_option);
+        DefaultCellStyle = CreateDefaultCellStyle(workbook);
+    }
+
+    public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>> data, ExcelExportOption<T>? option = null)
+    {
+        _data = data;
+        workbook = ExcelFactory.CreateWorkBook();
+        _option = option ?? new ExcelExportOption<T>();
+        _workbookHandlers = CreateHandler(_option);
+        DefaultCellStyle = CreateDefaultCellStyle(workbook);
+    }
+
+    public ExcelWriter(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null)
+    {
+        _data = data.Select(x => new KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>(x.Key, new(x.Value, new())));
+        workbook = ExcelFactory.CreateWorkBook();
+        _option = option ?? new ExcelExportOption<T>();
+        _workbookHandlers = CreateHandler(_option);
+        DefaultCellStyle = CreateDefaultCellStyle(workbook);
+    }
+
+    private static ICellStyle CreateDefaultCellStyle(IWorkbook book)
+    {
+        var style = book.CreateCellStyle();
+        style.Alignment = HorizontalAlignment.Center;
+        style.VerticalAlignment = VerticalAlignment.Center;
+        style.BorderBottom = BorderStyle.Thin;
+        style.BorderLeft = BorderStyle.Thin;
+        style.BorderRight = BorderStyle.Thin;
+        style.BorderTop = BorderStyle.Thin;
+        style.WrapText = true;
+        return style;
+    }
+
+    private static IEnumerable<IExportCellHandler<T>> CreateHandler(ExcelExportOption<T> option)
+    {
+        IEnumerable<IExportCellHandler<T>> result = option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x));
+        var dynamics = option.DynamicExports ?? Enumerable.Empty<IExportDynamicWrite<T>>();
+        if (option.DynamicExport != null)
         {
-            _data = new List<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>>() { new("sheet", new(data, sheetOption)) };
-            workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelExportOption<T>();
-            _workbookHandlers = _workbookHandlers = CreateHandler(_option);
-            DefaultCellStyle = CreateDefaultCellStyle(workbook);
+            dynamics = dynamics.Concat(new[] { option.DynamicExport });
         }
-
-        public ExcelWriter(IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? region = null)
+        if (dynamics.Any())
         {
-            _data = new List<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>>() { new("sheet", new(data, new ExcelExportSheetOption<T>() { MergedRegions = region })) };
-            workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelExportOption<T>();
-            _workbookHandlers = _workbookHandlers = CreateHandler(_option);
-            DefaultCellStyle = CreateDefaultCellStyle(workbook);
+            result = result.Concat(dynamics.SelectMany(x => DynamicExportCellHandler<T>.Create(x)));
         }
+        return result;
+    }
 
-        public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null)
+    private void ResetHandler(ExcelExportSheetOption<T> option)
+    {
+        var dynamics = option.DynamicExports ?? Enumerable.Empty<IExportDynamicWrite<T>>();
+        if (option.DynamicExport != null)
         {
-            _data = data.Select(x => new KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>(x.Key, new Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>(x.Value.Item1, new ExcelExportSheetOption<T>() { MergedRegions = x.Value.Item2 })));
-            workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelExportOption<T>();
-            _workbookHandlers = _workbookHandlers = CreateHandler(_option);
-            DefaultCellStyle = CreateDefaultCellStyle(workbook);
+            dynamics = dynamics.Concat(new[] { option.DynamicExport });
         }
-
-        public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>> data, ExcelExportOption<T>? option = null)
+        if (dynamics.Any())
         {
-            _data = data;
-            workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelExportOption<T>();
-            _workbookHandlers = _workbookHandlers = CreateHandler(_option);
-            DefaultCellStyle = CreateDefaultCellStyle(workbook);
+            _handlers = _workbookHandlers.Concat(dynamics.SelectMany(x => DynamicExportCellHandler<T>.Create(x)));
         }
-
-        public ExcelWriter(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null)
+        else
         {
-            _data = data.Select(x => new KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>(x.Key, new(x.Value, new())));
-            workbook = ExcelFactory.CreateWorkBook();
-            _option = option ?? new ExcelExportOption<T>();
-            _workbookHandlers = CreateHandler(_option);
-            DefaultCellStyle = CreateDefaultCellStyle(workbook);
+            _handlers = _workbookHandlers;
         }
+        _handlers = _handlers.OrderBy(x => x.Order).ToList();
+    }
 
-        static ICellStyle CreateDefaultCellStyle(IWorkbook book)
+    public IWorkbook Write()
+    {
+        foreach (var item in _data)
         {
-            var style = book.CreateCellStyle();
-            style.Alignment = HorizontalAlignment.Center;
-            style.VerticalAlignment = VerticalAlignment.Center;
-            style.BorderBottom = BorderStyle.Thin;
-            style.BorderLeft = BorderStyle.Thin;
-            style.BorderRight = BorderStyle.Thin;
-            style.BorderTop = BorderStyle.Thin;
-            style.WrapText = true;
-            return style;
+            WriteSheet(item.Key, item.Value.Item1, item.Value.Item2);
+            WriteMergedRegion(_option.MergedRegions);
+            WriteMergedRegion(item.Value.Item2.MergedRegions);
         }
+        return workbook;
+    }
 
-        static IEnumerable<IExportCellHandler<T>> CreateHandler(ExcelExportOption<T> option)
+    private void WriteMergedRegion(IEnumerable<MergedRegion>? regions)
+    {
+        if (regions == null)
         {
-            IEnumerable<IExportCellHandler<T>> result = option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x));
-            var dynamics = option.DynamicExports ?? Enumerable.Empty<IExportDynamicWrite<T>>();
-            if (option.DynamicExport != null)
+            return;
+        }
+        foreach (var item in regions)
+        {
+            if (item.Value != null)
             {
-                dynamics = dynamics.Concat(new[] { option.DynamicExport });
+                var cell = _currentSheet!.GetOrCreateRow(item.RowStartIndex).GetOrCreateCell(item.ColumnStartIndex, DefaultCellStyle);
+                var converter = _factory.GetDefaultConverter(item.Value.GetType());
+                converter.WriteCell(cell, item.Value);
             }
-            if (dynamics.Any())
+            if (item.ColumnEndIndex != item.ColumnStartIndex || item.RowEndIndex != item.RowStartIndex)
             {
-                result = result.Concat(dynamics.SelectMany(x => DynamicExportCellHandler<T>.Create(x)));
-            }
-            return result;
-        }
-
-        void ResetHandler(ExcelExportSheetOption<T> option)
-        {
-            var dynamics = option.DynamicExports ?? Enumerable.Empty<IExportDynamicWrite<T>>();
-            if (option.DynamicExport != null)
-            {
-                dynamics = dynamics.Concat(new[] { option.DynamicExport });
-            }
-            if (dynamics.Any())
-            {
-                _handlers = _workbookHandlers.Concat(dynamics.SelectMany(x => DynamicExportCellHandler<T>.Create(x)));
-            }
-            else
-            {
-                _handlers = _workbookHandlers;
-            }
-            _handlers = _handlers.OrderBy(x => x.Order).ToList();
-        }
-
-        public IWorkbook Write()
-        {
-            foreach (var item in _data)
-            {
-                WriteSheet(item.Key, item.Value.Item1, item.Value.Item2);
-                WriteMergedRegion(_option.MergedRegions);
-                WriteMergedRegion(item.Value.Item2.MergedRegions);
-            }
-            return workbook;
-        }
-
-        private void WriteMergedRegion(IEnumerable<MergedRegion>? regions)
-        {
-            if (regions == null)
-            {
-                return;
-            }
-            foreach (var item in regions)
-            {
-                if (item.Value != null)
-                {
-                    var cell = _currentSheet!.GetOrCreateRow(item.RowStartIndex).GetOrCreateCell(item.ColumnStartIndex, DefaultCellStyle);
-                    var converter = _factory.GetDefaultConverter(item.Value.GetType());
-                    converter.WriteCell(cell, item.Value);
-                }
-                if (item.ColumnEndIndex != item.ColumnStartIndex || item.RowEndIndex != item.RowStartIndex)
-                {
-                    var region = new CellRangeAddress(item.RowStartIndex, item.RowEndIndex, item.ColumnStartIndex, item.ColumnEndIndex);
-                    RegionUtil.SetBorderBottom(((int)BorderStyle.Thin), region, _currentSheet);
-                    RegionUtil.SetBorderRight(((int)BorderStyle.Thin), region, _currentSheet);
-                    RegionUtil.SetBorderLeft(((int)BorderStyle.Thin), region, _currentSheet);
-                    RegionUtil.SetBorderTop(((int)BorderStyle.Thin), region, _currentSheet);
-                    _currentSheet!.AddMergedRegion(region);
-                }
+                var region = new CellRangeAddress(item.RowStartIndex, item.RowEndIndex, item.ColumnStartIndex, item.ColumnEndIndex);
+                RegionUtil.SetBorderBottom(((int)BorderStyle.Thin), region, _currentSheet);
+                RegionUtil.SetBorderRight(((int)BorderStyle.Thin), region, _currentSheet);
+                RegionUtil.SetBorderLeft(((int)BorderStyle.Thin), region, _currentSheet);
+                RegionUtil.SetBorderTop(((int)BorderStyle.Thin), region, _currentSheet);
+                _currentSheet!.AddMergedRegion(region);
             }
         }
+    }
 
-        private void WriteSheet(string name, IEnumerable<T> data, ExcelExportSheetOption<T> option)
+    private void WriteSheet(string name, IEnumerable<T> data, ExcelExportSheetOption<T> option)
+    {
+        ResetHandler(option);
+        CreateSheet(name);
+        WriteHeader();
+        _rowIndex = _option.StartLineIndex;
+        foreach (var item in data.Where(x => x != null))
         {
-            ResetHandler(option);
-            CreateSheet(name);
-            WriteHeader();
-            _rowIndex = _option.StartLineIndex;
-            foreach (var item in data.Where(x => x != null))
-            {
-                WriteOneLine(item);
-            }
+            WriteOneLine(item);
         }
+    }
 
-        private void CreateSheet(string name)
+    private void CreateSheet(string name)
+    {
+        _rowIndex = 0;
+        _currentSheet = workbook.CreateSheet(name);
+    }
+
+    private void NextRow(int? row = null)
+    {
+        _columnIndex = 0;
+        _rowIndex = row ?? _rowIndex;
+        _currentRow = _currentSheet!.CreateRow(_rowIndex++);
+        _currentRow.HeightInPoints = 20;
+    }
+
+    private ICell NextCell()
+    {
+        var cell = _currentRow!.CreateCell(_columnIndex++);
+        cell.CellStyle = DefaultCellStyle;
+        return cell;
+    }
+
+    private void WriteHeader()
+    {
+        NextRow(_option.HeaderLineIndex);
+        foreach (var item in Info.Select(x => x.Info))
         {
-            _rowIndex = 0;
-            _currentSheet = workbook.CreateSheet(name);
+            var cell = NextCell();
+            _factory.GetDefaultConverter(nameof(String))!.WriteToCell(cell, item.Name);
+            _currentSheet!.SetColumnWidth(_columnIndex - 1, (item.Width.HasValue && item.Width > 0 ? item.Width.Value : _option.DefaultColumnWidth) * WidthFactor);
         }
+    }
 
-        private void NextRow(int? row = null)
+    private void WriteOneLine(T data)
+    {
+        NextRow();
+        foreach (var item in Info)
         {
-            _columnIndex = 0;
-            _rowIndex = row ?? _rowIndex;
-            _currentRow = _currentSheet!.CreateRow(_rowIndex++);
-            _currentRow.HeightInPoints = 20;
-        }
-
-        private ICell NextCell()
-        {
-            var cell = _currentRow!.CreateCell(_columnIndex++);
-            cell.CellStyle = DefaultCellStyle;
-            return cell;
-        }
-
-        private void WriteHeader()
-        {
-            NextRow(_option.HeaderLineIndex);
-            foreach (var item in Info.Select(x => x.Info))
-            {
-                var cell = NextCell();
-                _factory.GetDefaultConverter(nameof(String))!.WriteToCell(cell, item.Name);
-                _currentSheet!.SetColumnWidth(_columnIndex - 1, (item.Width.HasValue && item.Width > 0 ? item.Width.Value : _option.DefaultColumnWidth) * WidthFactor);
-            }
-        }
-
-        private void WriteOneLine(T data)
-        {
-            NextRow();
-            foreach (var item in Info)
-            {
-                var cell = NextCell();
-                item.WriteToCell(cell, data, _factory);
-            }
+            var cell = NextCell();
+            item.WriteToCell(cell, data, _factory);
         }
     }
 }

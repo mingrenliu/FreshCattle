@@ -16,6 +16,7 @@ public interface IConverterFactory
 
 public class DefaultConverterFactory : IConverterFactory
 {
+    private const string DefaultType = "DefaultType";
     private readonly Dictionary<string, ExcelConverter> _defaultConverters = new();
 
     public ExcelConverter? GetDefaultConverter(Type type)
@@ -40,25 +41,31 @@ public class DefaultConverterFactory : IConverterFactory
         return Add(type);
     }
 
-    ExcelConverter? Add(string type)
+    private ExcelConverter? Add(string type)
     {
-        if (defaultConverterMap.ContainsKey(type))
+        var result = Create(type);
+        result ??= Create(DefaultType);
+        return result;
+        ExcelConverter? Create(string name)
         {
-            if (Activator.CreateInstance(defaultConverterMap[type]) is ExcelConverter converter)
+            if (defaultConverterMap.ContainsKey(name))
             {
-                _defaultConverters[type] = converter;
-                return converter;
+                if (Activator.CreateInstance(defaultConverterMap[name]) is ExcelConverter converter)
+                {
+                    _defaultConverters[type] = converter;
+                    return converter;
+                }
             }
+            return null;
         }
-        return null;
     }
 
-    ExcelConverter? Add(Type type)
+    private ExcelConverter? Add(Type type)
     {
         return Add(type.Name);
     }
 
-    static readonly Dictionary<string, Type> defaultConverterMap = new()
+    private static readonly Dictionary<string, Type> defaultConverterMap = new()
     {
         [nameof(Double)] = typeof(DoubleFormat),
         [nameof(Int32)] = typeof(IntFormat),
@@ -73,5 +80,6 @@ public class DefaultConverterFactory : IConverterFactory
         [nameof(Single)] = typeof(FloatFormat),
         [nameof(String)] = typeof(StringFormat),
         [nameof(Int16)] = typeof(ShortFormat),
+        [DefaultType] = typeof(DefaultFormat)
     };
 }

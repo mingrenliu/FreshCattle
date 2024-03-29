@@ -81,7 +81,18 @@ public class ExcelImportOption<T> : ExcelOption<T> where T : class
     public bool ValidImportField { get; set; } = true;
 
     /// <summary>
+    /// 忽略导入字段
+    /// </summary>
+    public Func<string, bool>? IgnoreField { get; set; }
+
+    /// <summary>
     /// 动态导出
     /// </summary>
     public IImportDynamicRead<T>? DynamicImport { get; set; }
+
+    /// <summary>
+    /// 动态导出数组
+    /// </summary>
+
+    public IEnumerable<IImportDynamicRead<T>>? DynamicImports { get; set; }
 }

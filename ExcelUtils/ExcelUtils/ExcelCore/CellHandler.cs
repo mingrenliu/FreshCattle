@@ -1,23 +1,27 @@
 ﻿namespace ExcelUtile.ExcelCore;
 
-public interface IColumnBaseInfo
+internal interface IColumnBaseInfo
 {
     ColumnInfo Info { get; }
 }
 
-public interface IExportCellHandler<T> : IColumnBaseInfo where T : class
+internal interface IExportCellHandler<T> : IColumnBaseInfo where T : class
 {
     public int Order { get; }
 
     void WriteToCell(ICell cell, T value, IConverterFactory factory);
 }
 
-public interface IImportCellHandler<T> : IColumnBaseInfo where T : class
+internal interface IExactImportCellHandler<T> : IImportCellHandler<T>, IColumnBaseInfo where T : class
 {
-    void ReadFromCell(ICell cell, T value, IConverterFactory factory);
 }
 
-public class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
+internal interface IImportCellHandler<T> : IDynamicHeader<T> where T : class
+{
+    void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory);
+}
+
+internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
 
@@ -45,32 +49,56 @@ public class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
     }
 }
 
-public class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class
+internal class ExactImportCellHandler<T> : IExactImportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
     private readonly IImportDynamicRead<T> _import;
 
-    public DynamicImportCellHandler(IImportDynamicRead<T> import, ColumnInfo info)
+    public ExactImportCellHandler(IImportDynamicRead<T> import, ColumnInfo info)
     {
         _import = import;
         Info = info;
     }
 
-    public void ReadFromCell(ICell cell, T value, IConverterFactory factory)
+    public void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory)
     {
         _import.ReadFromCell(value, cell, Info.Name, factory);
     }
 
-    public static IEnumerable<DynamicImportCellHandler<T>> Create(IImportDynamicRead<T> data)
+    public static IEnumerable<ExactImportCellHandler<T>> Create(IImportExactRead<T> data)
     {
         foreach (var item in data.Headers())
         {
-            yield return new DynamicImportCellHandler<T>(data, item);
+            yield return new ExactImportCellHandler<T>(data, item);
         }
     }
+
+    public bool Match(string field) => Info.Name == field;
 }
 
-public class PropertyCellHandler<T> : IExportCellHandler<T>, IImportCellHandler<T> where T : class
+internal class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class
+{
+    private readonly IImportDynamicRead<T> _import;
+
+    public DynamicImportCellHandler(IImportDynamicRead<T> import)
+    {
+        _import = import;
+    }
+
+    public void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory)
+    {
+        _import.ReadFromCell(value, cell, field, factory);
+    }
+
+    public static DynamicImportCellHandler<T> Create(IImportDynamicRead<T> data)
+    {
+        return new DynamicImportCellHandler<T>(data);
+    }
+
+    public bool Match(string field) => _import.Match(field);
+}
+
+internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get => _info; }
 
@@ -89,7 +117,7 @@ public class PropertyCellHandler<T> : IExportCellHandler<T>, IImportCellHandler<
         Info.GetConverter(factory)?.WriteCell(cell, propertyValue);
     }
 
-    public void ReadFromCell(ICell cell, T value, IConverterFactory factory)
+    public void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory)
     {
         var propertyValue = Info.GetConverter(factory).ReadCell(cell);
         if (propertyValue != null)
@@ -103,4 +131,6 @@ public class PropertyCellHandler<T> : IExportCellHandler<T>, IImportCellHandler<
             }
         }
     }
+
+    public bool Match(string field) => field == Info.Name;
 }
