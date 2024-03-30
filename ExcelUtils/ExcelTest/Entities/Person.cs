@@ -1,6 +1,4 @@
-﻿using ExcelUtile.Formats;
-
-namespace ExcelTest.Entities;
+﻿namespace ExcelUtileTest.Entities;
 
 internal class Person
 {

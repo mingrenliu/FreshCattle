@@ -1,8 +1,4 @@
-﻿using ExcelUtile.ExcelCore;
-using ExcelUtileTest.Entities;
-using NPOI.SS.UserModel;
-
-namespace ExcelTest;
+﻿namespace ExcelUtileTest.Tests;
 
 [TestFixture]
 [Order(1)]
@@ -13,7 +9,7 @@ internal class ImportTest
     {
         var timer = StartTimer();
         var workBook = GetWorkBook(filename);
-        var lst = ExcelHelper.Import<Person>(workBook, new ExcelImportOption<Person>() { HeaderLineIndex = 1 });
+        var lst = ExcelHelper.Import(workBook, new ExcelImportOption<Person>() { HeaderLineIndex = 1 });
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(40));
     }
@@ -30,7 +26,7 @@ internal class ImportTest
             HeaderLineIndex = 1,
             StartLineIndex = 3,
         };
-        var lst = ExcelHelper.Import<Person>(workBook, option);
+        var lst = ExcelHelper.Import(workBook, option);
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds());
         Assert.That(lst.Count(), Is.AtLeast(40));
     }
