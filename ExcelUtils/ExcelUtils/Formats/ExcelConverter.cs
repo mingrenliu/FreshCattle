@@ -2,8 +2,19 @@
 
 public abstract class ExcelConverter
 {
+    /// <summary>
+    /// 单元格样式
+    /// </summary>
     protected ICellStyle? _cellStyle;
+
+    /// <summary>
+    /// 单元格格式
+    /// </summary>
     protected virtual string? Format { get; }
+
+    /// <summary>
+    /// 数据类型
+    /// </summary>
 
     protected readonly Type _type;
 
@@ -12,6 +23,11 @@ public abstract class ExcelConverter
         _type = type;
     }
 
+    /// <summary>
+    /// 是否可以转换
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public virtual bool CanConvert(Type type)
     {
         return _type == type;
@@ -48,11 +64,20 @@ public abstract class ExcelConverter
         }
     }
 
+    /// <summary>
+    /// 规范单元格样式
+    /// </summary>
+    /// <param name="cell"></param>
     protected void FormatCell(ICell cell)
     {
         cell.CellStyle = _cellStyle ?? DefaultCellStyle(cell);
     }
 
+    /// <summary>
+    /// 默认样式
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
     public virtual ICellStyle DefaultCellStyle(ICell cell)
     {
         var style = cell.Sheet.Workbook.CreateCellStyle();

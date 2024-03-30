@@ -1,84 +1,54 @@
-﻿using ExcelUtile.Formats;
-
-namespace ExcelUtile.ExcelCore;
+﻿namespace ExcelUtile.ExcelCore;
 
 /// <summary>
-/// 列信息
+/// 导入导出表头匹配
 /// </summary>
-public class ColumnInfo
-{
-    /// <summary>
-    /// 字段展示名称
-    /// </summary>
-    public virtual string Name { get; }
-
-    private int? _width;
-
-    /// <summary>
-    /// 列宽
-    /// </summary>
-    public virtual int? Width { get => _width <= 0 ? null : _width; private set => _width = value; }
-
-    /// <summary>
-    /// 导出字段顺序
-    /// </summary>
-    public virtual int Order { get; }
-
-    /// <summary>
-    /// 基础类型
-    /// </summary>
-    public Type BaseType { get; private set; }
-
-    /// <summary>
-    /// 字段是必须的(导入时没有该字段,会报错)
-    /// </summary>
-    public virtual bool IsRequired { get; }
-
-    /// <summary>
-    /// 自定义类型转换器
-    /// </summary>
-
-    public ExcelConverter? Converter { get; set; }
-
-    public ColumnInfo(string name, Type type, int order = 0, bool isRequired = true, int width = 0)
-    {
-        BaseType = Nullable.GetUnderlyingType(type) ?? type;
-        Name = name;
-        IsRequired = isRequired;
-        Order = order;
-        Width = width;
-    }
-
-    public ExcelConverter? GetConverter(IConverterFactory _factory)
-    {
-        return Converter ?? _factory.GetDefaultConverter(BaseType);
-    }
-}
-
-public interface IExactHeader<T> : IDynamicHeader<T>
-{
-    IEnumerable<ColumnInfo> Headers();
-}
-
+/// <typeparam name="T"></typeparam>
 public interface IDynamicHeader<T>
 {
     bool Match(string field);
 }
 
+/// <summary>
+/// 表头信息
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public interface IExactHeader<T> : IDynamicHeader<T>
+{
+    IEnumerable<ColumnInfo> Headers();
+}
+
+/// <summary>
+/// 导入读取
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public interface IImportDynamicRead<T> : IDynamicHeader<T>
 {
     void ReadFromCell(T obj, ICell cell, string field, IConverterFactory factory);
 }
 
+/// <summary>
+/// 导入时根据字段信息准确读取
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public interface IImportExactRead<T> : IExactHeader<T>, IImportDynamicRead<T>
 {
 }
 
+/// <summary>
+/// 导出写入
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public interface IExportDynamicWrite<T> : IExactHeader<T>
 {
     void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory);
 }
 
+/// <summary>
+/// 列表类型根据表头信息准确读写
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <typeparam name="Element"></typeparam>
 public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExactRead<T>
 {
     private readonly Dictionary<string, int> _dic = new();
@@ -149,6 +119,11 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExa
     }
 }
 
+/// <summary>
+/// 字典类型动态导入读取
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <typeparam name="Element"></typeparam>
 public class DictionaryDynamicImportHandler<T, Element> : IImportDynamicRead<T>
 {
     private readonly Func<T, Dictionary<string, Element>> _selector;
@@ -178,6 +153,11 @@ public class DictionaryDynamicImportHandler<T, Element> : IImportDynamicRead<T>
     }
 }
 
+/// <summary>
+/// 字典类型根据表头信息准确读写
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <typeparam name="Element"></typeparam>
 public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExactRead<T>
 {
     private readonly IEnumerable<ColumnInfo> _columns;

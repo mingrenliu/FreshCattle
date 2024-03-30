@@ -2,6 +2,26 @@
 
 namespace ExcelUtile.ExcelCore;
 
+internal static class DefaultPropertySelector
+{
+    public static IEnumerable<PropertyTypeInfo> GetTypeInfo(Type type)
+    {
+        foreach (var property in type.GetProperties())
+        {
+            var attribute = property.GetCustomAttribute<DisplayAttribute>();
+            if (attribute != null)
+            {
+                yield return new DefaultPropertyInfo(property, attribute);
+            }
+        }
+    }
+
+    public static IEnumerable<PropertyTypeInfo> GetTypeInfo<T>()
+    {
+        return GetTypeInfo(typeof(T));
+    }
+}
+
 public class MapOverridePropertySelector
 {
     private readonly Dictionary<string, string> _dic;
@@ -31,25 +51,5 @@ public class MapOverridePropertySelector
                 }
             }
         }
-    }
-}
-
-internal static class DefaultPropertySelector
-{
-    public static IEnumerable<PropertyTypeInfo> GetTypeInfo(Type type)
-    {
-        foreach (var property in type.GetProperties())
-        {
-            var attribute = property.GetCustomAttribute<DisplayAttribute>();
-            if (attribute != null)
-            {
-                yield return new DefaultPropertyInfo(property, attribute);
-            }
-        }
-    }
-
-    public static IEnumerable<PropertyTypeInfo> GetTypeInfo<T>()
-    {
-        return GetTypeInfo(typeof(T));
     }
 }

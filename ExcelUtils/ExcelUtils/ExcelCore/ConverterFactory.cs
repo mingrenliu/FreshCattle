@@ -3,7 +3,7 @@
 namespace ExcelUtile.ExcelCore;
 
 /// <summary>
-/// 类型转化器
+/// 类型转化器工厂
 /// </summary>
 public interface IConverterFactory
 {
@@ -14,6 +14,9 @@ public interface IConverterFactory
     public ExcelConverter? GetDefaultConverter(string type);
 }
 
+/// <summary>
+/// 默认的转换器工厂
+/// </summary>
 public class DefaultConverterFactory : IConverterFactory
 {
     private const string DefaultType = "DefaultType";

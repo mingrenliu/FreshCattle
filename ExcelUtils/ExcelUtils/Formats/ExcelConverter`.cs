@@ -1,5 +1,9 @@
 ﻿namespace ExcelUtile.Formats;
 
+/// <summary>
+/// 泛型Excel读写转换器
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class ExcelConverter<T> : ExcelConverter where T : notnull
 {
     public bool CanConvert() => CanConvert(typeof(T));
@@ -9,6 +13,10 @@ public abstract class ExcelConverter<T> : ExcelConverter where T : notnull
     }
 }
 
+/// <summary>
+/// 泛型单元格读写接口
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public interface IConverter<T>
 {
     public void Write(ICell cell, T? value);
@@ -16,6 +24,10 @@ public interface IConverter<T>
     public T? Read(ICell cell);
 }
 
+/// <summary>
+/// 泛型引用类型Excel读写转换器
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter<T?> where T : class
 {
     protected override void WriteAsObject(ICell cell, object? obj)
@@ -47,6 +59,10 @@ public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter
     }
 }
 
+/// <summary>
+/// 泛型值类型Excel读写转换器
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class ExcelStructConverter<T> : ExcelConverter<T>, IConverter<T?> where T : struct
 {
     protected override void WriteAsObject(ICell cell, object? obj)

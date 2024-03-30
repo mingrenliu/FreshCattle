@@ -4,6 +4,8 @@ namespace ExcelUtile.ExcelCore;
 
 public static class CellParseExtension
 {
+    #region excel extension
+
     public static void WriteCell(this ExcelConverter? converter, ICell cell, object? value)
     {
         if (converter != null)
@@ -56,6 +58,10 @@ public static class CellParseExtension
         }
         return cell;
     }
+
+    #endregion excel extension
+
+    #region GetValues
 
     public static bool? GetBoolean(this ICell cell)
     {
@@ -228,4 +234,6 @@ public static class CellParseExtension
         }
         return null;
     }
+
+    #endregion GetValues
 }
