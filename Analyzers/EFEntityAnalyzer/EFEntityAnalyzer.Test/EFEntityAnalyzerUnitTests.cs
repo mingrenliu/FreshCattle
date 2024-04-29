@@ -105,6 +105,9 @@ namespace EFEntityAnalyzer.Test
     [Table(""sample"")]
     public class {|#0:Sample|}
     {
+        /// <summary>
+        /// fewf
+        /// </summary>
         public string {|#1:Name|} { get; set; }
         public DateTime {|#2:Date|} { get; set; }
         public UploadStatus {|#3:Status|} { get; set; }
@@ -160,6 +163,9 @@ namespace EFEntityAnalyzer.Test
     [Comment("""")]
     public class Sample
     {
+        /// <summary>
+        /// fewf
+        /// </summary>
         [StringLength(50)]
         [Comment("""")]
         public string Name { get; set; }

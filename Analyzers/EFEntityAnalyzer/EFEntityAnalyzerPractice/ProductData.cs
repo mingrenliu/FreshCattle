@@ -14,8 +14,6 @@ public class ProductData
     /// <summary>
     /// fewf
     /// </summary>
-    [StringLength(50)]
-    [Comment("fewf")]
     public string? Id { get; set; }
 
     /// <summary>

@@ -6,10 +6,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace EFEntityAnalyzer
 {
@@ -61,11 +61,30 @@ namespace EFEntityAnalyzer
                 }
                 if (nodes.Any())
                 {
-                    target = target.ReplaceNodes(nodes, (oldNode, newNode) => newNode.AddAttributeLists(CreateAttribute(oldNode.Type, oldNode, option)));
+                    target = target.ReplaceNodes(nodes, (oldNode, newNode) => CreateProperty(newNode, CreateAttribute(oldNode.Type, oldNode, option)));
                 }
             }
             target = containClass ? target.AddAttributeLists(AttributeFactory.CreateAttributeWithStringPara(Comment)) : target;
             return doc.WithSyntaxRoot(root.ReplaceNode(old, target).NormalizeWhitespace());
+        }
+
+        static PropertyDeclarationSyntax CreateProperty(PropertyDeclarationSyntax node, AttributeListSyntax[] attributes)
+        {
+            if (attributes.Any() is false)
+            {
+                return node;
+            }
+            var pub = node.Modifiers.First(x => x.IsKind(SyntaxKind.PublicKeyword));
+            //调整Xml Comment 和 Attribute的顺序
+            if (pub.LeadingTrivia.Any(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)))
+            {
+                var xml = pub.LeadingTrivia.First(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+                return node.WithModifiers(node.Modifiers.Replace(pub, SyntaxFactory.Token(SyntaxKind.PublicKeyword))).AddAttributeLists(attributes).WithLeadingTrivia(xml);
+            }
+            else
+            {
+                return node.AddAttributeLists(attributes);
+            }
         }
 
         private static AttributeListSyntax[] CreateAttribute(TypeSyntax type, PropertyDeclarationSyntax prop, AttributeOption option)
