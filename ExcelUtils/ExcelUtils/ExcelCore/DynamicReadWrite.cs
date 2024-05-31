@@ -3,8 +3,8 @@
 /// <summary>
 /// 列表类型根据表头信息准确读写
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="Element"></typeparam>
+/// <typeparam name="T"> </typeparam>
+/// <typeparam name="Element"> </typeparam>
 public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExactRead<T>
 {
     private readonly Dictionary<string, int> _dic = new();
@@ -57,7 +57,7 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExa
         }
     }
 
-    public void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory)
+    public void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory, ICellStyle? style = null)
     {
         if (_dic.TryGetValue(field, out int index))
         {
@@ -65,11 +65,11 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExa
             if (index < values.Count)
             {
                 var value = values[index];
-                _columns[index].GetConverter(factory).WriteCell(cell, value);
+                _columns[index].GetConverter(factory).WriteCell(cell, value, style);
             }
             else
             {
-                _columns[index].GetConverter(factory).WriteCell(cell, null);
+                _columns[index].GetConverter(factory).WriteCell(cell, null, style);
             }
         }
     }
@@ -78,8 +78,8 @@ public class ListDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExa
 /// <summary>
 /// 字典类型动态导入读取
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="Element"></typeparam>
+/// <typeparam name="T"> </typeparam>
+/// <typeparam name="Element"> </typeparam>
 public class DictionaryDynamicImportHandler<T, Element> : IImportDynamicRead<T>
 {
     private readonly Func<T, Dictionary<string, Element>> _selector;
@@ -112,8 +112,8 @@ public class DictionaryDynamicImportHandler<T, Element> : IImportDynamicRead<T>
 /// <summary>
 /// 字典类型根据表头信息准确读写
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="Element"></typeparam>
+/// <typeparam name="T"> </typeparam>
+/// <typeparam name="Element"> </typeparam>
 public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImportExactRead<T>
 {
     private readonly IEnumerable<ColumnInfo> _columns;
@@ -157,18 +157,18 @@ public class DictionaryDynamicHandler<T, Element> : IExportDynamicWrite<T>, IImp
         }
     }
 
-    public void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory)
+    public void WriteToCell(T obj, ICell cell, string field, IConverterFactory factory, ICellStyle? style = null)
     {
         var values = _selector.Invoke(obj);
         if (_dic.TryGetValue(field, out var info))
         {
             if (values.TryGetValue(field, out var value))
             {
-                info.GetConverter(factory).WriteCell(cell, value);
+                info.GetConverter(factory).WriteCell(cell, value, style);
             }
             else
             {
-                info.GetConverter(factory).WriteCell(cell, null);
+                info.GetConverter(factory).WriteCell(cell, null, style);
             }
         }
     }

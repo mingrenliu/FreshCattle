@@ -6,11 +6,11 @@ public static class CellParseExtension
 {
     #region excel extension
 
-    public static void WriteCell(this ExcelConverter? converter, ICell cell, object? value)
+    public static void WriteCell(this ExcelConverter? converter, ICell cell, object? value, ICellStyle? style = null)
     {
         if (converter != null)
         {
-            converter.WriteToCell(cell, value);
+            converter.WriteToCell(cell, value, style);
         }
         else
         {
@@ -19,7 +19,29 @@ public static class CellParseExtension
             {
                 cell.SetCellValue(str);
             }
+            if (style != null)
+            {
+                cell.CellStyle = style;
+            }
         }
+    }
+
+    public static ICellStyle CreateDefaultCellStyle(this IWorkbook book)
+    {
+        var style = book.CreateCellStyle();
+        style.Alignment = HorizontalAlignment.Center;
+        style.VerticalAlignment = VerticalAlignment.Center;
+        style.BorderBottom = BorderStyle.Thin;
+        style.BorderLeft = BorderStyle.Thin;
+        style.BorderRight = BorderStyle.Thin;
+        style.BorderTop = BorderStyle.Thin;
+        style.WrapText = true;
+        return style;
+    }
+
+    public static short GetDataFormat(this IWorkbook book, string format)
+    {
+        return book.CreateDataFormat().GetFormat(format);
     }
 
     public static object? ReadCell(this ExcelConverter? converter, ICell cell)

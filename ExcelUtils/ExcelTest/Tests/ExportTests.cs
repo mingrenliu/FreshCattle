@@ -24,7 +24,13 @@ internal class ExportTests : TestBase
         var direction = LocationHelper.GetExportResourcesPath();
         var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
         var timer = StartTimer();
-        var bytes = ExcelHelper.Export(persons, null, new List<MergedRegion>() { new() { ColumnEndIndex = 3, ColumnStartIndex = 1, RowStartIndex = 3, RowEndIndex = 5, Value = DateTime.Now } });
+        var bytes = ExcelHelper.Export(persons, null, new List<MergedRegion>() { new() { ColumnEndIndex = 3, ColumnStartIndex = 1, RowStartIndex = 3, RowEndIndex = 5, Value = DateTime.Now,FormatCellStyle=(cell)=>{
+            var style=cell.Sheet.Workbook.CreateDefaultCellStyle();
+            style.DataFormat=cell.Sheet.Workbook.GetDataFormat("yyyy-mm-dd hh:mm:ss");
+            style.Alignment = HorizontalAlignment.Left;
+            return style;
+        }
+        } });
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds() + ";条数:" + persons.Count());
         File.WriteAllBytes(path, bytes);
         Assume.That(bytes.Length, Is.AtLeast(10));
@@ -39,7 +45,22 @@ internal class ExportTests : TestBase
         var option = new ExcelExportOption<Person>()
         {
             DynamicExport = new ListDynamicHandler<Person, decimal?>(new ColumnInfo[] {
-            new("扩展行1",typeof(decimal?),10), new("扩展行2", typeof(decimal?), 10) }, p => new List<decimal?> { 1, null })
+                new("扩展行1", typeof(decimal?), 10)
+                {
+                    FormatCellStyle = (cell) =>
+                    {
+                       var style= cell.Sheet.Workbook.CreateDefaultCellStyle();
+                        style.Alignment=HorizontalAlignment.Right;
+                        return style;
+                    }
+                }, new("扩展行2", typeof(decimal?), 10){
+                    FormatCellStyle = (cell) =>
+                    {
+                       var style= cell.Sheet.Workbook.CreateDefaultCellStyle();
+                        style.Alignment=HorizontalAlignment.Left;
+                        return style;
+                    }
+                } }, p => new List<decimal?> { 1, 58 })
         };
         var timer = StartTimer();
         var bytes = ExcelHelper.Export(persons, option);

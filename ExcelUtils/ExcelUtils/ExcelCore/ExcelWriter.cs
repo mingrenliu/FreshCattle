@@ -66,15 +66,7 @@ internal class ExcelWriter<T> where T : class
 
     private static ICellStyle CreateDefaultCellStyle(IWorkbook book)
     {
-        var style = book.CreateCellStyle();
-        style.Alignment = HorizontalAlignment.Center;
-        style.VerticalAlignment = VerticalAlignment.Center;
-        style.BorderBottom = BorderStyle.Thin;
-        style.BorderLeft = BorderStyle.Thin;
-        style.BorderRight = BorderStyle.Thin;
-        style.BorderTop = BorderStyle.Thin;
-        style.WrapText = true;
-        return style;
+        return book.CreateDefaultCellStyle();
     }
 
     private static IEnumerable<IExportCellHandler<T>> CreateHandler(ExcelExportOption<T> option)
@@ -133,7 +125,7 @@ internal class ExcelWriter<T> where T : class
             {
                 var cell = _currentSheet!.GetOrCreateRow(item.RowStartIndex).GetOrCreateCell(item.ColumnStartIndex, DefaultCellStyle);
                 var converter = _factory.GetDefaultConverter(item.Value.GetType());
-                converter.WriteCell(cell, item.Value);
+                converter.WriteCell(cell, item.Value, item.FormatCellStyle?.Invoke(cell));
             }
             if (item.ColumnEndIndex != item.ColumnStartIndex || item.RowEndIndex != item.RowStartIndex)
             {

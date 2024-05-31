@@ -26,4 +26,9 @@ public class MergedRegion
     /// 单元格内容，可选
     /// </summary>
     public object? Value { get; set; }
+
+    /// <summary>
+    /// 设置单元格格式
+    /// </summary>
+    public Func<ICell, ICellStyle>? FormatCellStyle { get; set; }
 }

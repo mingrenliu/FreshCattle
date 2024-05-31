@@ -3,7 +3,7 @@
 /// <summary>
 /// 泛型Excel读写转换器
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 public abstract class ExcelConverter<T> : ExcelConverter where T : notnull
 {
     public bool CanConvert() => CanConvert(typeof(T));
@@ -16,10 +16,10 @@ public abstract class ExcelConverter<T> : ExcelConverter where T : notnull
 /// <summary>
 /// 泛型单元格读写接口
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 public interface IConverter<T>
 {
-    public void Write(ICell cell, T? value);
+    public void Write(ICell cell, T? value, ICellStyle? style);
 
     public T? Read(ICell cell);
 }
@@ -27,7 +27,7 @@ public interface IConverter<T>
 /// <summary>
 /// 泛型引用类型Excel读写转换器
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter<T?> where T : class
 {
     protected override void WriteAsObject(ICell cell, object? obj)
@@ -52,9 +52,9 @@ public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter
         return Read(cell);
     }
 
-    public void Write(ICell cell, T? value)
+    public void Write(ICell cell, T? value, ICellStyle? style = null)
     {
-        FormatCell(cell);
+        FormatCell(cell, style);
         WriteValue(cell, value);
     }
 }
@@ -62,7 +62,7 @@ public abstract class ExcelReferenceConverter<T> : ExcelConverter<T>, IConverter
 /// <summary>
 /// 泛型值类型Excel读写转换器
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 public abstract class ExcelStructConverter<T> : ExcelConverter<T>, IConverter<T?> where T : struct
 {
     protected override void WriteAsObject(ICell cell, object? obj)
@@ -87,9 +87,9 @@ public abstract class ExcelStructConverter<T> : ExcelConverter<T>, IConverter<T?
         return Read(cell);
     }
 
-    public void Write(ICell cell, T? value)
+    public void Write(ICell cell, T? value, ICellStyle? style = null)
     {
-        FormatCell(cell);
+        FormatCell(cell, style);
         WriteValue(cell, value);
     }
 }

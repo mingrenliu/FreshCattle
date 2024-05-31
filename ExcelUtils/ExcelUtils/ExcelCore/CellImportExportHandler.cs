@@ -3,11 +3,11 @@
 /// <summary>
 /// 根据字段信息准确导出
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
-
+    private ICellStyle? _style;
     public int Order => Info.Order;
 
     private readonly IExportDynamicWrite<T> _export;
@@ -18,9 +18,15 @@ internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : cla
         Info = info;
     }
 
-    public void WriteToCell(ICell cell, T value, IConverterFactory factory)
+    public void WriteToCell(ICell cell, T value, IConverterFactory factory, ICellStyle? style = null)
     {
-        _export.WriteToCell(value, cell, Info.Name, factory);
+        _export.WriteToCell(value, cell, Info.Name, factory, style ?? GetCellStyle(cell));
+    }
+
+    ICellStyle? GetCellStyle(ICell cell)
+    {
+        _style ??= Info.FormatCellStyle?.Invoke(cell);
+        return _style;
     }
 
     public static IEnumerable<DynamicExportCellHandler<T>> Create(IExportDynamicWrite<T> data)
@@ -35,7 +41,7 @@ internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : cla
 /// <summary>
 /// 根据字段信息准确导入
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 internal class ExactImportCellHandler<T> : IExactImportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
@@ -66,7 +72,7 @@ internal class ExactImportCellHandler<T> : IExactImportCellHandler<T> where T : 
 /// <summary>
 /// 动态导入
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 internal class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class
 {
     private readonly IImportDynamicRead<T> _import;
@@ -92,7 +98,7 @@ internal class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : cla
 /// <summary>
 /// 默认的类属性导入导出处理器
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T"> </typeparam>
 internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get => _info; }
@@ -101,15 +107,17 @@ internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellH
 
     private readonly PropertyTypeInfo _info;
 
+    private ICellStyle? _style;
+
     public PropertyCellHandler(PropertyTypeInfo info)
     {
         _info = info;
     }
 
-    public void WriteToCell(ICell cell, T value, IConverterFactory factory)
+    public void WriteToCell(ICell cell, T value, IConverterFactory factory, ICellStyle? style = null)
     {
         var propertyValue = _info.Info.GetValue(value);
-        Info.GetConverter(factory)?.WriteCell(cell, propertyValue);
+        Info.GetConverter(factory)?.WriteCell(cell, propertyValue, style ?? GetCellStyle(cell));
     }
 
     public void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory)
@@ -125,6 +133,12 @@ internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellH
             {
             }
         }
+    }
+
+    ICellStyle? GetCellStyle(ICell cell)
+    {
+        _style ??= Info.FormatCellStyle?.Invoke(cell);
+        return _style;
     }
 
     public bool Match(string field) => field == Info.Name;

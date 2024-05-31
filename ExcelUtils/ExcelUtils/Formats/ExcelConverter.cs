@@ -1,4 +1,6 @@
-﻿namespace ExcelUtile.Formats;
+﻿using ExcelUtile.ExcelCore;
+
+namespace ExcelUtile.Formats;
 
 public abstract class ExcelConverter
 {
@@ -26,8 +28,8 @@ public abstract class ExcelConverter
     /// <summary>
     /// 是否可以转换
     /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
+    /// <param name="type"> </param>
+    /// <returns> </returns>
     public virtual bool CanConvert(Type type)
     {
         return _type == type;
@@ -45,10 +47,10 @@ public abstract class ExcelConverter
     /// </summary>
     /// <param name="cell"> </param>
     /// <param name="obj"> </param>
-    public void WriteToCell(ICell cell, object? obj)
+    public void WriteToCell(ICell cell, object? obj, ICellStyle? style = null)
     {
         WriteAsObject(cell, obj);
-        FormatCell(cell);
+        FormatCell(cell, style);
     }
 
     /// <summary>
@@ -67,34 +69,27 @@ public abstract class ExcelConverter
     /// <summary>
     /// 规范单元格样式
     /// </summary>
-    /// <param name="cell"></param>
-    protected void FormatCell(ICell cell)
+    /// <param name="cell"> </param>
+    protected void FormatCell(ICell cell, ICellStyle? style = null)
     {
-        cell.CellStyle = _cellStyle ?? DefaultCellStyle(cell);
+        cell.CellStyle = style ?? _cellStyle ?? DefaultCellStyle(cell);
     }
 
     /// <summary>
     /// 默认样式
     /// </summary>
-    /// <param name="cell"></param>
-    /// <returns></returns>
+    /// <param name="cell"> </param>
+    /// <returns> </returns>
     public virtual ICellStyle DefaultCellStyle(ICell cell)
     {
-        var style = cell.Sheet.Workbook.CreateCellStyle();
-        style.Alignment = HorizontalAlignment.Center;
-        style.VerticalAlignment = VerticalAlignment.Center;
-        style.BorderBottom = BorderStyle.Thin;
-        style.BorderLeft = BorderStyle.Thin;
-        style.BorderRight = BorderStyle.Thin;
-        style.BorderTop = BorderStyle.Thin;
-        style.WrapText = true;
-        if (!string.IsNullOrWhiteSpace(Format))
+        if (_cellStyle == null)
         {
-            var format = cell.Sheet.Workbook.CreateDataFormat();
-            var formatIndex = format.GetFormat(Format);
-            style.DataFormat = formatIndex;
+            _cellStyle ??= cell.Sheet.Workbook.CreateDefaultCellStyle();
+            if (!string.IsNullOrWhiteSpace(Format))
+            {
+                _cellStyle.DataFormat = cell.Sheet.Workbook.GetDataFormat(Format);
+            }
         }
-        _cellStyle = style;
-        return style;
+        return _cellStyle;
     }
 }

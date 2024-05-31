@@ -35,19 +35,23 @@ public class ColumnInfo
     public virtual bool IsRequired { get; }
 
     /// <summary>
+    /// 设置单元格格式
+    /// </summary>
+    public Func<ICell, ICellStyle>? FormatCellStyle { get; set; }
+
+    /// <summary>
     /// 自定义类型转换器
     /// </summary>
 
     public ExcelConverter? Converter { get; set; }
 
     /// <summary>
-    ///
     /// </summary>
-    /// <param name="name">字段导出名称</param>
-    /// <param name="type">字段类型</param>
-    /// <param name="order">序号</param>
-    /// <param name="isRequired">是否必须</param>
-    /// <param name="width">列宽</param>
+    /// <param name="name"> 字段导出名称 </param>
+    /// <param name="type"> 字段类型 </param>
+    /// <param name="order"> 序号 </param>
+    /// <param name="isRequired"> 是否必须 </param>
+    /// <param name="width"> 列宽 </param>
     public ColumnInfo(string name, Type type, int order = 0, bool isRequired = true, int width = 0)
     {
         BaseType = Nullable.GetUnderlyingType(type) ?? type;
@@ -60,8 +64,8 @@ public class ColumnInfo
     /// <summary>
     /// 获取转换器
     /// </summary>
-    /// <param name="_factory"></param>
-    /// <returns></returns>
+    /// <param name="_factory"> </param>
+    /// <returns> </returns>
     public ExcelConverter? GetConverter(IConverterFactory _factory)
     {
         return Converter ?? _factory.GetDefaultConverter(BaseType);
