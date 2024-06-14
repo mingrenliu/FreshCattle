@@ -37,7 +37,7 @@ internal class ExcelWriter<T> where T : class
         DefaultCellStyle = CreateDefaultCellStyle(workbook);
     }
 
-    public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null)
+    public ExcelWriter(IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>> data, ExcelExportOption<T>? option = null)
     {
         _data = data.Select(x => new KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>(x.Key, new Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>(x.Value.Item1, new ExcelExportSheetOption<T>() { MergedRegions = x.Value.Item2 })));
         workbook = ExcelFactory.CreateWorkBook();
@@ -46,7 +46,7 @@ internal class ExcelWriter<T> where T : class
         DefaultCellStyle = CreateDefaultCellStyle(workbook);
     }
 
-    public ExcelWriter(Dictionary<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>> data, ExcelExportOption<T>? option = null)
+    public ExcelWriter(IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>> data, ExcelExportOption<T>? option = null)
     {
         _data = data;
         workbook = ExcelFactory.CreateWorkBook();
@@ -55,7 +55,7 @@ internal class ExcelWriter<T> where T : class
         DefaultCellStyle = CreateDefaultCellStyle(workbook);
     }
 
-    public ExcelWriter(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null)
+    public ExcelWriter(IEnumerable<KeyValuePair<string, IEnumerable<T>>> data, ExcelExportOption<T>? option = null)
     {
         _data = data.Select(x => new KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>(x.Key, new(x.Value, new())));
         workbook = ExcelFactory.CreateWorkBook();

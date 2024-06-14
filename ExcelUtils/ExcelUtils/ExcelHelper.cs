@@ -23,12 +23,12 @@ namespace ExcelUtile
             new ExcelWriter<T>(data, option, regions).Write().Write(stream, true);
         }
 
-        public static void Export<T>(Stream stream, Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
+        public static void Export<T>(Stream stream, IEnumerable<KeyValuePair<string, IEnumerable<T>>> data, ExcelExportOption<T>? option = null) where T : class
         {
             new ExcelWriter<T>(data, option).Write().Write(stream, true);
         }
 
-        public static void Export<T>(Stream stream, Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null) where T : class
+        public static void Export<T>(Stream stream, IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>> data, ExcelExportOption<T>? option = null) where T : class
         {
             new ExcelWriter<T>(data, option).Write().Write(stream, true);
         }
@@ -43,17 +43,17 @@ namespace ExcelUtile
             return new ExcelWriter<T>(sheetOption, data, option).Write().ToBytes();
         }
 
-        public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
+        public static byte[] Export<T>(IEnumerable<KeyValuePair<string, IEnumerable<T>>> data, ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(data, option).Write().ToBytes();
         }
 
-        public static byte[] Export<T>(Dictionary<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>> data, ExcelExportOption<T>? option = null) where T : class
+        public static byte[] Export<T>(IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>> data, ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(data, option).Write().ToBytes();
         }
 
-        public static byte[] Export<T>(Dictionary<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>> data, ExcelExportOption<T>? option = null) where T : class
+        public static byte[] Export<T>(IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>> data, ExcelExportOption<T>? option = null) where T : class
         {
             return new ExcelWriter<T>(data, option).Write().ToBytes();
         }
