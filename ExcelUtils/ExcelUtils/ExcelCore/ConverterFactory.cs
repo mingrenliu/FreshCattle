@@ -15,12 +15,20 @@ public interface IConverterFactory
 }
 
 /// <summary>
-/// 默认的转换器工厂
+/// 默认的转换器工厂(也是Object类型的转换器)
 /// </summary>
-public class DefaultConverterFactory : IConverterFactory
+public class DefaultConverterFactory : ExcelReferenceConverter<object>, IConverterFactory
 {
     private const string DefaultType = "DefaultType";
-    private readonly Dictionary<string, ExcelConverter> _defaultConverters = new();
+    private readonly Dictionary<string, ExcelConverter> _defaultConverters;
+
+    public DefaultConverterFactory()
+    {
+        _defaultConverters = new()
+        {
+            [nameof(Object)] = this
+        };
+    }
 
     public ExcelConverter? GetDefaultConverter(Type type)
     {
@@ -66,6 +74,38 @@ public class DefaultConverterFactory : IConverterFactory
     private ExcelConverter? Add(Type type)
     {
         return Add(type.Name);
+    }
+
+    protected override void WriteValue(ICell cell, object? value)
+    {
+        if (value == null) return;
+        var convert = GetDefaultConverter(value.GetType());
+        if (convert == null || convert == this)
+        {
+            convert = GetDefaultConverter(DefaultType);
+        }
+        convert?.WriteToCell(cell, value);
+    }
+
+    public override object? Read(ICell cell)
+    {
+        if (cell.IsInValid() is false)
+        {
+            return null;
+        }
+        else if (cell.IsString())
+        {
+            return cell.GetString();
+        }
+        else if (cell.IsNumeric())
+        {
+            return cell.GetDecimal();
+        }
+        else if (cell.IsBoolean())
+        {
+            return cell.GetBoolean();
+        }
+        return null;
     }
 
     private static readonly Dictionary<string, Type> defaultConverterMap = new()

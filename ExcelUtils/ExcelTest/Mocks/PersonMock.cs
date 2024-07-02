@@ -13,7 +13,7 @@ internal class PersonMock
             .RuleFor(x => x.Age, faker => faker.Random.Int(10, 45))
             .RuleFor(x => x.Birthday, faker => faker.Date.Between(DateTime.Now.AddYears(1), DateTime.Now))
             .RuleFor(x => x.Remark, faker => faker.Lorem.Letter(25))
-            .RuleFor(x => x.FeatherName, faker => faker.Name.FullName())
+            .RuleFor(x => x.FeatherName, faker => faker.Random.Int(1, 10) > 5 ? faker.Name.FullName() : faker.Random.Int(1, 100000).OrNull(faker, 0.1f))
             .RuleFor(x => x.Money, faker => faker.Random.Double(10, 25642));
         if (rows > 0)
         {

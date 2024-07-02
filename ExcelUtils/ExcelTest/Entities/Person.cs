@@ -43,7 +43,7 @@ internal class Person
     /// 父亲名字
     /// </summary>
     [Display("父亲名字", 6, false)]
-    public string? FeatherName { get; set; }
+    public object? FeatherName { get; set; }
 
     /// <summary>
     /// 备注
