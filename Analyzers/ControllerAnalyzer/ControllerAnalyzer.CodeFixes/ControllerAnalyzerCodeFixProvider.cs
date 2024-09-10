@@ -129,6 +129,10 @@ namespace ControllerAnalyzer
                 }
                 if (!ExistAttribute(para.AttributeLists, "Required"))
                 {
+                    if (para.DescendantNodes().Any(x => x.IsKind(SyntaxKind.EqualsValueClause)))
+                    {
+                        continue;
+                    }
                     required.Add(para);
                 }
             }

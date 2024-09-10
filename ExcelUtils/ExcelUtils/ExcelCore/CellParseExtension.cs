@@ -210,7 +210,7 @@ public static class CellParseExtension
     public static TimeSpan? GetTimeSpan(this ICell cell)
     {
         if (IsInValid(cell)) return null;
-        if (IsNumeric(cell)) return cell.DateCellValue.TimeOfDay;
+        if (IsNumeric(cell)) return cell.DateCellValue?.TimeOfDay;
         var str = GetStringForDateTime(cell);
         if (!string.IsNullOrWhiteSpace(str))
         {
@@ -241,7 +241,7 @@ public static class CellParseExtension
     public static TimeOnly? GetTime(this ICell cell)
     {
         if (IsInValid(cell)) return null;
-        if (IsNumeric(cell)) return TimeOnly.FromDateTime(cell.DateCellValue);
+        if (IsNumeric(cell)) return cell.DateCellValue.HasValue?  TimeOnly.FromDateTime(cell.DateCellValue.Value):null;
         var str = GetStringForDateTime(cell);
         if (!string.IsNullOrWhiteSpace(str))
         {

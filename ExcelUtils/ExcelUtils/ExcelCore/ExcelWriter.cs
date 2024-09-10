@@ -130,10 +130,10 @@ internal class ExcelWriter<T> where T : class
             if (item.ColumnEndIndex != item.ColumnStartIndex || item.RowEndIndex != item.RowStartIndex)
             {
                 var region = new CellRangeAddress(item.RowStartIndex, item.RowEndIndex, item.ColumnStartIndex, item.ColumnEndIndex);
-                RegionUtil.SetBorderBottom(((int)BorderStyle.Thin), region, _currentSheet);
-                RegionUtil.SetBorderRight(((int)BorderStyle.Thin), region, _currentSheet);
-                RegionUtil.SetBorderLeft(((int)BorderStyle.Thin), region, _currentSheet);
-                RegionUtil.SetBorderTop(((int)BorderStyle.Thin), region, _currentSheet);
+                RegionUtil.SetBorderBottom(BorderStyle.Thin, region, _currentSheet);
+                RegionUtil.SetBorderRight(BorderStyle.Thin, region, _currentSheet);
+                RegionUtil.SetBorderLeft(BorderStyle.Thin, region, _currentSheet);
+                RegionUtil.SetBorderTop(BorderStyle.Thin, region, _currentSheet);
                 _currentSheet!.AddMergedRegion(region);
             }
         }
