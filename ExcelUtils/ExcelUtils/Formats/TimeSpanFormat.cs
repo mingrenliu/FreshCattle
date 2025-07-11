@@ -4,6 +4,17 @@ namespace ExcelUtile.Formats;
 
 public class TimeSpanFormat : ExcelStructConverter<TimeSpan>
 {
+    private readonly string DefaultFormat = "d\\.hh\\:mm\\:ss";
+
+    public TimeSpanFormat()
+    {
+    }
+
+    public TimeSpanFormat(string? format)
+    {
+        DefaultFormat = format ?? DefaultFormat;
+    }
+
     public override TimeSpan? Read(ICell cell)
     {
         if (CanConvert())
@@ -17,7 +28,7 @@ public class TimeSpanFormat : ExcelStructConverter<TimeSpan>
     {
         if (value.HasValue)
         {
-            cell.SetCellValue(value.Value.ToString("d\\.hh\\:mm\\:ss"));
+            cell.SetCellValue(value.Value.ToString(DefaultFormat));
         }
     }
 }

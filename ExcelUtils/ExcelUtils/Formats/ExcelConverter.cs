@@ -12,7 +12,7 @@ public abstract class ExcelConverter
     /// <summary>
     /// 单元格格式
     /// </summary>
-    protected virtual string? Format { get; }
+    protected string? Format;
 
     /// <summary>
     /// 数据类型

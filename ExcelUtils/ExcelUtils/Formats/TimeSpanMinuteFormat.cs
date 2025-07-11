@@ -4,7 +4,15 @@ namespace ExcelUtile.Formats;
 
 public class TimeSpanMinuteFormat : ExcelStructConverter<TimeSpan>
 {
-    protected override string? Format => "0";
+    public TimeSpanMinuteFormat() : this(0)
+    {
+
+    }
+    public TimeSpanMinuteFormat(int? precision) : base()
+    {
+        precision ??= 0;
+        Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
+    }
 
     public override TimeSpan? Read(ICell cell)
     {

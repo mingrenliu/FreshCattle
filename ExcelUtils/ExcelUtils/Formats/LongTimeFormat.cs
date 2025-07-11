@@ -2,5 +2,13 @@
 
 public class LongTimeFormat : DateTimeFormat
 {
-    protected override string? Format => "yyyy-mm-dd hh:mm:ss";
+    private const string DefaultFormat = "yyyy-mm-dd hh:mm:ss";
+
+    public LongTimeFormat() : this(DefaultFormat)
+    {
+    }
+
+    public LongTimeFormat(string? format):base(format)
+    {
+    }
 }

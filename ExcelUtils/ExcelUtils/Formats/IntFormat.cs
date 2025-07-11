@@ -4,7 +4,14 @@ namespace ExcelUtile.Formats;
 
 public class IntFormat : ExcelStructConverter<int>
 {
-    protected override string? Format => "0";
+    public IntFormat()
+    {
+    }
+
+    public IntFormat(string? format)
+    {
+        Format = format;
+    }
 
     public override int? Read(ICell cell)
     {

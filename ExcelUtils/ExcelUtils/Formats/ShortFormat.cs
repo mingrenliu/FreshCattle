@@ -4,7 +4,14 @@ namespace ExcelUtile.Formats;
 
 public class ShortFormat : ExcelStructConverter<short>
 {
-    protected override string? Format => "0";
+    public ShortFormat()
+    {
+    }
+
+    public ShortFormat(string? format)
+    {
+        Format = format;
+    }
 
     public override short? Read(ICell cell)
     {

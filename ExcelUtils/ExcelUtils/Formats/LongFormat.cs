@@ -4,7 +4,14 @@ namespace ExcelUtile.Formats;
 
 public class LongFormat : ExcelStructConverter<long>
 {
-    protected override string? Format => "0";
+    public LongFormat()
+    {
+    }
+
+    public LongFormat(string? format)
+    {
+        Format = format;
+    }
 
     public override long? Read(ICell cell)
     {

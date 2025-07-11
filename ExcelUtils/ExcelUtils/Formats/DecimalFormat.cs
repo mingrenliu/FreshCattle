@@ -4,7 +4,15 @@ namespace ExcelUtile.Formats;
 
 public class DecimalFormat : ExcelStructConverter<decimal>
 {
-    protected override string? Format => "0.00";
+    public DecimalFormat() : this(3)
+    {
+
+    }
+    public DecimalFormat(int? precision) : base()
+    {
+        precision ??= 3;
+        Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
+    }
 
     public override decimal? Read(ICell cell)
     {

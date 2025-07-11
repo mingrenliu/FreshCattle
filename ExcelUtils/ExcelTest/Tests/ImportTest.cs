@@ -21,8 +21,7 @@ internal class ImportTest
         var workBook = GetWorkBook(filename);
         var option = new ExcelImportOption<Person>()
         {
-            DynamicImport = new ListDynamicHandler<Person, decimal?>(new ColumnInfo[] {
-                new("扩展行1",typeof(decimal?),10), new("扩展行2", typeof(decimal?), 10) }, p => p.Data),
+            DynamicImports = new List<DictionaryDynamicReader<Person, decimal?>>(){  new  (p=>p.Data)},
             HeaderLineIndex = 1,
             StartLineIndex = 3,
         };

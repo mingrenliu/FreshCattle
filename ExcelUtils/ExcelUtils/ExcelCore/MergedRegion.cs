@@ -1,26 +1,12 @@
-﻿namespace ExcelUtile.ExcelCore;
+﻿using NPOI.SS.Util;
 
-public class MergedRegion
+namespace ExcelUtile.ExcelCore;
+
+public class MergedRegion : CellRangeAddress
 {
-    /// <summary>
-    /// 起始行
-    /// </summary>
-    public int RowStartIndex { get; set; }
-
-    /// <summary>
-    /// 结束行
-    /// </summary>
-    public int RowEndIndex { get; set; }
-
-    /// <summary>
-    /// 起始列
-    /// </summary>
-    public int ColumnStartIndex { get; set; }
-
-    /// <summary>
-    /// 结束列
-    /// </summary>
-    public int ColumnEndIndex { get; set; }
+    public MergedRegion(int firstRow, int lastRow, int firstCol, int lastCol) : base(firstRow, lastRow, firstCol, lastCol)
+    {
+    }
 
     /// <summary>
     /// 单元格内容，可选

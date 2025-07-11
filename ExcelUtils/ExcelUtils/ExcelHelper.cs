@@ -1,76 +1,77 @@
 ﻿using ExcelUtile.ExcelCore;
 
-namespace ExcelUtile
+namespace ExcelUtile;
+
+public static class ExcelHelper
 {
-    public static class ExcelHelper
+    public static IEnumerable<T> Import<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new() => Import<T>(stream.CreateWorkBook(), option);
+
+    public static Dictionary<string, IEnumerable<T>> ImportAll<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new() => ImportAll<T>(stream.CreateWorkBook(), option);
+
+    public static IEnumerable<T> Import<T>(IWorkbook workbook, ExcelImportOption<T>? option = null) where T : class, new()
     {
-        public static IEnumerable<T> Import<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new() => Import<T>(stream.CreateWorkBook(), option);
+        return workbook.GetSheetAt(0).ReadData<T>(option);
+    }
 
-        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new() => ImportAll<T>(stream.CreateWorkBook(), option);
-
-        public static IEnumerable<T> Import<T>(IWorkbook workbook, ExcelImportOption<T>? option = null) where T : class, new()
+    public static Dictionary<string, IEnumerable<T>> ImportAll<T>(IWorkbook workbook, ExcelImportOption<T>? option = null) where T : class, new()
+    {
+        var result = new Dictionary<string, IEnumerable<T>>();
+        foreach (var item in workbook.GetAllSheets())
         {
-            return new ExcelReader<T>(workbook, option).ReadOneSheet();
+            result[item.Key] = item.Value.ReadData<T>(option);
         }
+        return result;
+    }
 
-        public static Dictionary<string, IEnumerable<T>> ImportAll<T>(IWorkbook workbook, ExcelImportOption<T>? option = null) where T : class, new()
-        {
-            return new ExcelReader<T>(workbook, option).ReadMultiSheet();
-        }
+    public static void Export<T>(Stream stream, IEnumerable<T> data, ExcelExportOption<T>? option = null, string? sheetName = null) where T : class
+    {
+        var workbook = ExcelFactory.CreateWorkBook();
+        workbook.CreateNewSheet(sheetName).WriteData(data, option);
+        workbook.Write(stream, true);
+    }
 
-        public static void Export<T>(Stream stream, IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? regions = null) where T : class
+    public static void Export<T>(Stream stream, Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
+    {
+        var workbook = ExcelFactory.CreateWorkBook();
+        foreach (var item in data)
         {
-            new ExcelWriter<T>(data, option, regions).Write().Write(stream, true);
+            workbook.CreateNewSheet(item.Key).WriteData(item.Value, option);
         }
+        workbook.Write(stream, true);
+    }
 
-        public static void Export<T>(Stream stream, IEnumerable<KeyValuePair<string, IEnumerable<T>>> data, ExcelExportOption<T>? option = null) where T : class
-        {
-            new ExcelWriter<T>(data, option).Write().Write(stream, true);
-        }
+    public static byte[] Export<T>(IEnumerable<T> data, ExcelExportOption<T>? option = null,string? sheetName=null) where T : class
+    {
+        var workbook = ExcelFactory.CreateWorkBook();
+        workbook.CreateNewSheet(sheetName).WriteData(data, option);
+        return workbook.ToBytes();
+    }
 
-        public static void Export<T>(Stream stream, IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>> data, ExcelExportOption<T>? option = null) where T : class
+    public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
+    {
+        var workbook = ExcelFactory.CreateWorkBook();
+        foreach (var item in data)
         {
-            new ExcelWriter<T>(data, option).Write().Write(stream, true);
+            workbook.CreateNewSheet(item.Key).WriteData(item.Value, option);
         }
+        return workbook.ToBytes();
+    }
 
-        public static byte[] Export<T>(IEnumerable<T> data, ExcelExportOption<T>? option = null, IEnumerable<MergedRegion>? regions = null) where T : class
-        {
-            return new ExcelWriter<T>(data, option, regions).Write().ToBytes();
-        }
+    public static byte[] ExportTemplate<T>(ExcelExportOption<T>? option = null, string? sheetName = null) where T : class
+    {
+        return Export(Enumerable.Empty<T>(), option,sheetName);
+    }
 
-        public static byte[] Export<T>(ExcelExportSheetOption<T> sheetOption, IEnumerable<T> data, ExcelExportOption<T>? option = null) where T : class
-        {
-            return new ExcelWriter<T>(sheetOption, data, option).Write().ToBytes();
-        }
-
-        public static byte[] Export<T>(IEnumerable<KeyValuePair<string, IEnumerable<T>>> data, ExcelExportOption<T>? option = null) where T : class
-        {
-            return new ExcelWriter<T>(data, option).Write().ToBytes();
-        }
-
-        public static byte[] Export<T>(IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, IEnumerable<MergedRegion>?>>> data, ExcelExportOption<T>? option = null) where T : class
-        {
-            return new ExcelWriter<T>(data, option).Write().ToBytes();
-        }
-
-        public static byte[] Export<T>(IEnumerable<KeyValuePair<string, Tuple<IEnumerable<T>, ExcelExportSheetOption<T>>>> data, ExcelExportOption<T>? option = null) where T : class
-        {
-            return new ExcelWriter<T>(data, option).Write().ToBytes();
-        }
-
-        public static byte[] ExportTemplate<T>(ExcelExportOption<T>? option = null) where T : class
-        {
-            return new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().ToBytes();
-        }
-
-        public static void ExportTemplate<T>(Stream stream, ExcelExportOption<T>? option = null) where T : class
-        {
-            new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().Write(stream, true);
-        }
-
-        public static void Export<T>(Stream stream, ExcelExportOption<T>? option = null) where T : class
-        {
-            new ExcelWriter<T>(Enumerable.Empty<T>(), option).Write().Write(stream, true);
-        }
+    public static void ExportTemplate<T>(Stream stream, ExcelExportOption<T>? option = null, string? sheetName = null) where T : class
+    {
+        Export(stream, Enumerable.Empty<T>(), option,sheetName);
+    }
+    public static IWorkbook CreateWorkBook()
+    {
+       return ExcelFactory.CreateWorkBook();
+    }
+    public static IWorkbook CreateWorkBook(Stream stream)
+    {
+        return stream.CreateWorkBook();
     }
 }

@@ -2,37 +2,23 @@
 
 internal class ExcelReader<T> where T : class, new()
 {
-    private readonly IWorkbook _workbook;
     private readonly ExcelImportOption<T> _option;
-    private readonly KeyValueWrapper<IExactImportCellHandler<T>> _exactHandler;
-    private readonly IEnumerable<IImportCellHandler<T>>? _commonHandler;
     private readonly Dictionary<int, IImportCellHandler<T>> _handers = new();
-    private int _currentSheetIndex = -1;
-    private ISheet? _currentSheet;
+    private readonly ISheet _currentSheet;
     private IRow? _currentRow;
     private readonly Dictionary<int, string> _headers = new();
     private readonly IConverterFactory _factory = new DefaultConverterFactory();
-    private int NumberOfSheets => _workbook.NumberOfSheets;
 
-    public ExcelReader(IWorkbook? workbook, ExcelImportOption<T>? option = null)
+    public ExcelReader(ISheet sheet, ExcelImportOption<T>? option = null)
     {
-        if (workbook == null)
-        {
-            throw new Exception("导入的不存在");
-        }
-        _workbook = workbook!;
+        _currentSheet = sheet;
         _option = option ?? new ExcelImportOption<T>();
-        _exactHandler = new KeyValueWrapper<IExactImportCellHandler<T>>(_option.Selector.Invoke().Select(x => new PropertyCellHandler<T>(x)), x => x.Info.Name);
-        _commonHandler = AddOption(_option);
     }
 
-    private List<IImportCellHandler<T>> AddOption(ExcelImportOption<T> option)
+    private (DictionaryWrapper<IExactImportCellHandler<T>>, List<IImportCellHandler<T>>) CreateHandler(ExcelImportOption<T> option)
     {
+        var exactHandler = new DictionaryWrapper<IExactImportCellHandler<T>>(_option.Selector.Invoke().Select(x => new DefaultCellHandler<T>(x)), x => x.Info.Name);
         var handlers = new List<IImportCellHandler<T>>();
-        if (option.DynamicImport != null)
-        {
-            Add(option.DynamicImport);
-        }
         if (option.DynamicImports != null)
         {
             foreach (var item in option.DynamicImports)
@@ -40,19 +26,19 @@ internal class ExcelReader<T> where T : class, new()
                 Add(item);
             }
         }
-        void Add(IImportDynamicRead<T> import)
+        void Add(IDynamicCellReader<T> import)
         {
-            if (import is IImportExactRead<T> reacd)
+            if (import is IExactCellReader<T> read)
             {
-                var exact = ExactImportCellHandler<T>.Create(reacd);
-                _exactHandler.AddRange(exact, x => x.Info.Name);
+                var exact = ExactImportCellHandler<T>.Create(read);
+                exactHandler.AddRange(exact, x => x.Info.Name);
             }
             else
             {
                 handlers.Add(DynamicImportCellHandler<T>.Create(import));
             }
         }
-        return handlers;
+        return (exactHandler, handlers);
     }
 
     /// <summary>
@@ -60,30 +46,25 @@ internal class ExcelReader<T> where T : class, new()
     /// </summary>
     /// <param name="sheetNum"> </param>
     /// <returns> </returns>
-    private bool SwitchSheet()
+    private bool Init()
     {
-        _currentSheetIndex++;
-        if (NumberOfSheets <= _currentSheetIndex) return false;
-        _currentSheet = _workbook.GetSheetAt(_currentSheetIndex);
-        if (_currentSheet == null) return false;
         if (_currentSheet.LastRowNum < _option.HeaderLineIndex) return false;
         if (_option.StartLineIndex > _currentSheet.LastRowNum) return false;
         var row = _currentSheet.GetRow(_option.HeaderLineIndex);
         if (row == null) return false;
-        _handers.Clear();
-        _headers.Clear();
+        var (exactHandler, commonHandler) = CreateHandler(_option);
         foreach (var cell in MergedHeaders().Concat(row.Cells))
         {
             var str = cell.StringCellValue;
-            if (string.IsNullOrWhiteSpace(str) || !_exactHandler.ContainKey(str)) continue;
-            if (_exactHandler.ContainKey(str))
+            if (string.IsNullOrWhiteSpace(str) || !exactHandler.ContainKey(str)) continue;
+            if (exactHandler.ContainKey(str))
             {
-                _handers[cell.ColumnIndex] = _exactHandler[str]!;
+                _handers[cell.ColumnIndex] = exactHandler[str]!;
                 _headers[cell.ColumnIndex] = str;
             }
-            else if (_option.IgnoreField?.Invoke(str) != true && _commonHandler != null)
+            else if (_option.IgnoreField?.Invoke(str) != true && commonHandler != null)
             {
-                foreach (var item in _commonHandler)
+                foreach (var item in commonHandler)
                 {
                     if (item.Match(str))
                     {
@@ -98,14 +79,14 @@ internal class ExcelReader<T> where T : class, new()
         _currentRow = _currentSheet.GetRow(_option.StartLineIndex);
         if (_option.ValidImportField)
         {
-            Validate();
+            Validate(exactHandler);
         }
         return true;
     }
 
     public IEnumerable<ICell> MergedHeaders()
     {
-        foreach (var item in _currentSheet!.MergedRegions.Where(x => x.ContainsRow(_option.HeaderLineIndex)))
+        foreach (var item in _currentSheet.MergedRegions.Where(x => x.ContainsRow(_option.HeaderLineIndex)))
         {
             var mergedRow = _currentSheet.GetRow(item.FirstRow);
             if (mergedRow != null)
@@ -119,9 +100,9 @@ internal class ExcelReader<T> where T : class, new()
         }
     }
 
-    private void Validate()
+    private void Validate(DictionaryWrapper<IExactImportCellHandler<T>> exactHandler)
     {
-        foreach (var info in _exactHandler.Values.Select(x => x.Info).Where(x => x.IsRequired))
+        foreach (var info in exactHandler.Values.Select(x => x.Info).Where(x => x.IsRequired))
         {
             if (_headers.Values.Any(x => x == info.Name))
             {
@@ -137,38 +118,22 @@ internal class ExcelReader<T> where T : class, new()
     /// <returns> </returns>
     private bool SwitchRow()
     {
-        if (_currentSheet!.LastRowNum == _currentRow!.RowNum) return false;
+        if (_currentSheet.LastRowNum == _currentRow!.RowNum) return false;
         _currentRow = _currentSheet.GetRow(_currentRow.RowNum + 1);
         return _currentRow != null;
     }
 
-    public Dictionary<string, IEnumerable<T>> ReadMultiSheet()
-    {
-        var result = new Dictionary<string, IEnumerable<T>>();
-        while (SwitchSheet())
-        {
-            result[_currentSheet!.SheetName] = ReadSheet();
-        }
-        return result;
-    }
-
-    public IEnumerable<T> ReadOneSheet()
-    {
-        if (SwitchSheet())
-        {
-            return ReadSheet();
-        }
-        return Enumerable.Empty<T>();
-    }
-
-    private IEnumerable<T> ReadSheet()
+    public IEnumerable<T> Read()
     {
         var result = new List<T>();
-        do
+        if (Init())
         {
-            var obj = ReadLine();
-            if (obj != null) result.Add(obj);
-        } while (SwitchRow());
+            do
+            {
+                var obj = ReadLine();
+                if (obj != null) result.Add(obj);
+            } while (SwitchRow());
+        }
         return result;
     }
 

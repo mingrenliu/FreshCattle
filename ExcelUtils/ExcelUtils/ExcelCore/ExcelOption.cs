@@ -40,37 +40,19 @@ public class ExcelExportOption<T> : ExcelOption<T> where T : class
     public int DefaultColumnWidth { get; set; } = 15;
 
     /// <summary>
-    /// 合并区域(导出时使用)
+    /// 默认行高
     /// </summary>
-    public IEnumerable<MergedRegion>? MergedRegions { get; set; }
+    public int DefaultRowWidth { get; set; } = 20;
 
-    /// <summary>
-    /// 动态导出
-    /// </summary>
-    public IExportDynamicWrite<T>? DynamicExport { get; set; }
-
-    /// <summary>
-    /// 多个动态导出
-    /// </summary>
-    public IEnumerable<IExportDynamicWrite<T>>? DynamicExports { get; set; }
-}
-
-public class ExcelExportSheetOption<T> where T : class
-{
     /// <summary>
     /// 合并区域(导出时使用)
     /// </summary>
     public IEnumerable<MergedRegion>? MergedRegions { get; set; }
 
     /// <summary>
-    /// 动态导出
-    /// </summary>
-    public IExportDynamicWrite<T>? DynamicExport { get; set; }
-
-    /// <summary>
     /// 多个动态导出
     /// </summary>
-    public IEnumerable<IExportDynamicWrite<T>>? DynamicExports { get; set; }
+    public IEnumerable<ICellWriter<T>>? DynamicExports { get; set; }
 }
 
 public class ExcelImportOption<T> : ExcelOption<T> where T : class
@@ -86,13 +68,8 @@ public class ExcelImportOption<T> : ExcelOption<T> where T : class
     public Func<string, bool>? IgnoreField { get; set; }
 
     /// <summary>
-    /// 动态导出
-    /// </summary>
-    public IImportDynamicRead<T>? DynamicImport { get; set; }
-
-    /// <summary>
     /// 动态导出数组
     /// </summary>
 
-    public IEnumerable<IImportDynamicRead<T>>? DynamicImports { get; set; }
+    public IEnumerable<IDynamicCellReader<T>>? DynamicImports { get; set; }
 }

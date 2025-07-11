@@ -4,7 +4,15 @@ namespace ExcelUtile.Formats;
 
 public class DoubleFormat : ExcelStructConverter<double>
 {
-    protected override string? Format => "0.00";
+    public DoubleFormat() : this(3)
+    {
+
+    }
+    public DoubleFormat(int? precision) : base()
+    {
+        precision ??= 3;
+        Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
+    }
 
     public override double? Read(ICell cell)
     {

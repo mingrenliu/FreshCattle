@@ -11,7 +11,7 @@ public class DisplayAttribute : Attribute
     /// <summary>
     /// 列宽
     /// </summary>
-    public int Width { get; }
+    public int? Width { get; }
 
     /// <summary>
     /// 导出字段顺序
@@ -24,9 +24,14 @@ public class DisplayAttribute : Attribute
     public bool IsRequired { get; } = true;
 
     /// <summary>
+    /// 动态列宽
+    /// </summary>
+    public bool DynamicWidth { get; set; } = false;
+
+    /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="name"></param>
+    /// <param name="name"> </param>
     public DisplayAttribute(string name, int order = 0, bool isRequired = true, int width = 0)
     {
         Name = name;

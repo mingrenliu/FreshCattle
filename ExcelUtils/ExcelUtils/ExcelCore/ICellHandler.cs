@@ -25,7 +25,7 @@ internal interface IExportCellHandler<T> : IColumnBaseInfo where T : class
 /// <typeparam name="T"> </typeparam>
 internal interface IImportCellHandler<T> : IDynamicHeader<T> where T : class
 {
-    void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory);
+    void ReadFromCell(ICell cell, T value, string title, IConverterFactory factory);
 }
 
 /// <summary>

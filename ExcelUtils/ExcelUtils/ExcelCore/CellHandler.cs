@@ -1,7 +1,7 @@
 ﻿namespace ExcelUtile.ExcelCore;
 
 /// <summary>
-/// 根据字段信息准确导出
+/// 动态导出操作
 /// </summary>
 /// <typeparam name="T"> </typeparam>
 internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : class
@@ -10,9 +10,9 @@ internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : cla
     private ICellStyle? _style;
     public int Order => Info.Order;
 
-    private readonly IExportDynamicWrite<T> _export;
+    private readonly ICellWriter<T> _export;
 
-    public DynamicExportCellHandler(IExportDynamicWrite<T> export, ColumnInfo info)
+    public DynamicExportCellHandler(ICellWriter<T> export, ColumnInfo info)
     {
         _export = export;
         Info = info;
@@ -29,7 +29,7 @@ internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : cla
         return _style;
     }
 
-    public static IEnumerable<DynamicExportCellHandler<T>> Create(IExportDynamicWrite<T> data)
+    public static IEnumerable<DynamicExportCellHandler<T>> Create(ICellWriter<T> data)
     {
         foreach (var item in data.Headers())
         {
@@ -39,26 +39,26 @@ internal class DynamicExportCellHandler<T> : IExportCellHandler<T> where T : cla
 }
 
 /// <summary>
-/// 根据字段信息准确导入
+/// 准确导入操作
 /// </summary>
 /// <typeparam name="T"> </typeparam>
 internal class ExactImportCellHandler<T> : IExactImportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get; private set; }
-    private readonly IImportDynamicRead<T> _import;
+    private readonly ICellReader<T> _import;
 
-    public ExactImportCellHandler(IImportDynamicRead<T> import, ColumnInfo info)
+    public ExactImportCellHandler(ICellReader<T> import, ColumnInfo info)
     {
         _import = import;
         Info = info;
     }
 
-    public void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory)
+    public void ReadFromCell(ICell cell, T value, string title, IConverterFactory factory)
     {
         _import.ReadFromCell(value, cell, Info.Name, factory);
     }
 
-    public static IEnumerable<ExactImportCellHandler<T>> Create(IImportExactRead<T> data)
+    public static IEnumerable<ExactImportCellHandler<T>> Create(IExactCellReader<T> data)
     {
         foreach (var item in data.Headers())
         {
@@ -66,40 +66,40 @@ internal class ExactImportCellHandler<T> : IExactImportCellHandler<T> where T : 
         }
     }
 
-    public bool Match(string field) => Info.Name == field;
+    public bool Match(string title) => Info.Name == title;
 }
 
 /// <summary>
-/// 动态导入
+/// 动态导入操作
 /// </summary>
 /// <typeparam name="T"> </typeparam>
 internal class DynamicImportCellHandler<T> : IImportCellHandler<T> where T : class
 {
-    private readonly IImportDynamicRead<T> _import;
+    private readonly IDynamicCellReader<T> _import;
 
-    public DynamicImportCellHandler(IImportDynamicRead<T> import)
+    public DynamicImportCellHandler(IDynamicCellReader<T> import)
     {
         _import = import;
     }
 
-    public void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory)
+    public void ReadFromCell(ICell cell, T value, string title, IConverterFactory factory)
     {
-        _import.ReadFromCell(value, cell, field, factory);
+        _import.ReadFromCell(value, cell, title, factory);
     }
 
-    public static DynamicImportCellHandler<T> Create(IImportDynamicRead<T> data)
+    public static DynamicImportCellHandler<T> Create(IDynamicCellReader<T> data)
     {
         return new DynamicImportCellHandler<T>(data);
     }
 
-    public bool Match(string field) => _import.Match(field);
+    public bool Match(string title) => _import.Match(title);
 }
 
 /// <summary>
 /// 默认的类属性导入导出处理器
 /// </summary>
 /// <typeparam name="T"> </typeparam>
-internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellHandler<T> where T : class
+internal class DefaultCellHandler<T> : IExactImportCellHandler<T>, IExportCellHandler<T> where T : class
 {
     public ColumnInfo Info { get => _info; }
 
@@ -109,7 +109,7 @@ internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellH
 
     private ICellStyle? _style;
 
-    public PropertyCellHandler(PropertyTypeInfo info)
+    public DefaultCellHandler(PropertyTypeInfo info)
     {
         _info = info;
     }
@@ -120,7 +120,7 @@ internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellH
         Info.GetConverter(factory)?.WriteCell(cell, propertyValue, style ?? GetCellStyle(cell));
     }
 
-    public void ReadFromCell(ICell cell, T value, string field, IConverterFactory factory)
+    public void ReadFromCell(ICell cell, T value, string title, IConverterFactory factory)
     {
         var propertyValue = Info.GetConverter(factory).ReadCell(cell);
         if (propertyValue != null)
@@ -141,5 +141,5 @@ internal class PropertyCellHandler<T> : IExactImportCellHandler<T>, IExportCellH
         return _style;
     }
 
-    public bool Match(string field) => field == Info.Name;
+    public bool Match(string title) => title == Info.Name;
 }

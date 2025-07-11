@@ -8,6 +8,7 @@ internal class PersonMock
     {
         var faker = new Faker<Entities.Person>("en");
         faker.RuleFor(x => x.IsEnable, faker => faker.PickRandomParam(true, false))
+            .RuleFor(x => x.IsDisable, faker => faker.PickRandomParam(true, false))
             .RuleFor(x => x.Name, faker => faker.Name.FullName())
             .RuleFor(x => x.Sex, faker => faker.PickRandomParam("male", "female"))
             .RuleFor(x => x.Age, faker => faker.Random.Int(10, 45))

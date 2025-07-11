@@ -2,8 +2,18 @@
 
 namespace ExcelUtile.Formats;
 
-public abstract class DateTimeFormat : ExcelStructConverter<DateTime>
+public  class DateTimeFormat : ExcelStructConverter<DateTime>
 {
+    private const string DefaultFormat = "yyyy-mm-dd";
+
+    public DateTimeFormat() : this(DefaultFormat)
+    {
+    }
+
+    public DateTimeFormat(string? format)
+    {
+        Format = format ?? DefaultFormat;
+    }
     public override DateTime? Read(ICell cell)
     {
         if (CanConvert())

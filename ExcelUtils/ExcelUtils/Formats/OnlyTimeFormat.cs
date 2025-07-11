@@ -2,5 +2,13 @@
 
 public class OnlyTimeFormat : DateTimeFormat
 {
-    protected override string? Format => "hh:mm:ss";
+    private const string DefaultFormat = "hh:mm:ss";
+
+    public OnlyTimeFormat() : this(DefaultFormat)
+    {
+    }
+
+    public OnlyTimeFormat(string? format) : base(format)
+    {
+    }
 }

@@ -1,15 +1,15 @@
 ﻿namespace ExcelUtile.ExcelCore;
 
-public class KeyValueWrapper<T> where T : class
+public class DictionaryWrapper<T> where T : class
 {
     private readonly Dictionary<string, T> _dic;
 
-    public KeyValueWrapper()
+    public DictionaryWrapper()
     {
         _dic = new();
     }
 
-    public KeyValueWrapper(IEnumerable<T> data, Func<T, string> selector)
+    public DictionaryWrapper(IEnumerable<T> data, Func<T, string> selector)
     {
         _dic = new();
         foreach (var item in data)

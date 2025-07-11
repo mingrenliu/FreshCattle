@@ -4,8 +4,16 @@ namespace ExcelUtile.Formats;
 
 public class DateTimeOffsetFormat : ExcelStructConverter<DateTimeOffset>
 {
-    protected override string? Format => "yyyy-mm-dd";
+    private const string DefaultFormat = "yyyy-mm-dd";
 
+    public DateTimeOffsetFormat() : this(DefaultFormat)
+    {
+    }
+
+    public DateTimeOffsetFormat(string? format)
+    {
+        Format = format ?? DefaultFormat;
+    }
     public override DateTimeOffset? Read(ICell cell)
     {
         if (CanConvert())

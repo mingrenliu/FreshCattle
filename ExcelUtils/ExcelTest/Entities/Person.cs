@@ -24,6 +24,7 @@ internal class Person
     /// 工资
     /// </summary>
     [Display("工资", 3)]
+    [DataFormat(typeof(DoubleFormat),1)]
     public double Money { get; set; }
 
     /// <summary>
@@ -37,12 +38,20 @@ internal class Person
     /// 是否在职
     /// </summary>
     [Display("是否在职", 5)]
+    [DataFormat(typeof(BooleanFormat),"对","错")]
+
     public bool IsEnable { get; set; }
+    /// <summary>
+    /// 是否在职
+    /// </summary>
+    [Display("是否不在职", 6,false)]
+
+    public bool IsDisable { get; set; }
 
     /// <summary>
     /// 父亲名字
     /// </summary>
-    [Display("父亲名字", 6, false)]
+    [Display("父亲名字", 7, false,DynamicWidth =true)]
     public object? FeatherName { get; set; }
 
     /// <summary>
@@ -54,5 +63,5 @@ internal class Person
     /// 动态数组
     /// </summary>
 
-    public List<decimal?> Data { get; set; } = new();
+    public Dictionary<string, decimal?> Data { get; set; } = new();
 }

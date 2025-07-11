@@ -4,19 +4,19 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    
+    <NoWarn>CS8618;IDE0130</NoWarn>
     <PackageId>YangCode.ExcelUtile</PackageId>
     <PackageTags>ExcelUtile</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.1.20</PackageVersion>
+    <PackageVersion>1.1.21</PackageVersion>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
     <Description>package is used to excel import or export </Description>
     <PackageIcon>L.png</PackageIcon>
     <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-
+    
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>

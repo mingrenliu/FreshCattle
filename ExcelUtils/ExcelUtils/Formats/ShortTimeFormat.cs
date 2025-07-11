@@ -2,5 +2,13 @@
 
 public class ShortTimeFormat : DateTimeFormat
 {
-    protected override string? Format => "yyyy-mm-dd";
+    private const string DefaultFormat = "yyyy-mm-dd";
+
+    public ShortTimeFormat() : this(DefaultFormat)
+    {
+    }
+
+    public ShortTimeFormat(string? format) : base(format)
+    {
+    }
 }

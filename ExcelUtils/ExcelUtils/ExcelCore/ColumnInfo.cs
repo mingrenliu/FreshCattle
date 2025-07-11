@@ -1,4 +1,5 @@
 ﻿using ExcelUtile.Formats;
+using System.Reflection;
 
 namespace ExcelUtile.ExcelCore;
 
@@ -30,6 +31,11 @@ public class ColumnInfo
     public Type BaseType { get; private set; }
 
     /// <summary>
+    /// 动态列宽
+    /// </summary>
+    public bool DynamicWidth { get; set; } = false;
+
+    /// <summary>
     /// 字段是必须的(导入时没有该字段,会报错)
     /// </summary>
     public virtual bool IsRequired { get; }
@@ -52,7 +58,7 @@ public class ColumnInfo
     /// <param name="order"> 序号 </param>
     /// <param name="isRequired"> 是否必须 </param>
     /// <param name="width"> 列宽 </param>
-    public ColumnInfo(string name, Type type, int order = 0, bool isRequired = true, int width = 0)
+    public ColumnInfo(string name, Type type, int order = 0, bool isRequired = true, int? width = 0)
     {
         BaseType = Nullable.GetUnderlyingType(type) ?? type;
         Name = name;
@@ -69,5 +75,24 @@ public class ColumnInfo
     public ExcelConverter? GetConverter(IConverterFactory _factory)
     {
         return Converter ?? _factory.GetDefaultConverter(BaseType);
+    }
+}
+
+public class PropertyTypeInfo : ColumnInfo
+{
+    public PropertyInfo Info { get; private set; }
+
+    public PropertyTypeInfo(PropertyInfo info, string name, int order = 0, bool isRequired = true, int? width = 0) : base(name, info.PropertyType, order, isRequired, width)
+    {
+        Info = info;
+        Converter = Info.GetCustomAttribute<DataFormatAttribute>()?.Converter;
+    }
+}
+
+public class DefaultPropertyInfo : PropertyTypeInfo
+{
+    public DefaultPropertyInfo(PropertyInfo info, DisplayAttribute attribute, string? name = null) : base(info, name ?? attribute.Name, attribute.Order, attribute.IsRequired, attribute.Width)
+    {
+        DynamicWidth = attribute.DynamicWidth;
     }
 }

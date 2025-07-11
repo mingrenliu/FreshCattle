@@ -14,9 +14,9 @@ public class DataFormatAttribute : Attribute
     /// ctor
     /// </summary>
     /// <param name="type"></param>
-    public DataFormatAttribute(Type type)
+    public DataFormatAttribute(Type type, params object?[]? args)
     {
-        if (Activator.CreateInstance(type) is ExcelConverter result)
+        if (Activator.CreateInstance(type,args) is ExcelConverter result)
         {
             _converter = result;
         }

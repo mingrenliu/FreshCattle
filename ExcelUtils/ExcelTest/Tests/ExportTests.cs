@@ -24,13 +24,13 @@ internal class ExportTests : TestBase
         var direction = LocationHelper.GetExportResourcesPath();
         var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
         var timer = StartTimer();
-        var bytes = ExcelHelper.Export(persons, null, new List<MergedRegion>() { new() { ColumnEndIndex = 3, ColumnStartIndex = 1, RowStartIndex = 3, RowEndIndex = 5, Value = DateTime.Now,FormatCellStyle=(cell)=>{
+        var bytes = ExcelHelper.Export(persons, new ExcelExportOption<Person>(){MergedRegions= new List<MergedRegion>() { new(3,5,1,3) {  Value = DateTime.Now,FormatCellStyle=(cell)=>{
             var style=cell.Sheet.Workbook.CreateDefaultCellStyle();
             style.DataFormat=cell.Sheet.Workbook.GetDataFormat("yyyy-mm-dd hh:mm:ss");
             style.Alignment = HorizontalAlignment.Left;
             return style;
-        }
-        } });
+        } }
+        } },"中国*？?人");
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds() + ";条数:" + persons.Count());
         File.WriteAllBytes(path, bytes);
         Assume.That(bytes.Length, Is.AtLeast(10));
@@ -44,7 +44,7 @@ internal class ExportTests : TestBase
         var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
         var option = new ExcelExportOption<Person>()
         {
-            DynamicExport = new ListDynamicHandler<Person, decimal?>(new ColumnInfo[] {
+            DynamicExports = new List<DictionaryReaderWriter<Person, decimal?>>(){ new (new ColumnInfo[] {
                 new("扩展行1", typeof(decimal?), 10)
                 {
                     FormatCellStyle = (cell) =>
@@ -60,7 +60,8 @@ internal class ExportTests : TestBase
                         style.Alignment=HorizontalAlignment.Left;
                         return style;
                     }
-                } }, p => new List<decimal?> { 1, 58 })
+                } }, p => new Dictionary<string, decimal?> { ["扩展行1"] =1,["扩展行2"] = 58 })
+        }
         };
         var timer = StartTimer();
         var bytes = ExcelHelper.Export(persons, option);
@@ -77,23 +78,25 @@ internal class ExportTests : TestBase
         var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
         var option = new ExcelExportOption<Person>()
         {
-            DynamicExport = new ListDynamicHandler<Person, decimal?>(new ColumnInfo[] {
-            new("扩展行1",typeof(decimal?),10), new("扩展行2", typeof(decimal?), 10) }, p => new List<decimal?> { 1, null }),
+            DynamicExports = new List<DictionaryReaderWriter<Person, decimal?>>(){ new(new ColumnInfo[] {
+            new("扩展行1",typeof(decimal?),10), new("扩展行2", typeof(decimal?), 10) }, p => new Dictionary<string, decimal?> { ["扩展行1"] =1,["扩展行2"] = null  }) },
             HeaderLineIndex = 1,
             StartLineIndex = 3,
             MergedRegions = new List<MergedRegion>() {
-                new() { ColumnEndIndex = 8, ColumnStartIndex = 7, RowStartIndex = 0, RowEndIndex = 0, Value = "化验数据" },
-                new() { ColumnEndIndex = 7, ColumnStartIndex = 7, RowStartIndex = 2, RowEndIndex =2, Value = "标准1" },
-                new() { ColumnEndIndex = 8, ColumnStartIndex = 8, RowStartIndex = 2, RowEndIndex = 2, Value = "标准2" },
-                new() { ColumnEndIndex = 0, ColumnStartIndex = 0, RowStartIndex = 0, RowEndIndex = 2, Value = "姓名" },
-                new() { ColumnEndIndex = 1, ColumnStartIndex = 1, RowStartIndex = 0, RowEndIndex = 2, Value = "性别" },
-                new() { ColumnEndIndex = 2, ColumnStartIndex = 2, RowStartIndex = 0, RowEndIndex = 2, Value = "年龄" },
-                new() { ColumnEndIndex =3, ColumnStartIndex = 3, RowStartIndex = 0, RowEndIndex = 2, Value = "工资" },
-                new() { ColumnEndIndex = 4, ColumnStartIndex = 4, RowStartIndex = 0, RowEndIndex = 2, Value = "生日" },
-                new() { ColumnEndIndex = 5, ColumnStartIndex = 5, RowStartIndex = 0, RowEndIndex = 2, Value = "是否在职" },
-                new() { ColumnEndIndex = 6, ColumnStartIndex = 6, RowStartIndex = 0, RowEndIndex = 2, Value = "父亲名字" },
+                new(0,0,8,9) {  Value = "化验数据" },
+                new(2,2,8,8) {Value = "标准1" },
+                new(2,2,9,9) { Value = "标准2" },
+                new(0,2,0,0) { Value = "姓名" },
+                new(0,2,1,1) { Value = "性别" },
+                new(0,2,2,2) { Value = "年龄" },
+                new(0,2,3,3) {Value = "工资" },
+                new(0,2,4,4) { Value = "生日" },
+                new(0,2,5,5) { Value = "是否在职" },
+                new(0,2,6,6) { Value = "是否不在职" },
+                new(0,2,7,7) { Value = "父亲名字" },
             }
-        };
+        }
+        ;
         var timer = StartTimer();
         var bytes = ExcelHelper.Export(persons, option);
         Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds() + ";条数:" + persons.Count());

@@ -2,7 +2,7 @@
 
 namespace ExcelUtile.ExcelCore;
 
-public static class CellParseExtension
+public static class ExcelExtension
 {
     #region excel extension
 
@@ -241,7 +241,7 @@ public static class CellParseExtension
     public static TimeOnly? GetTime(this ICell cell)
     {
         if (IsInValid(cell)) return null;
-        if (IsNumeric(cell)) return cell.DateCellValue.HasValue?  TimeOnly.FromDateTime(cell.DateCellValue.Value):null;
+        if (IsNumeric(cell)) return cell.DateCellValue.HasValue ? TimeOnly.FromDateTime(cell.DateCellValue.Value) : null;
         var str = GetStringForDateTime(cell);
         if (!string.IsNullOrWhiteSpace(str))
         {
