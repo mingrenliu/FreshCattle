@@ -13,7 +13,18 @@ public class TimeSpanMinuteFormat : ExcelStructConverter<TimeSpan>
         precision ??= 0;
         Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
     }
-
+    public TimeSpanMinuteFormat(string? format) : base()
+    {
+        if (string.IsNullOrWhiteSpace(format))
+        {
+            var precision = 0;
+            Format = precision <= 0 ? "0" : "0." + new string('0', precision);
+        }
+        else
+        {
+            Format = format;
+        }
+    }
     public override TimeSpan? Read(ICell cell)
     {
         if (CanConvert())

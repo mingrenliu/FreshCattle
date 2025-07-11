@@ -12,7 +12,18 @@ public class FloatFormat : ExcelStructConverter<float>
         precision ??= 3;
         Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
     }
-
+    public FloatFormat(string? format) : base()
+    {
+        if (string.IsNullOrWhiteSpace(format))
+        {
+            var precision = 3;
+            Format = precision <= 0 ? "0" : "0." + new string('0', precision);
+        }
+        else
+        {
+            Format = format;
+        }
+    }
     public override float? Read(ICell cell)
     {
         if (CanConvert())

@@ -24,7 +24,7 @@ internal class Person
     /// 工资
     /// </summary>
     [Display("工资", 3)]
-    [DataFormat(typeof(DoubleFormat),1)]
+    [DataFormat(typeof(DoubleFormat),"0.####")]
     public double Money { get; set; }
 
     /// <summary>

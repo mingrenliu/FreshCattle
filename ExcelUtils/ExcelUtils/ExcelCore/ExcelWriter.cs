@@ -37,7 +37,7 @@ internal class ExcelWriter<T> where T : class
         {
             result = result.Concat(dynamics.SelectMany(x => DynamicExportCellHandler<T>.Create(x)));
         }
-        return result;
+        return result.OrderBy(x=>x.Order).ToList();
     }
 
     public ISheet Write()

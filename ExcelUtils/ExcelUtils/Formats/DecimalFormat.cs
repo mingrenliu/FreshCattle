@@ -13,7 +13,18 @@ public class DecimalFormat : ExcelStructConverter<decimal>
         precision ??= 3;
         Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
     }
-
+    public DecimalFormat(string? format) : base()
+    {
+        if (string.IsNullOrWhiteSpace(format))
+        {
+            var precision = 3;
+            Format = precision <= 0 ? "0" : "0." + new string('0', precision);
+        }
+        else
+        {
+            Format = format;
+        }
+    }
     public override decimal? Read(ICell cell)
     {
         if (CanConvert())
