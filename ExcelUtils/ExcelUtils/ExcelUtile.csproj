@@ -9,7 +9,7 @@
     <PackageTags>ExcelUtile</PackageTags>
     <PackageOutputPath>F:\\NugetPackagePath</PackageOutputPath>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.1.22</PackageVersion>
+    <PackageVersion>1.1.23</PackageVersion>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
     <Description>package is used to excel import or export </Description>

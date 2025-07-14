@@ -74,15 +74,15 @@ public class DynamicExportSelector
     public IEnumerable<PropertyTypeInfo> GetTypeInfo(Type type, Dictionary<string, string>? dic = null)
     {
         dic ??= new Dictionary<string, string>();
-        B_Columns = B_Columns?.Where(x => !string.IsNullOrWhiteSpace(x.GetTitle()) && !string.IsNullOrWhiteSpace(x.GetTitle())) ?? Enumerable.Empty<ColumnModel>();
+        B_Columns = B_Columns?.Where(x => !string.IsNullOrWhiteSpace(x.Title) && !string.IsNullOrWhiteSpace(x.Title)) ?? Enumerable.Empty<ColumnModel>();
         var results = new List<PropertyTypeInfo>();
         var props = type.GetProperties(BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.SetProperty).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
         var i = 1;
         foreach (var item in B_Columns)
         {
-            if (props.TryGetValue(item.GetField(), out var info))
+            if (props.TryGetValue(item.DataIndex, out var info))
             {
-                var name = dic.ContainsKey(item.GetField()) ? dic[item.GetField()] : item.GetTitle();
+                var name = dic.ContainsKey(item.DataIndex) ? dic[item.DataIndex] : item.Title;
                 results.Add(new PropertyTypeInfo(info, name, i++) { DynamicWidth = true });
             }
         }
@@ -111,20 +111,6 @@ public class ColumnModel : IExportInfo
     /// 字段名
     /// </summary>
     public string DataIndex { get; set; }
-
-    /// <summary>
-    /// 获取字段名
-    /// </summary>
-    /// <returns> </returns>
-
-    public string GetField() => DataIndex;
-
-    /// <summary>
-    /// 获取标题
-    /// </summary>
-    /// <returns> </returns>
-
-    public string GetTitle() => Title;
 }
 
 /// <summary>
@@ -133,15 +119,12 @@ public class ColumnModel : IExportInfo
 public interface IExportInfo
 {
     /// <summary>
-    /// 获取标题
+    /// Tile
     /// </summary>
-    /// <returns> </returns>
-    string GetTitle();
+    public string Title { get; }
 
     /// <summary>
-    /// 获取字段名
+    /// 字段名
     /// </summary>
-    /// <returns> </returns>
-
-    string GetField();
+    public string DataIndex { get;}
 }
