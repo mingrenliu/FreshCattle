@@ -42,7 +42,7 @@ public class ExcelExportOption<T> : ExcelOption<T> where T : class
     /// <summary>
     /// 默认行高
     /// </summary>
-    public int DefaultRowWidth { get; set; } = 20;
+    public int DefaultRowHeight { get; set; } = 20;
 
     /// <summary>
     /// 合并区域(导出时使用)

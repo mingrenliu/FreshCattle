@@ -87,7 +87,7 @@ internal class ExcelWriter<T> where T : class
         _columnIndex = 0;
         _rowIndex = row ?? _rowIndex;
         _currentRow = _sheet.CreateRow(_rowIndex++);
-        _currentRow.HeightInPoints = _option.DefaultColumnWidth;
+        _currentRow.HeightInPoints = _option.DefaultRowHeight;
     }
 
     private ICell NextCell()
