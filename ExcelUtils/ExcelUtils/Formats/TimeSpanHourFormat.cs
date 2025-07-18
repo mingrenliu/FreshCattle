@@ -30,6 +30,11 @@ public class TimeSpanHourFormat : ExcelStructConverter<TimeSpan>
     {
         if (CanConvert())
         {
+            var value = cell.GetDouble();
+            if (value.HasValue)
+            {
+                return TimeSpan.FromHours(value.Value);
+            }
             return cell.GetTimeSpanFromHours();
         }
         return default;

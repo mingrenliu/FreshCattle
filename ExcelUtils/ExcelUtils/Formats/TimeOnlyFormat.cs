@@ -4,7 +4,7 @@ namespace ExcelUtile.Formats;
 
 public class TimeOnlyFormat : ExcelStructConverter<TimeOnly>
 {
-    private readonly string DefaultFormat = "hh:mm:ss";
+    private readonly string DefaultFormat = "HH:mm:ss";
 
     public TimeOnlyFormat()
     {
@@ -19,6 +19,14 @@ public class TimeOnlyFormat : ExcelStructConverter<TimeOnly>
     {
         if (CanConvert())
         {
+            if(cell.IsString())
+            {
+                var s = cell.GetString();
+                if (!string.IsNullOrWhiteSpace(s) && TimeOnly.TryParseExact(s, DefaultFormat, out var result))
+                {
+                    return result;
+                }
+            }
             return cell.GetTime();
         }
         return default;

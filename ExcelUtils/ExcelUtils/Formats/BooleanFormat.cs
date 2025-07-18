@@ -4,8 +4,8 @@ namespace ExcelUtile.Formats;
 
 public class BooleanFormat : ExcelStructConverter<bool>
 {
-    private readonly string? TrueValue = "是";
-    private readonly string? FalseValue = "否";
+    private readonly string TrueValue = "是";
+    private readonly string FalseValue = "否";
 
     public BooleanFormat()
     {
@@ -31,7 +31,25 @@ public class BooleanFormat : ExcelStructConverter<bool>
     {
         if (CanConvert(typeof(bool)))
         {
-            return cell.GetBoolean();
+            var value= cell.GetBoolean();
+            if (value!=null)
+            {
+                return value.Value;
+            }
+            var s= cell.GetString();
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                return null;
+            }
+            if (TrueValue.Equals(cell.GetString()))
+            {
+                return true;
+            }
+            if (FalseValue.Equals(cell.GetString()))
+            {
+                return false;
+            }
+            return null;
         }
         return null;
     }

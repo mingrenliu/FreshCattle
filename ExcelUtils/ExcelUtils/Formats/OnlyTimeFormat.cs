@@ -2,7 +2,7 @@
 
 public class OnlyTimeFormat : DateTimeFormat
 {
-    private const string DefaultFormat = "hh:mm:ss";
+    private const string DefaultFormat = "HH:mm:ss";
 
     public OnlyTimeFormat() : this(DefaultFormat)
     {

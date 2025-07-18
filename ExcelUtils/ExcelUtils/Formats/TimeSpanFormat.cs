@@ -4,7 +4,7 @@ namespace ExcelUtile.Formats;
 
 public class TimeSpanFormat : ExcelStructConverter<TimeSpan>
 {
-    private readonly string DefaultFormat = "d\\.hh\\:mm\\:ss";
+    private readonly string DefaultFormat = @"d\.hh\:mm\:ss";
 
     public TimeSpanFormat()
     {
@@ -19,6 +19,14 @@ public class TimeSpanFormat : ExcelStructConverter<TimeSpan>
     {
         if (CanConvert())
         {
+            if (cell.IsString())
+            {
+                var s = cell.GetString();
+                if (!string.IsNullOrWhiteSpace(s) && TimeSpan.TryParseExact(s, DefaultFormat, null, out var result))
+                {
+                    return result;
+                }
+            }
             return cell.GetTimeSpan();
         }
         return default;

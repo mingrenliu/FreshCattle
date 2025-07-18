@@ -41,16 +41,24 @@ public static class ExcelFactory
     {
         if (string.IsNullOrWhiteSpace(name) is false)
         {
-            name= SheetNameRegen.Replace(name, "");
+            name = SheetNameFormat(name);
         }
         return string.IsNullOrWhiteSpace(name) ? workbook.CreateSheet() : workbook.CreateSheet(name);
     }
-
+    public static string SheetNameFormat(string name)
+    {
+        name = SheetNameRegen.Replace(name.Trim('\'',' '), "");
+        if(name.Length > 31)
+        {
+            name = name[..31];
+        }
+        return name;
+    }
     public static ISheet CreateNewSheet(this ISheet sheet, string? name = null)
     {
         if (string.IsNullOrWhiteSpace(name) is false)
         {
-            name = SheetNameRegen.Replace(name, "");
+            name = SheetNameFormat(name);
         }
         var workbook = sheet.Workbook;
         return string.IsNullOrWhiteSpace(name) ? workbook.CreateSheet() : workbook.CreateSheet(name);

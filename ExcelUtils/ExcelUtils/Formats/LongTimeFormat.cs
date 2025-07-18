@@ -2,7 +2,7 @@
 
 public class LongTimeFormat : DateTimeFormat
 {
-    private const string DefaultFormat = "yyyy-mm-dd hh:mm:ss";
+    private const string DefaultFormat = "yyyy-MM-dd HH:mm:ss";
 
     public LongTimeFormat() : this(DefaultFormat)
     {

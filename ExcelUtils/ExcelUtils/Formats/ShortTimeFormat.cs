@@ -2,7 +2,7 @@
 
 public class ShortTimeFormat : DateTimeFormat
 {
-    private const string DefaultFormat = "yyyy-mm-dd";
+    private const string DefaultFormat = "yyyy-MM-dd";
 
     public ShortTimeFormat() : this(DefaultFormat)
     {

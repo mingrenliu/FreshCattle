@@ -29,6 +29,11 @@ public class TimeSpanMinuteFormat : ExcelStructConverter<TimeSpan>
     {
         if (CanConvert())
         {
+            var value = cell.GetDouble();
+            if (value.HasValue)
+            {
+                return TimeSpan.FromMinutes(value.Value);
+            }
             return cell.GetTimeSpanFromMinutes();
         }
         return default;

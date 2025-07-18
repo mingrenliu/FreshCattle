@@ -1,10 +1,11 @@
 ﻿using ExcelUtile.ExcelCore;
+using System.Globalization;
 
 namespace ExcelUtile.Formats;
 
 public  class DateTimeFormat : ExcelStructConverter<DateTime>
 {
-    private const string DefaultFormat = "yyyy-mm-dd";
+    private const string DefaultFormat = "yyyy-MM-dd";
 
     public DateTimeFormat() : this(DefaultFormat)
     {
@@ -18,6 +19,14 @@ public  class DateTimeFormat : ExcelStructConverter<DateTime>
     {
         if (CanConvert())
         {
+            if (cell.IsString())
+            {
+                var s = cell.GetString();
+                if (!string.IsNullOrWhiteSpace(s) && DateTime.TryParseExact(s, Format, null, DateTimeStyles.AllowWhiteSpaces, out var result))
+                {
+                    return result;
+                }
+            }
             return cell.GetDateTime();
         }
         return null;
