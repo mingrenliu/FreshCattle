@@ -3,21 +3,26 @@
 namespace ExcelUtile.Formats;
 public class FloatFormat : ExcelStructConverter<float>
 {
-    public FloatFormat() : this(3)
+    public FloatFormat() : this((string?)null)
     {
 
     }
     public FloatFormat(int? precision) : base()
     {
-        precision ??= 3;
-        Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
+        if (precision.HasValue)
+        {
+            Format = precision == 0 ? "0" : "0.0" + new string(precision > 0 ? '0' : '#', Math.Abs(precision.Value) - 1);
+        }
+        else
+        {
+            Format = null;
+        }
     }
     public FloatFormat(string? format) : base()
     {
         if (string.IsNullOrWhiteSpace(format))
         {
-            var precision = 3;
-            Format = precision <= 0 ? "0" : "0." + new string('0', precision);
+            Format = null;
         }
         else
         {

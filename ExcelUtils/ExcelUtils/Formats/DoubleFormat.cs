@@ -4,21 +4,26 @@ namespace ExcelUtile.Formats;
 
 public class DoubleFormat : ExcelStructConverter<double>
 {
-    public DoubleFormat() : this(3)
+    public DoubleFormat() : this((string?)null)
     {
 
     }
     public DoubleFormat(int? precision) : base()
     {
-        precision ??= 3;
-        Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
+        if (precision.HasValue)
+        {
+            Format = precision == 0 ? "0" : "0.0" + new string(precision > 0 ? '0' : '#', Math.Abs(precision.Value) - 1);
+        }
+        else
+        {
+            Format = null;
+        }
     }
     public DoubleFormat(string? format) : base()
     {
         if (string.IsNullOrWhiteSpace(format))
         {
-            var precision = 3;
-            Format = precision <= 0 ? "0" : "0." + new string('0', precision);
+            Format = null;
         }
         else
         {

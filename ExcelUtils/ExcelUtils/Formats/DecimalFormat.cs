@@ -4,27 +4,34 @@ namespace ExcelUtile.Formats;
 
 public class DecimalFormat : ExcelStructConverter<decimal>
 {
-    public DecimalFormat() : this(3)
+    public DecimalFormat() : this((string?)null)
     {
-
     }
+
     public DecimalFormat(int? precision) : base()
     {
-        precision ??= 3;
-        Format = precision <= 0 ? "0" : "0." + new string('0', precision.Value);
+        if (precision.HasValue)
+        {
+            Format = precision == 0 ? "0" : "0.0" + new string(precision > 0 ? '0' : '#', Math.Abs(precision.Value) - 1);
+        }
+        else
+        {
+            Format = null;
+        }
     }
+
     public DecimalFormat(string? format) : base()
     {
         if (string.IsNullOrWhiteSpace(format))
         {
-            var precision = 3;
-            Format = precision <= 0 ? "0" : "0." + new string('0', precision);
+            Format = null;
         }
         else
         {
             Format = format;
         }
     }
+
     public override decimal? Read(ICell cell)
     {
         if (CanConvert())

@@ -16,7 +16,24 @@ internal class ExportTests : TestBase
         File.WriteAllBytes(path, bytes);
         Assume.That(bytes.Length, Is.AtLeast(10));
     }
-
+    [Test]
+    public void Decimal_Export_Record_Return_List_Test()
+    {
+        var persons = new List<Record>() {
+            new(){ Volume=125.0M},
+            new(){ Volume=125},
+            new(){ Volume=125.124M},
+            new(){ Volume=125.10M},
+            new(){ Volume=null},
+        };
+        var direction = LocationHelper.GetExportResourcesPath();
+        var path = Path.Combine(direction, Guid.NewGuid().ToString() + ".xlsx");
+        var timer = StartTimer();
+        var bytes = ExcelHelper.Export(persons);
+        Console.WriteLine("计算毫秒数：" + timer.GetMilliseconds() + ";条数:" + persons.Count());
+        File.WriteAllBytes(path, bytes);
+        Assume.That(bytes.Length, Is.AtLeast(3));
+    }
     [Test]
     public void New_Export_Person_WithMerged_Return_List_Test()
     {
