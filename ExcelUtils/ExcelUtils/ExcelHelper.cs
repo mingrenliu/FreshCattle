@@ -4,9 +4,17 @@ namespace ExcelUtile;
 
 public static class ExcelHelper
 {
-    public static IEnumerable<T> Import<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new() => Import<T>(stream.CreateWorkBook(), option);
+    public static IEnumerable<T> Import<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new()
+    {
+        using var workbook = stream.CreateWorkBook();
+        return Import<T>(workbook, option);
+    }
 
-    public static Dictionary<string, IEnumerable<T>> ImportAll<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new() => ImportAll<T>(stream.CreateWorkBook(), option);
+    public static Dictionary<string, IEnumerable<T>> ImportAll<T>(Stream stream, ExcelImportOption<T>? option = null) where T : class, new()
+    {
+        using var workbook = stream.CreateWorkBook();
+        return ImportAll<T>(workbook, option);
+    }
 
     public static IEnumerable<T> Import<T>(IWorkbook workbook, ExcelImportOption<T>? option = null) where T : class, new()
     {
@@ -25,14 +33,14 @@ public static class ExcelHelper
 
     public static void Export<T>(Stream stream, IEnumerable<T> data, ExcelExportOption<T>? option = null, string? sheetName = null) where T : class
     {
-        var workbook = ExcelFactory.CreateWorkBook();
+        using var workbook = ExcelFactory.CreateWorkBook();
         workbook.CreateNewSheet(sheetName).WriteData(data, option);
         workbook.Write(stream, true);
     }
 
     public static void Export<T>(Stream stream, Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
     {
-        var workbook = ExcelFactory.CreateWorkBook();
+        using var workbook = ExcelFactory.CreateWorkBook();
         foreach (var item in data)
         {
             workbook.CreateNewSheet(item.Key).WriteData(item.Value, option);
@@ -42,14 +50,14 @@ public static class ExcelHelper
 
     public static byte[] Export<T>(IEnumerable<T> data, ExcelExportOption<T>? option = null,string? sheetName=null) where T : class
     {
-        var workbook = ExcelFactory.CreateWorkBook();
+        using var workbook = ExcelFactory.CreateWorkBook();
         workbook.CreateNewSheet(sheetName).WriteData(data, option);
         return workbook.ToBytes();
     }
 
     public static byte[] Export<T>(Dictionary<string, IEnumerable<T>> data, ExcelExportOption<T>? option = null) where T : class
     {
-        var workbook = ExcelFactory.CreateWorkBook();
+        using var workbook = ExcelFactory.CreateWorkBook();
         foreach (var item in data)
         {
             workbook.CreateNewSheet(item.Key).WriteData(item.Value, option);

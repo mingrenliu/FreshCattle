@@ -20,11 +20,11 @@ internal static class LocationHelper
 
     internal static string GetImportResourcesPath()
     {
-        return Path.Combine(GetBasePath(), "Resources", "Imports");
+        return Path.Combine(GetBasePath(), "Resources", ".Imports");
     }
 
     internal static string GetExportResourcesPath()
     {
-        return Path.Combine(GetBasePath(), "Resources", "Exports");
+        return Path.Combine(GetBasePath(), "Resources", ".Exports");
     }
 }
