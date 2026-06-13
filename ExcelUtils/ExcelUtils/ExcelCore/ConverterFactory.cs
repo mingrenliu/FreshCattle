@@ -1,4 +1,5 @@
 ﻿using ExcelUtile.Formats;
+using System.Xml.Linq;
 
 namespace ExcelUtile.ExcelCore;
 
@@ -7,11 +8,11 @@ namespace ExcelUtile.ExcelCore;
 /// </summary>
 public interface IConverterFactory
 {
-    public ExcelConverter? GetDefaultConverter(Type type);
+    public ExcelConverter GetDefaultConverter(Type type);
 
     public IConverter<T>? GetDefaultConverter<T>() where T : notnull;
 
-    public ExcelConverter? GetDefaultConverter(string type);
+    public ExcelConverter GetDefaultConverter(string type);
 }
 
 /// <summary>
@@ -20,60 +21,42 @@ public interface IConverterFactory
 public class DefaultConverterFactory : ExcelReferenceConverter<object>, IConverterFactory
 {
     private const string DefaultType = "DefaultType";
-    private readonly Dictionary<string, ExcelConverter> _defaultConverters;
+    private readonly Dictionary<string, ExcelConverter> _converters;
 
     public DefaultConverterFactory()
     {
-        _defaultConverters = new()
+        _converters = new()
         {
             [nameof(Object)] = this
         };
     }
 
-    public ExcelConverter? GetDefaultConverter(Type type)
+    public ExcelConverter GetDefaultConverter(Type type)
     {
-        if (_defaultConverters.TryGetValue(type.Name, out ExcelConverter? value)) return value;
-        return Add(type);
+        return GetDefaultConverter((Nullable.GetUnderlyingType(type) ?? type).Name);
     }
 
     public IConverter<T>? GetDefaultConverter<T>() where T : notnull
     {
-        var type = typeof(T);
-        if (!_defaultConverters.TryGetValue(type.Name, out ExcelConverter? value))
-        {
-            value = Add(type);
-        }
-        return value == null ? null : value as IConverter<T>;
+        return GetDefaultConverter(typeof(T).Name) as IConverter<T>;
     }
 
-    public ExcelConverter? GetDefaultConverter(string type)
+    public ExcelConverter GetDefaultConverter(string type)
     {
-        if (_defaultConverters.TryGetValue(type, out ExcelConverter? value)) return value;
-        return Add(type);
-    }
-
-    private ExcelConverter? Add(string type)
-    {
-        var result = Create(type);
-        result ??= Create(DefaultType);
-        return result;
-        ExcelConverter? Create(string name)
+        if (_converters.TryGetValue(type, out ExcelConverter? value)) return value;
+        if (defaultConverterMap.ContainsKey(type))
         {
-            if (defaultConverterMap.ContainsKey(name))
+            if (Activator.CreateInstance(defaultConverterMap[type]) is ExcelConverter converter)
             {
-                if (Activator.CreateInstance(defaultConverterMap[name]) is ExcelConverter converter)
-                {
-                    _defaultConverters[type] = converter;
-                    return converter;
-                }
+                _converters[type] = converter;
+                return converter;
             }
-            return null;
         }
-    }
-
-    private ExcelConverter? Add(Type type)
-    {
-        return Add(type.Name);
+        if (_converters.ContainsKey(DefaultType) is false )
+        {
+            _converters[DefaultType] = new DefaultFormat();
+        }
+        return this;
     }
 
     protected override void WriteValue(ICell cell, object? value)
@@ -84,7 +67,7 @@ public class DefaultConverterFactory : ExcelReferenceConverter<object>, IConvert
         {
             convert = GetDefaultConverter(DefaultType);
         }
-        convert?.WriteToCell(cell, value);
+        convert.WriteToCell(cell, value);
     }
 
     public override object? Read(ICell cell)
@@ -108,7 +91,7 @@ public class DefaultConverterFactory : ExcelReferenceConverter<object>, IConvert
         return null;
     }
 
-    private static readonly Dictionary<string, Type> defaultConverterMap = new()
+    private static readonly Dictionary<string, Type> defaultConverterMap = new(StringComparer.OrdinalIgnoreCase)
     {
         [nameof(Double)] = typeof(DoubleFormat),
         [nameof(Int32)] = typeof(IntFormat),

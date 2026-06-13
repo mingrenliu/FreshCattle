@@ -6,7 +6,7 @@ namespace ExcelUtile;
 
 public static class ExcelFactory
 {
-    private static readonly char[] InvalidateChars = new char[] { '\\', '/',  '*', '？','?', ':', '：' };
+    private static readonly char[] InvalidateChars = new char[] { '\\', '/', '*', '？', '?', ':', '：' };
     public readonly static Regex SheetNameRegen = new(string.Format("[\\[\\]{0}]", Regex.Escape(new string(InvalidateChars))));
 
     public static IWorkbook CreateWorkBook()
@@ -14,7 +14,7 @@ public static class ExcelFactory
         return new XSSFWorkbook();
     }
 
-    internal static IWorkbook CreateWorkBook(this Stream stream)
+    public static IWorkbook CreateWorkBook(this Stream stream)
     {
         return new XSSFWorkbook(stream);
     }
@@ -43,25 +43,22 @@ public static class ExcelFactory
         {
             name = SheetNameFormat(name);
         }
-        return string.IsNullOrWhiteSpace(name) ? workbook.CreateSheet() : workbook.CreateSheet(name);
+        return string.IsNullOrWhiteSpace(name) ? workbook.CreateSheet() : (workbook.GetSheet(name) ?? workbook.CreateSheet(name));
     }
+
     public static string SheetNameFormat(string name)
     {
-        name = SheetNameRegen.Replace(name.Trim('\'',' '), "");
-        if(name.Length > 31)
+        name = SheetNameRegen.Replace(name.Trim('\'', ' '), "");
+        if (name.Length > 31)
         {
             name = name[..31];
         }
         return name;
     }
+
     public static ISheet CreateNewSheet(this ISheet sheet, string? name = null)
     {
-        if (string.IsNullOrWhiteSpace(name) is false)
-        {
-            name = SheetNameFormat(name);
-        }
-        var workbook = sheet.Workbook;
-        return string.IsNullOrWhiteSpace(name) ? workbook.CreateSheet() : workbook.CreateSheet(name);
+        return sheet.Workbook.CreateNewSheet(name);
     }
 
     public static ISheet WriteData<T>(this ISheet sheet, IEnumerable<T> data, ExcelExportOption<T>? option = null) where T : class

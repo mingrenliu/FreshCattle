@@ -52,7 +52,7 @@ public static class ExcelExtension
         }
         else
         {
-            return cell.ToString();
+            return cell.GetObject();
         }
     }
 

@@ -1,4 +1,8 @@
 ﻿namespace ExcelUtile.ExcelCore;
+public class ExcelReader
+{
+
+}
 
 internal class ExcelReader<T> where T : class, new()
 {
