@@ -1,13 +1,16 @@
-﻿using ExcelUtile.ExcelCore;
-using NPOI.XSSF.UserModel;
+﻿using NPOI.XSSF.UserModel;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace ExcelUtile;
 
+/// <summary>
+/// Excel 工作簿工厂：创建 NPOI Workbook、Sheet 命名、字节转换等。
+/// </summary>
 public static class ExcelFactory
 {
-    private static readonly char[] InvalidateChars = new char[] { '\\', '/', '*', '？', '?', ':', '：' };
-    public readonly static Regex SheetNameRegen = new(string.Format("[\\[\\]{0}]", Regex.Escape(new string(InvalidateChars))));
+    private static readonly char[] InvalidChars = new char[] { '\\', '/', '*', '?', ':', '？', '：' };
+    public static readonly Regex SheetNameRegex = new(string.Format("[\\[\\]{0}]", Regex.Escape(new string(InvalidChars))));
 
     public static IWorkbook CreateWorkBook()
     {
@@ -48,7 +51,7 @@ public static class ExcelFactory
 
     public static string SheetNameFormat(string name)
     {
-        name = SheetNameRegen.Replace(name.Trim('\'', ' '), "");
+        name = SheetNameRegex.Replace(name.Trim('\'', ' '), "");
         if (name.Length > 31)
         {
             name = name[..31];
@@ -59,16 +62,5 @@ public static class ExcelFactory
     public static ISheet CreateNewSheet(this ISheet sheet, string? name = null)
     {
         return sheet.Workbook.CreateNewSheet(name);
-    }
-
-    public static ISheet WriteData<T>(this ISheet sheet, IEnumerable<T> data, ExcelExportOption<T>? option = null) where T : class
-    {
-        new ExcelWriter<T>(sheet, data, option).Write();
-        return sheet;
-    }
-
-    public static IEnumerable<T> ReadData<T>(this ISheet sheet, ExcelImportOption<T>? option = null) where T : class, new()
-    {
-        return new ExcelReader<T>(sheet, option).Read();
     }
 }

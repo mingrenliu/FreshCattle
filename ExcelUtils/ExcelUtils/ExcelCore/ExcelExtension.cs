@@ -1,16 +1,22 @@
-﻿using ExcelUtile.Formats;
+﻿using ExcelUtile.Converters;
+using NPOI.SS.UserModel;
 
 namespace ExcelUtile.ExcelCore;
 
+/// <summary>
+/// NPOI 扩展方法：提供 ICell/IRow/ISheet/IWorkbook 的便捷操作。
+/// 包含单元格读写、样式创建、类型转换等。
+/// </summary>
 public static class ExcelExtension
 {
-    #region excel extension
+    #region Excel 扩展
 
+    /// <summary>通过转换器写入单元格，若转换器为空则按字符串写入。</summary>
     public static void WriteCell(this ExcelConverter? converter, ICell cell, object? value, ICellStyle? style = null)
     {
         if (converter != null)
         {
-            converter.WriteToCell(cell, value, style);
+            converter.WriteObject(cell, value, style);
         }
         else
         {
@@ -48,7 +54,7 @@ public static class ExcelExtension
     {
         if (converter != null)
         {
-            return converter.ReadFromCell(cell);
+            return converter.ReadObject(cell);
         }
         else
         {
@@ -81,9 +87,9 @@ public static class ExcelExtension
         return cell;
     }
 
-    #endregion excel extension
+    #endregion
 
-    #region GetValues
+    #region 样式和格式
 
     public static bool? GetBoolean(this ICell cell)
     {
@@ -183,7 +189,11 @@ public static class ExcelExtension
     public static DateTime? GetDateTime(this ICell cell)
     {
         if (IsInValid(cell)) return null;
-        if (IsNumeric(cell)) return cell.DateCellValue;
+        if (IsNumeric(cell))
+        {
+            try { return cell.DateCellValue; }
+            catch (ArgumentException) { return null; }
+        }
         var str = GetStringForDateTime(cell);
         if (string.IsNullOrWhiteSpace(str) || !DateTime.TryParse(str, out var value)) return null;
         return value;
@@ -210,7 +220,11 @@ public static class ExcelExtension
     public static TimeSpan? GetTimeSpan(this ICell cell)
     {
         if (IsInValid(cell)) return null;
-        if (IsNumeric(cell)) return cell.DateCellValue?.TimeOfDay;
+        if (IsNumeric(cell))
+        {
+            try { return cell.DateCellValue?.TimeOfDay; }
+            catch (ArgumentException) { return null; }
+        }
         var str = GetStringForDateTime(cell);
         if (!string.IsNullOrWhiteSpace(str))
         {
@@ -232,12 +246,6 @@ public static class ExcelExtension
         return date.HasValue ? DateOnly.FromDateTime(date.Value) : null;
     }
 
-    public static DateTimeOffset? GetDateTimeOffset(this ICell cell)
-    {
-        var date = GetDateTime(cell);
-        return date.HasValue ? new DateTimeOffset(date.Value) : null;
-    }
-
     public static TimeOnly? GetTime(this ICell cell)
     {
         if (IsInValid(cell)) return null;
@@ -255,6 +263,12 @@ public static class ExcelExtension
             }
         }
         return null;
+    }
+
+    public static DateTimeOffset? GetDateTimeOffset(this ICell cell)
+    {
+        var date = GetDateTime(cell);
+        return date.HasValue ? new DateTimeOffset(date.Value) : null;
     }
 
     #endregion GetValues
