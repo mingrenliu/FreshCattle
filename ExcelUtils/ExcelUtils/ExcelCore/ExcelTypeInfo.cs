@@ -73,7 +73,7 @@ public static class ExcelTypeInfoResolver
     }
 
     /// <summary>核心解析：反射遍历属性。</summary>
-    private static List<RawColumnInfo> ResolveColumns(Type type, ExcelSerializerOptions options)
+    public static List<RawColumnInfo> ResolveColumns(Type type, ExcelSerializerOptions options)
     {
         var list = new List<RawColumnInfo>();
         var bindingFlags = BindingFlags.Public | BindingFlags.Instance;
@@ -84,27 +84,20 @@ public static class ExcelTypeInfoResolver
             var columnAttr = prop.GetCustomAttribute<ExcelColumnAttribute>();
             var ignoreAttr = prop.GetCustomAttribute<ExcelIgnoreAttribute>();
             var converterAttr = prop.GetCustomAttribute<ExcelConverterAttribute>();
-            var formatAttr = prop.GetCustomAttribute<ExcelFormatAttribute>();
 
-            if (options.AutoInclude)
-            {
-                if (ignoreAttr != null) continue;
-            }
-            else
-            {
-                if (columnAttr == null) continue;
-            }
+            if (options.AutoInclude && ignoreAttr != null || !options.AutoInclude && columnAttr == null)
+                continue;
+            // 动态导出：只包含指定字段
+            if (options.FieldScope != null && !options.FieldScope.Contains(prop.Name))
+                continue;
 
-            var columnName = columnAttr?.Name ?? options.ColumnNameMap?.GetValueOrDefault(prop.Name) ?? prop.Name;
+            var columnName = options.ColumnNameMap?.GetValueOrDefault(prop.Name) ?? columnAttr?.Name ?? prop.Name;
             var order = columnAttr?.Order ?? 0;
             var width = columnAttr?.Width ?? 0;
+            if (width == 0) width = GetTypeDefaultWidth(prop.PropertyType);
             var required = columnAttr?.Required ?? false;
 
             var converter = ResolveConverter(prop, converterAttr, options);
-            if (formatAttr != null && converter != null)
-            {
-                converter.ExcelFormat = formatAttr.Format;
-            }
 
             list.Add(new RawColumnInfo(prop, columnName, order, width, required, converter));
         }
@@ -112,7 +105,7 @@ public static class ExcelTypeInfoResolver
         return list;
     }
 
-    private static ExcelConverter ResolveConverter(PropertyInfo prop,
+    public static ExcelConverter ResolveConverter(PropertyInfo prop,
         ExcelConverterAttribute? converterAttr, ExcelSerializerOptions options)
     {
         if (converterAttr != null)
@@ -124,18 +117,42 @@ public static class ExcelTypeInfoResolver
                 return custom;
         }
 
-        return options.Converters.GetConverter(
-            Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType)!;
+        return options.Converters.GetConverter(prop.PropertyType)!;
     }
 
-    private sealed class RawColumnInfo
+    /// <summary>常见类型的默认列宽（字符数）。</summary>
+    public static readonly Dictionary<Type, int> TypeDefaultWidths = new()
     {
-        public readonly PropertyInfo Property;
-        public readonly string ColumnName;
-        public readonly int Order;
-        public readonly int Width;
-        public readonly bool Required;
-        public readonly ExcelConverter? Converter;
+        [typeof(string)] = 25,
+        [typeof(DateTime)] = 25,
+        [typeof(DateTimeOffset)] = 20,
+        [typeof(DateOnly)] = 12,
+        [typeof(TimeOnly)] = 10,
+        [typeof(TimeSpan)] = 10,
+        [typeof(bool)] = 8,
+        [typeof(int)] = 12,
+        [typeof(long)] = 14,
+        [typeof(short)] = 8,
+        [typeof(byte)] = 8,
+        [typeof(double)] = 14,
+        [typeof(float)] = 12,
+        [typeof(decimal)] = 14,
+    };
+
+    private static int GetTypeDefaultWidth(Type type)
+    {
+        type = Nullable.GetUnderlyingType(type) ?? type;
+        return TypeDefaultWidths.TryGetValue(type, out var w) ? w : 0;
+    }
+
+    public sealed class RawColumnInfo
+    {
+        public PropertyInfo Property;
+        public string ColumnName;
+        public int Order;
+        public int Width;
+        public bool Required;
+        public ExcelConverter? Converter;
 
         public RawColumnInfo(PropertyInfo property, string columnName,
             int order, int width, bool required, ExcelConverter? converter)

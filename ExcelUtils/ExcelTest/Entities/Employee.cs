@@ -3,7 +3,7 @@ namespace ExcelUtileTest.Entities;
 /// <summary>
 /// opt-out 模式实体（配合 AutoInclude=true）：
 /// 所有 public 属性默认都导出，[ExcelIgnore] 的排除。
-/// 使用独立的 [ExcelFormat] 和 [ExcelConverter]。
+/// 使用独立的 [ExcelConverter]。
 /// </summary>
 public class Employee
 {
@@ -18,11 +18,9 @@ public class Employee
     public string Department { get; set; } = string.Empty;
 
     /// <summary>工资（带格式）</summary>
-    [ExcelFormat("#,##0.00")]
     public decimal Salary { get; set; }
 
     /// <summary>入职日期</summary>
-    [ExcelFormat("yyyy-MM-dd")]
     public DateTime HireDate { get; set; }
 
     /// <summary>是否在职</summary>

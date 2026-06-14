@@ -39,9 +39,12 @@ public class ExcelSerializerOptions
 
     /// <summary>
     /// 属性名 -> Excel 列名（表头）的覆盖映射。
-    /// 优先级低于 <see cref="ExcelColumnAttribute.Name"/>。
+    /// 优先级高于 <see cref="ExcelColumnAttribute.Name"/>。
     /// </summary>
     public Dictionary<string, string>? ColumnNameMap { get; set; }
+
+    /// <summary>有效的导入导出字段范围，null 表示按正常规则匹配。</summary>
+    public IReadOnlyList<string>? FieldScope { get; set; }
 
     // ==================== 导入 ====================
 

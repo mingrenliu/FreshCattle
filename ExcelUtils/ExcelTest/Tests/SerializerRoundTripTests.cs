@@ -3,7 +3,7 @@ namespace ExcelUtileTest.Tests;
 [TestFixture]
 internal class SerializerRoundTripTests : TestBase
 {
-    [Test] public void AllTypes_RoundTrip()
+    [Test] public void AllTypes()
     {
         var original = new List<AllTypesEntity>
         {
@@ -19,6 +19,7 @@ internal class SerializerRoundTripTests : TestBase
         };
 
         var bytes = ExcelSerializer.Serialize(original);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(14, original.Count), bytes);
         using var ms = new MemoryStream(bytes);
         var imported = ExcelSerializer.Deserialize<AllTypesEntity>(ms).ToList();
 
@@ -40,10 +41,11 @@ internal class SerializerRoundTripTests : TestBase
         }
     }
 
-    [Test] public void NullValues_RoundTrip()
+    [Test] public void NullValues()
     {
         var e = new AllTypesEntity { StringValue = "", IntValue = 0, NullableInt = null, NullableDouble = null, NullableDateTime = null, NullableBool = null, GuidValue = Guid.Empty };
         var bytes = ExcelSerializer.Serialize(new[] { e });
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(14, 1), bytes);
         using var ms = new MemoryStream(bytes);
         var r = ExcelSerializer.Deserialize<AllTypesEntity>(ms).First();
         Assert.That(r.NullableInt, Is.Null);
@@ -52,10 +54,11 @@ internal class SerializerRoundTripTests : TestBase
         Assert.That(r.NullableBool, Is.Null);
     }
 
-    [Test] public void MaxMinValues_RoundTrip()
+    [Test] public void MaxMinValues()
     {
         var e = new AllTypesEntity { StringValue = "边界", IntValue = int.MaxValue, LongValue = long.MaxValue, ShortValue = short.MaxValue, ByteValue = byte.MaxValue, DoubleValue = double.MaxValue, DecimalValue = 999999999.99m, BoolValue = true };
         var bytes = ExcelSerializer.Serialize(new[] { e });
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(14, 1), bytes);
         using var ms = new MemoryStream(bytes);
         var r = ExcelSerializer.Deserialize<AllTypesEntity>(ms).First();
         Assert.That(r.IntValue, Is.EqualTo(int.MaxValue));
@@ -64,7 +67,7 @@ internal class SerializerRoundTripTests : TestBase
         Assert.That(r.ByteValue, Is.EqualTo(byte.MaxValue));
     }
 
-    [Test] public void MultiSheet_RoundTrip()
+    [Test] public void MultiSheet()
     {
         var sheets = new Dictionary<string, IEnumerable<Student>>
         {
@@ -72,6 +75,7 @@ internal class SerializerRoundTripTests : TestBase
             ["二班"] = new[] { new Student { Name = "B1", Age = 16, Score = 90 } },
         };
         var bytes = ExcelSerializer.Serialize(sheets);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, 2), bytes);
         using var ms = new MemoryStream(bytes);
         var r = ExcelSerializer.DeserializeAll<Student>(ms);
         Assert.That(r.Count, Is.EqualTo(2));
@@ -79,9 +83,10 @@ internal class SerializerRoundTripTests : TestBase
         Assert.That(r["二班"].First().Name, Is.EqualTo("B1"));
     }
 
-    [Test] public void Template_OnlyHeader()
+    [Test] public void CreateTemplate()
     {
         var bytes = ExcelSerializer.CreateTemplate<Student>();
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(14, 0), bytes);
         using var ms = new MemoryStream(bytes);
         var r = ExcelSerializer.Deserialize<Student>(ms).ToList();
         Assert.That(r, Is.Empty);

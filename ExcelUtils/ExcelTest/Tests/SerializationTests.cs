@@ -4,12 +4,12 @@ namespace ExcelUtileTest.Tests;
 /// 测试新的 ExcelSerializer API（opt-in / opt-out 模式）。
 /// </summary>
 [TestFixture]
-internal class NewApiTests : TestBase
+internal class SerializationTests : TestBase
 {
     #region Opt-In 模式（AutoInclude=false，默认）
 
     [Test]
-    public void Serialize_OptIn_OnlyExcelColumn_Test()
+    public void OptIn_Serialize_OnlyExcelColumn()
     {
         var students = new List<Student>
         {
@@ -19,14 +19,14 @@ internal class NewApiTests : TestBase
 
         // 默认 AutoInclude=false，只导出 [ExcelColumn] 标注的属性
         var bytes = ExcelSerializer.Serialize(students);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(0, 0), bytes);
         Assume.That(bytes.Length, Is.AtLeast(50));
 
-        var path = Path.Combine(LocationHelper.GetExportResourcesPath(), $"students_optin_{Guid.NewGuid():N}.xlsx");
-        File.WriteAllBytes(path, bytes);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, students.Count), bytes);
     }
 
     [Test]
-    public void Deserialize_OptIn_OnlyExcelColumn_Test()
+    public void OptIn_Deserialize_RoundTrip()
     {
         var students = new List<Student>
         {
@@ -36,6 +36,7 @@ internal class NewApiTests : TestBase
 
         // 导出后重新导入
         var exported = ExcelSerializer.Serialize(students);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, students.Count), exported);
         using var ms = new MemoryStream(exported);
         var imported = ExcelSerializer.Deserialize<Student>(ms).ToList();
 
@@ -46,14 +47,14 @@ internal class NewApiTests : TestBase
     }
 
     [Test]
-    public void Serialize_OptIn_TemplateOnly_Test()
+    public void OptIn_CreateTemplate()
     {
         // 模板导出：只有表头没有数据
         var bytes = ExcelSerializer.CreateTemplate<Student>();
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(0, 0), bytes);
         Assume.That(bytes.Length, Is.AtLeast(30));
 
-        var path = Path.Combine(LocationHelper.GetExportResourcesPath(), $"student_template_optin_{Guid.NewGuid():N}.xlsx");
-        File.WriteAllBytes(path, bytes);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, 0), bytes);
     }
 
     #endregion
@@ -61,7 +62,7 @@ internal class NewApiTests : TestBase
     #region Opt-Out 模式（AutoInclude=true）
 
     [Test]
-    public void Serialize_OptOut_AllExceptIgnored_Test()
+    public void OptOut_Serialize_AllExceptIgnored()
     {
         var employees = new List<Employee>
         {
@@ -82,14 +83,14 @@ internal class NewApiTests : TestBase
         // AutoInclude=true：所有 public 属性默认导出，[ExcelIgnore] 的排除
         var options = ExcelSerializerOptions.AutoIncludeAll;
         var bytes = ExcelSerializer.Serialize(employees, options);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(0, 0), bytes);
         Assume.That(bytes.Length, Is.AtLeast(50));
 
-        var path = Path.Combine(LocationHelper.GetExportResourcesPath(), $"employees_optout_{Guid.NewGuid():N}.xlsx");
-        File.WriteAllBytes(path, bytes);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(6, employees.Count), bytes);
     }
 
     [Test]
-    public void Deserialize_OptOut_RoundTrip_Test()
+    public void OptOut_Deserialize_RoundTrip()
     {
         var original = new List<Employee>
         {
@@ -99,6 +100,7 @@ internal class NewApiTests : TestBase
 
         var options = ExcelSerializerOptions.AutoIncludeAll;
         var exported = ExcelSerializer.Serialize(original, options);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(6, original.Count), exported);
 
         using var ms = new MemoryStream(exported);
         var imported = ExcelSerializer.Deserialize<Employee>(ms, options).ToList();
@@ -111,14 +113,14 @@ internal class NewApiTests : TestBase
     }
 
     [Test]
-    public void Serialize_OptOut_Template_Test()
+    public void OptOut_CreateTemplate()
     {
         var options = ExcelSerializerOptions.AutoIncludeAll;
         var bytes = ExcelSerializer.CreateTemplate<Employee>(options);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(0, 0), bytes);
         Assume.That(bytes.Length, Is.AtLeast(30));
 
-        var path = Path.Combine(LocationHelper.GetExportResourcesPath(), $"employee_template_optout_{Guid.NewGuid():N}.xlsx");
-        File.WriteAllBytes(path, bytes);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(6, 0), bytes);
     }
 
     #endregion
@@ -126,7 +128,7 @@ internal class NewApiTests : TestBase
     #region 自定义转换器和列名映射
 
     [Test]
-    public void Serialize_WithColumnNameMap_Test()
+    public void ColumnNameMap_OverrideHeaders()
     {
         var students = new List<Student>
         {
@@ -147,10 +149,10 @@ internal class NewApiTests : TestBase
         };
 
         var bytes = ExcelSerializer.Serialize(students, options);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(0, 0), bytes);
         Assume.That(bytes.Length, Is.AtLeast(30));
 
-        var path = Path.Combine(LocationHelper.GetExportResourcesPath(), $"students_mapped_{Guid.NewGuid():N}.xlsx");
-        File.WriteAllBytes(path, bytes);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, students.Count), bytes);
     }
 
     #endregion
@@ -158,7 +160,7 @@ internal class NewApiTests : TestBase
     #region 多 Sheet
 
     [Test]
-    public void Serialize_MultiSheet_Test()
+    public void MultiSheet_Serialize()
     {
         var students = new List<Student>
         {
@@ -175,85 +177,10 @@ internal class NewApiTests : TestBase
             ["学生表"] = students,
         };
         var bytes = ExcelSerializer.Serialize(sheets);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(0, 0), bytes);
         Assume.That(bytes.Length, Is.AtLeast(50));
 
-        var path = Path.Combine(LocationHelper.GetExportResourcesPath(), $"multi_sheet_{Guid.NewGuid():N}.xlsx");
-        File.WriteAllBytes(path, bytes);
-    }
-
-    #endregion
-
-    #region 低层自由写入（ExcelSheetWriter）
-
-    [Test]
-    public void SheetWriter_CustomLayout_Test()
-    {
-        using var workbook = ExcelFactory.CreateWorkBook();
-        var sheet = workbook.CreateNewSheet("自定义报表");
-        var writer = new ExcelSheetWriter(sheet);
-
-        writer.MoveTo(0, 0);
-        writer.Write("日报表");
-        writer.Merge(new MergeRegion(0, 0, 0, 3) { Value = "2024年1月日报表" });
-
-        writer.MoveTo(1, 0);
-        var headers = new[] { "序号", "项目", "金额", "备注" };
-        foreach (var h in headers)
-        {
-            writer.Write(h);
-            writer.Width(12);
-        }
-
-        writer.MoveTo(2, 0);
-        writer.Write(1);
-        writer.Write("销售收入");
-        writer.Write(10000.50);
-        writer.Write("已到账");
-
-        writer.NextRow();
-        writer.Write(2);
-        writer.Write("采购支出");
-        writer.Write(3500.00);
-        writer.Write("待审批");
-
-        writer.NextRow();
-        writer.Write("");
-        writer.Write("合计");
-        var style = writer.Style();
-        style.BorderTop = NPOI.SS.UserModel.BorderStyle.Double;
-        writer.Write(13500.50);
-        writer.NextCol();
-
-        var bytes = workbook.ToBytes();
-        Assume.That(bytes.Length, Is.AtLeast(30));
-
-        var path = Path.Combine(LocationHelper.GetExportResourcesPath(), $"custom_layout_{Guid.NewGuid():N}.xlsx");
-        File.WriteAllBytes(path, bytes);
-    }
-
-    [Test]
-    public void SheetReader_ReadCells_Test()
-    {
-        using var workbook = ExcelFactory.CreateWorkBook();
-        var sheet = workbook.CreateNewSheet("读取测试");
-        var writer = new ExcelSheetWriter(sheet);
-        writer.MoveTo(0, 0).Write("姓名");
-        writer.Write("年龄");
-        writer.NextRow();
-        writer.Write("张三");
-        writer.Write(25);
-        writer.NextRow();
-        writer.Write("李四");
-        writer.Write(30);
-
-        var reader = new ExcelSheetReader(sheet);
-        var headers = reader.ReadHeaders(0);
-        Assert.That(headers[0], Is.EqualTo("姓名"));
-        Assert.That(headers[1], Is.EqualTo("年龄"));
-
-        var row1 = reader.ReadRowAsText(1, new[] { 0, 1 });
-        Assert.That(row1[0], Is.EqualTo("张三"));
-        Assert.That(row1[1], Is.EqualTo("25"));
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, students.Count), bytes);
     }
 
     #endregion

@@ -29,14 +29,15 @@ public class ExcelColumnReader : IExcelColumnReader
     {
         return string.Equals(_columnName, columnName, System.StringComparison.OrdinalIgnoreCase);
     }
-
+    private Type? _underlyingType;
+    private Type UnderlyingType(Type type) => _underlyingType ??= (Nullable.GetUnderlyingType(type) ?? type);
     /// <inheritdoc/>
     public void SetValue(object obj, string columnName, object? value)
     {
         if (value == null) return;
         try
         {
-            var targetType = Nullable.GetUnderlyingType(_property.PropertyType) ?? _property.PropertyType;
+            var targetType = UnderlyingType(_property.PropertyType);
             _property.SetValue(obj, System.Convert.ChangeType(value, targetType));
         }
         catch { /* 类型转换失败则跳过 */ }

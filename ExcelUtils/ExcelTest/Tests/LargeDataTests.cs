@@ -17,6 +17,7 @@ internal class LargeDataTests : TestBase
 
         var sw = Stopwatch.StartNew();
         var bytes = ExcelSerializer.Serialize(data);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, count), bytes);
         sw.Stop();
         Console.WriteLine($"序列化 {count} 条: {sw.ElapsedMilliseconds}ms, 文件 {bytes.Length / 1024}KB");
         Assert.That(bytes.Length, Is.GreaterThan(1024));
@@ -45,6 +46,7 @@ internal class LargeDataTests : TestBase
 
         var sw = Stopwatch.StartNew();
         var bytes = ExcelSerializer.Serialize(data);
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, 40000), bytes);
         sw.Stop();
         Console.WriteLine($"4万行序列化: {sw.ElapsedMilliseconds}ms, 文件 {bytes.Length / 1024}KB");
         Assert.That(bytes.Length, Is.GreaterThan(10240)); // >10KB

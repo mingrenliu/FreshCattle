@@ -158,7 +158,7 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell).Year, Is.EqualTo(2024));
     }
 
-    [Test] public void Short_Byte_RoundTrip()
+    [Test] public void ShortAndByte()
     {
         using var wb = ExcelFactory.CreateWorkBook();
         var s = wb.CreateNewSheet();

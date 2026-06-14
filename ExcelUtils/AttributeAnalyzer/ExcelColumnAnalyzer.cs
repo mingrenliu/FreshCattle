@@ -119,7 +119,8 @@ namespace AttributeAnalyzer
         private static bool IsExcelColumn(AttributeSyntax attr)
         {
             var name = attr.Name.ToString();
-            return name == "ExcelColumn" || name == "ExcelColumnAttribute";
+            return name == "ExcelColumn" || name == "ExcelColumnAttribute"
+                || name.EndsWith(".ExcelColumn") || name.EndsWith(".ExcelColumnAttribute");
         }
     }
 }

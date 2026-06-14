@@ -21,30 +21,24 @@ public class AllTypesEntity
     public byte ByteValue { get; set; }
 
     [ExcelColumn(Name = "浮点", Order = 5)]
-    [ExcelFormat("0.00")]
     public float FloatValue { get; set; }
 
     [ExcelColumn(Name = "双精度", Order = 6)]
-    [ExcelFormat("0.0000")]
     public double DoubleValue { get; set; }
 
     [ExcelColumn(Name = "高精度", Order = 7)]
-    [ExcelFormat("0.00")]
     public decimal DecimalValue { get; set; }
 
     [ExcelColumn(Name = "布尔", Order = 8)]
     public bool BoolValue { get; set; }
 
     [ExcelColumn(Name = "日期时间", Order = 9)]
-    [ExcelFormat("yyyy-MM-dd HH:mm:ss")]
     public DateTime DateTimeValue { get; set; }
 
     [ExcelColumn(Name = "日期", Order = 10)]
-    [ExcelFormat("yyyy-MM-dd")]
     public DateOnly DateOnlyValue { get; set; }
 
     [ExcelColumn(Name = "时间", Order = 11)]
-    [ExcelFormat("HH:mm:ss")]
     public TimeOnly TimeOnlyValue { get; set; }
 
     [ExcelColumn(Name = "时间跨度", Order = 12)]

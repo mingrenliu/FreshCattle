@@ -13,14 +13,12 @@ public class Student
     public int Age { get; set; }
 
     [ExcelColumn(Name = "成绩", Order = 2)]
-    [ExcelFormat("0.0")]
     public double Score { get; set; }
 
     [ExcelColumn(Name = "是否毕业", Order = 3)]
     public bool Graduated { get; set; }
 
     [ExcelColumn(Name = "入学日期", Order = 4)]
-    [ExcelFormat("yyyy-MM-dd")]
     public DateTime EnrollDate { get; set; }
 
     // 未标注 [ExcelColumn]，opt-in 模式下不导出
