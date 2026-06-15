@@ -43,8 +43,9 @@ public class ExcelWriterTypeInfo
 public static class ExcelTypeInfoResolver
 {
     /// <summary>解析读取专用元数据（反射属性 + 自定义 Reader）。</summary>
-    public static ExcelReaderTypeInfo ResolveRead(Type type, ExcelSerializerOptions options)
+    public static ExcelReaderTypeInfo ResolveRead(Type type, ExcelOptions? options)
     {
+        options ??= ExcelOptions.Default;
         var columns = ResolveColumns(type, options);
         var readColumns = columns.Select(c =>
             (IExcelColumnReader)new ExcelColumnReader(c.Property, c.ColumnName, c.Required) { Converter = c.Converter }
@@ -58,8 +59,9 @@ public static class ExcelTypeInfoResolver
     }
 
     /// <summary>解析写入专用元数据（反射属性 + 自定义 Writer）。</summary>
-    public static ExcelWriterTypeInfo ResolveWrite(Type type, ExcelSerializerOptions options)
+    public static ExcelWriterTypeInfo ResolveWrite(Type type, ExcelOptions? options)
     {
+        options ??= ExcelOptions.Default;
         var columns = ResolveColumns(type, options);
         var writeColumns = columns.Select(c =>
             (IExcelColumnWriter)new ExcelColumnWriter(c.Property, c.ColumnName, c.Order, c.Width) { Converter = c.Converter }
@@ -73,7 +75,7 @@ public static class ExcelTypeInfoResolver
     }
 
     /// <summary>核心解析：反射遍历属性。</summary>
-    public static List<RawColumnInfo> ResolveColumns(Type type, ExcelSerializerOptions options)
+    public static List<RawColumnInfo> ResolveColumns(Type type, ExcelOptions options)
     {
         var list = new List<RawColumnInfo>();
         var bindingFlags = BindingFlags.Public | BindingFlags.Instance;
@@ -106,7 +108,7 @@ public static class ExcelTypeInfoResolver
     }
 
     public static ExcelConverter ResolveConverter(PropertyInfo prop,
-        ExcelConverterAttribute? converterAttr, ExcelSerializerOptions options)
+        ExcelConverterAttribute? converterAttr, ExcelOptions options)
     {
         if (converterAttr != null)
         {
@@ -126,17 +128,10 @@ public static class ExcelTypeInfoResolver
         [typeof(string)] = 25,
         [typeof(DateTime)] = 25,
         [typeof(DateTimeOffset)] = 20,
-        [typeof(DateOnly)] = 12,
-        [typeof(TimeOnly)] = 10,
-        [typeof(TimeSpan)] = 10,
-        [typeof(bool)] = 8,
-        [typeof(int)] = 12,
-        [typeof(long)] = 14,
-        [typeof(short)] = 8,
-        [typeof(byte)] = 8,
-        [typeof(double)] = 14,
-        [typeof(float)] = 12,
-        [typeof(decimal)] = 14,
+        [typeof(DateOnly)] = 20,
+        [typeof(TimeOnly)] = 20,
+        [typeof(TimeSpan)] = 20,
+
     };
 
     private static int GetTypeDefaultWidth(Type type)

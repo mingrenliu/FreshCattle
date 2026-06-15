@@ -10,7 +10,7 @@ namespace ExcelUtile.ExcelCore;
 internal class ExcelDataReader<T> where T : class, new()
 {
     private readonly ExcelSheetReader _reader;
-    private readonly ExcelSerializerOptions _options;
+    private readonly ExcelOptions _options;
     private readonly ExcelReaderTypeInfo _typeInfo;
     private readonly ExcelConverter _defaultConverter;
 
@@ -18,7 +18,7 @@ internal class ExcelDataReader<T> where T : class, new()
     private List<(int ColIdx, string ColumnName, IExcelColumnReader Prop)>? _columns;
 
     public ExcelDataReader(ExcelSheetReader reader, ExcelReaderTypeInfo typeInfo,
-        ExcelSerializerOptions options)
+        ExcelOptions options)
     {
         _reader = reader;
         _typeInfo = typeInfo;

@@ -6,10 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>CS8618;IDE0130</NoWarn>
-    <PackageId>YangCode.ExcelUtile</PackageId>
-    <PackageTags>ExcelUtile</PackageTags>
+    <PackageId>YangCode.Excel</PackageId>
+    <PackageTags>Excel</PackageTags>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.1.24</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
     <Description>package is used to excel import or export </Description>

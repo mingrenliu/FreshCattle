@@ -22,7 +22,7 @@ public class ExcelColumnAttribute : Attribute
     /// <summary>
     /// 列宽（字符数）。
     /// <list type="bullet">
-    ///   <item><c>0</c>：使用 <see cref="ExcelCore.ExcelSerializerOptions.DefaultColumnWidth"/>（默认值）。</item>
+    ///   <item><c>0</c>：使用 <see cref="ExcelCore.ExcelOptions.DefaultColumnWidth"/>（默认值）。</item>
     ///   <item><c>&gt; 0</c>：固定列宽。</item>
     ///   <item><c>&lt; 0</c>：自适应列宽（AutoFit）。</item>
     /// </list>

@@ -1,7 +1,7 @@
 namespace ExcelUtileTest.Tests;
 
 [TestFixture]
-internal class ExtensionTests : TestBase
+internal class CellExtensionTests : TestBase
 {
     [Test] public void IsInValid_Blank()
     {
@@ -77,5 +77,71 @@ internal class ExtensionTests : TestBase
         r.GetOrCreateCell(0).SetCellValue("hello"); Assert.That(r.GetOrCreateCell(0).GetObject(), Is.EqualTo("hello"));
         r.GetOrCreateCell(1).SetCellValue(42.0);     Assert.That(r.GetOrCreateCell(1).GetObject(), Is.EqualTo(42.0));
         r.GetOrCreateCell(2).SetCellValue(true);     Assert.That(r.GetOrCreateCell(2).GetObject(), Is.EqualTo(true));
+    }
+
+    [Test] public void GetDouble_From_Boolean()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        cell.SetCellValue(true);
+        // Boolean 类型不被 IsNumeric 识别，GetDouble 返回 null
+        Assert.That(cell.GetDouble(), Is.Null);
+    }
+
+    [Test] public void GetInt_From_Boolean()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        cell.SetCellValue(false);
+        Assert.That(cell.GetInt(), Is.Null);
+    }
+
+    [Test] public void GetBoolean_From_Numeric()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        // GetBoolean 不支持从数值 1/0 转换，返回 null
+        cell.SetCellValue(1); Assert.That(cell.GetBoolean(), Is.Null);
+        cell.SetCellValue(0); Assert.That(cell.GetBoolean(), Is.Null);
+    }
+
+    [Test] public void GetBoolean_English()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        cell.SetCellValue("true"); Assert.That(cell.GetBoolean(), Is.True);
+        cell.SetCellValue("false"); Assert.That(cell.GetBoolean(), Is.False);
+    }
+
+    [Test] public void GetString_From_Boolean()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        cell.SetCellValue(true);
+        Assert.That(cell.GetString(), Is.EqualTo("TRUE"));
+    }
+
+    [Test] public void GetString_Blank()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        Assert.That(cell.GetString(), Is.Null);
+    }
+
+    [Test] public void GetBoolean_Invalid()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        Assert.That(cell.GetBoolean(), Is.Null); // 空白返回 null
+        cell.SetCellValue("notabool");
+        Assert.That(cell.GetBoolean(), Is.Null);
+    }
+
+    [Test] public void IsNumeric_And_IsString()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
+        cell.SetCellValue(123); Assert.That(cell.IsNumeric(), Is.True);
+        cell.SetCellValue("abc"); Assert.That(cell.IsString(), Is.True);
     }
 }

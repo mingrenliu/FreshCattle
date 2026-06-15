@@ -2,7 +2,6 @@
 
 internal static class LocationHelper
 {
-    private static readonly object _lock = new();
     private static readonly bool OutputToFiles = true;
 
     public static string GetTestPath()
@@ -35,12 +34,12 @@ internal static class LocationHelper
     public static void SaveToFile(string fileName, byte[] content)
     {
         if (!OutputToFiles) return;
-        lock (_lock)
+        var dir = GetExportResourcesPath();
+        if (Directory.Exists(dir) is false)
         {
-            var dir = GetExportResourcesPath();
             Directory.CreateDirectory(dir);
-            File.WriteAllBytes(Path.Combine(dir, fileName), content);
         }
+        File.WriteAllBytes(Path.Combine(dir, fileName), content);
     }
 
     /// <summary>生成标准导出文件名：测试名_列数_行数.xlsx。</summary>

@@ -10,11 +10,11 @@ namespace ExcelUtile.ExcelCore;
 internal class ExcelDataWriter<T> where T : class
 {
     private readonly ExcelSheetWriter _writer;
-    private readonly ExcelSerializerOptions _options;
+    private readonly ExcelOptions _options;
     private readonly ExcelWriterTypeInfo _typeInfo;
     private readonly ExcelConverter _defaultConverter;
 
-    public ExcelDataWriter(ExcelSheetWriter writer, ExcelWriterTypeInfo typeInfo, ExcelSerializerOptions options)
+    public ExcelDataWriter(ExcelSheetWriter writer, ExcelWriterTypeInfo typeInfo, ExcelOptions options)
     {
         _writer = writer;
         _typeInfo = typeInfo;
@@ -41,7 +41,7 @@ internal class ExcelDataWriter<T> where T : class
         foreach (var prop in _typeInfo.Columns)
         {
             _writer.Write(prop.ColumnName, _defaultConverter,_writer.Style("__ExcelHeader__"));
-            _writer.Width(prop.Width != 0 ? prop.Width : _options.DefaultColumnWidth);
+            _writer.PrevWidth(prop.Width != 0 ? prop.Width : _options.DefaultColumnWidth);
         }
         return _writer.CurrentRow();
     }

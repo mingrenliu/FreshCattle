@@ -6,7 +6,7 @@ namespace ExcelUtile.ExcelCore;
 /// Excel 序列化统一配置选项。
 /// 对应 System.Text.Json 的 JsonSerializerOptions。
 /// </summary>
-public class ExcelSerializerOptions
+public class ExcelOptions
 {
     // ==================== 核心行为 ====================
 
@@ -75,10 +75,10 @@ public class ExcelSerializerOptions
     // ==================== 工厂方法 ====================
 
     /// <summary>创建 opt-in 模式的默认配置。</summary>
-    public static ExcelSerializerOptions Default => new();
+    public static ExcelOptions Default => new();
 
     /// <summary>
     /// 创建 opt-out 模式的配置（自动包含所有 public 属性）。
     /// </summary>
-    public static ExcelSerializerOptions AutoIncludeAll => new() { AutoInclude = true };
+    public static ExcelOptions AutoIncludeAll => new() { AutoInclude = true };
 }

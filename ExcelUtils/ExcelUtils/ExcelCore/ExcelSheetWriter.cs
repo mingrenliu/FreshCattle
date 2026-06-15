@@ -12,7 +12,7 @@ namespace ExcelUtile.ExcelCore;
 /// <code>
 /// var writer = new ExcelSheetWriter(sheet);
 /// writer.MoveTo(0, 0).Write("标题").NextRow();
-/// writer.Write(123).Width(15);
+/// writer.Write(123).SetPrevWidth(15);
 /// writer.NextColumn().Write("备注");
 /// writer.Merge(new MergedRegionInfo(0, 0, 0, 3) { Value = "日报表" });
 /// </code>
@@ -42,8 +42,8 @@ public class ExcelSheetWriter
     // ==================== Sheet 切换 ====================
 
     public IWorkbook Workbook => _sheet.Workbook;
-    public int Row => _rowIndex;
-    public int Col => _colIndex;
+    public int RowIndex => _rowIndex;
+    public int ColIndex => _colIndex;
 
     /// <summary>切换到指定名称的 Sheet（不存在则创建），重置游标到 (0,0)。</summary>
     public ExcelSheetWriter UseSheet(string name)
@@ -191,18 +191,19 @@ public class ExcelSheetWriter
 
     // ==================== 列宽 ====================
 
-    /// <summary>设置当前列宽（字符数）。</summary>
-    public ExcelSheetWriter Width(int chars)
+    /// <summary>设置刚写入列的列宽（字符数），配合 Write 链式使用，操作的是上一列而非当前列。</summary>
+    public ExcelSheetWriter PrevWidth(int chars)
     {
+        var targetCol = Math.Max(0, _colIndex - 1);
         if (chars < 0)
-            _sheet.AutoSizeColumn(_colIndex);
+            _sheet.AutoSizeColumn(targetCol);
         else if (chars > 0)
-            _sheet.SetColumnWidth(_colIndex, chars * WidthFactor);
+            _sheet.SetColumnWidth(targetCol, chars * WidthFactor);
         return this;
     }
 
     /// <summary>设置指定列宽（字符数）。</summary>
-    public ExcelSheetWriter Width(int col, int chars)
+    public ExcelSheetWriter WidthAt(int col, int chars)
     {
         if (chars < 0)
             _sheet.AutoSizeColumn(col);
@@ -224,6 +225,18 @@ public class ExcelSheetWriter
             RegionUtil.SetBorderLeft(BorderStyle.Thin, addr, _sheet);
             RegionUtil.SetBorderTop(BorderStyle.Thin, addr, _sheet);
             _sheet.AddMergedRegion(addr);
+
+            // 清除非左上角单元格内容，确保合并后其余位置为空
+            for (var r = region.FirstRow; r <= region.LastRow; r++)
+            {
+                var row = _sheet.GetRow(r);
+                if (row == null) continue;
+                for (var c = region.FirstCol; c <= region.LastCol; c++)
+                {
+                    if (r == region.FirstRow && c == region.FirstCol) continue;
+                    row.GetCell(c)?.SetBlank();
+                }
+            }
         }
 
         var cell = CellAt(region.FirstRow, region.FirstCol);
