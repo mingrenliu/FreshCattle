@@ -32,7 +32,7 @@ public static class ExcelExtension
         }
     }
 
-    public static ICellStyle CreateDefaultCellStyle(this IWorkbook book)
+    public static ICellStyle CreateDefaultCellStyle(this IWorkbook book,string? format = null)
     {
         var style = book.CreateCellStyle();
         style.Alignment = HorizontalAlignment.Center;
@@ -42,6 +42,10 @@ public static class ExcelExtension
         style.BorderRight = BorderStyle.Thin;
         style.BorderTop = BorderStyle.Thin;
         style.WrapText = true;
+        if (!string.IsNullOrEmpty(format))
+        {
+            style.DataFormat = book.GetDataFormat(format);
+        }
         return style;
     }
     public static ICellStyle SetBackgroundColor(this ICellStyle style, int color)

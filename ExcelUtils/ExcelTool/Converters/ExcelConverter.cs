@@ -10,14 +10,12 @@ namespace ExcelTool.Converters;
 public abstract class ExcelConverter
 {
     public abstract Type Type { get; }
+    /// <summary>
+    /// 根据属性自己自定义 Excel 格式（如日期格式 "yyyy-mm-dd"），供 ExcelDataWriter 设置单元格样式时使用。不会自动应用于单元格
+    /// </summary>
     public virtual string? ExcelFormat { get; set; }
-
-    public virtual ICellStyle? CreateDefaultStyle(IWorkbook workbook)
+    public virtual void ApplyToStyle(ICellStyle style, ISheet sheet)
     {
-        if (string.IsNullOrWhiteSpace(ExcelFormat)) return null;
-        var style = workbook.CreateDefaultCellStyle();
-        style.DataFormat = workbook.GetDataFormat(ExcelFormat!);
-        return style;
     }
 
     /// <summary>

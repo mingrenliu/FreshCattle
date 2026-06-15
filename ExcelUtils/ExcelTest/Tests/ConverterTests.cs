@@ -87,6 +87,90 @@ internal class ConverterTests : TestBase
     }
 
     [Test]
+    public void Double_Precision_SetsExcelFormat()
+    {
+        var c0 = new DoubleConverter(0);
+        var c2 = new DoubleConverter(2);
+        var c5 = new DoubleConverter(5);
+        Assert.Multiple(() =>
+        {
+            Assert.That(c0.ExcelFormat, Is.EqualTo("0"));
+            Assert.That(c2.ExcelFormat, Is.EqualTo("0.00"));
+            Assert.That(c5.ExcelFormat, Is.EqualTo("0.00000"));
+            Assert.That(c0.Precision, Is.EqualTo(0));
+            Assert.That(c2.Precision, Is.EqualTo(2));
+            Assert.That(c5.Precision, Is.EqualTo(5));
+        });
+    }
+
+    [Test]
+    public void Double_Precision_DefaultIsNull()
+    {
+        var c = new DoubleConverter();
+        Assert.Multiple(() =>
+        {
+            Assert.That(c.Precision, Is.Null);
+            Assert.That(c.ExcelFormat, Is.Null);
+        });
+    }
+
+    [Test]
+    public void Double_ApplyToStyle_DefaultNoFormat()
+    {
+        var c = new DoubleConverter("#,##0.00");
+        Assert.That(c.ExcelFormat, Is.EqualTo("#,##0.00"));
+    }
+
+    [Test]
+    public void Double_ApplyToStyle_SetsDataFormat()
+    {
+        var c = new DoubleConverter(2);
+        using var wb = ExcelFactory.CreateWorkBook();
+        var sheet = wb.CreateNewSheet();
+        var style = wb.CreateCellStyle();
+        c.ApplyToStyle(style, sheet);
+        var expectedFormat = wb.GetDataFormat("0.00");
+        Assert.That(style.DataFormat, Is.EqualTo(expectedFormat));
+    }
+
+    [Test]
+    public void Double_ApplyToStyle_Precision0_SetsDataFormat()
+    {
+        var c = new DoubleConverter(0);
+        using var wb = ExcelFactory.CreateWorkBook();
+        var sheet = wb.CreateNewSheet();
+        var style = wb.CreateCellStyle();
+        c.ApplyToStyle(style, sheet);
+        var expectedFormat = wb.GetDataFormat("0");
+        Assert.That(style.DataFormat, Is.EqualTo(expectedFormat));
+    }
+
+    [Test]
+    public void Double_ApplyToStyle_NoFormat_DoesNotSetDataFormat()
+    {
+        var c = new DoubleConverter(); // 默认无格式
+        using var wb = ExcelFactory.CreateWorkBook();
+        var sheet = wb.CreateNewSheet();
+        var style = wb.CreateCellStyle();
+        var originalFormat = style.DataFormat;
+        c.ApplyToStyle(style, sheet);
+        Assert.That(style.DataFormat, Is.EqualTo(originalFormat));
+    }
+
+    [Test]
+    public void Double_WriteToCell_FormatApplied()
+    {
+        var c = new DoubleConverter(2);
+        using var wb = ExcelFactory.CreateWorkBook();
+        var sheet = wb.CreateNewSheet();
+        var style = wb.CreateCellStyle();
+        c.ApplyToStyle(style, sheet);
+        var cell = sheet.GetOrCreateRow(0).GetOrCreateCell(0);
+        c.Write(cell, 3.14159, style);
+        Assert.That(cell.CellStyle.DataFormat, Is.EqualTo(style.DataFormat));
+    }
+
+    [Test]
     public void Decimal_RoundTrip()
     {
         var c = new DecimalConverter();
@@ -96,12 +180,100 @@ internal class ConverterTests : TestBase
     }
 
     [Test]
+    public void Decimal_Precision_SetsExcelFormat()
+    {
+        var c0 = new DecimalConverter(0);
+        var c2 = new DecimalConverter(2);
+        var c4 = new DecimalConverter(4);
+        Assert.Multiple(() =>
+        {
+            Assert.That(c0.ExcelFormat, Is.EqualTo("0"));
+            Assert.That(c2.ExcelFormat, Is.EqualTo("0.00"));
+            Assert.That(c4.ExcelFormat, Is.EqualTo("0.0000"));
+            Assert.That(c0.Precision, Is.EqualTo(0));
+            Assert.That(c4.Precision, Is.EqualTo(4));
+        });
+    }
+
+    [Test]
+    public void Decimal_Precision_DefaultIsNull()
+    {
+        var c = new DecimalConverter();
+        Assert.Multiple(() =>
+        {
+            Assert.That(c.Precision, Is.Null);
+            Assert.That(c.ExcelFormat, Is.Null);
+        });
+    }
+
+    [Test]
+    public void Decimal_ApplyToStyle_SetsDataFormat()
+    {
+        var c = new DecimalConverter(2);
+        using var wb = ExcelFactory.CreateWorkBook();
+        var sheet = wb.CreateNewSheet();
+        var style = wb.CreateCellStyle();
+        c.ApplyToStyle(style, sheet);
+        var expectedFormat = wb.GetDataFormat("0.00");
+        Assert.That(style.DataFormat, Is.EqualTo(expectedFormat));
+    }
+
+    [Test]
     public void Float_RoundTrip()
     {
         var c = new SingleConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         c.Write(cell, 3.14f); Assert.That(c.Read(cell), Is.EqualTo(3.14f).Within(0.01));
+    }
+
+    [Test]
+    public void Float_Precision_SetsExcelFormat()
+    {
+        var c0 = new SingleConverter(0);
+        var c2 = new SingleConverter(2);
+        var c3 = new SingleConverter(3);
+        Assert.Multiple(() =>
+        {
+            Assert.That(c0.ExcelFormat, Is.EqualTo("0"));
+            Assert.That(c2.ExcelFormat, Is.EqualTo("0.00"));
+            Assert.That(c3.ExcelFormat, Is.EqualTo("0.000"));
+            Assert.That(c0.Precision, Is.EqualTo(0));
+            Assert.That(c2.Precision, Is.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public void Float_Precision_DefaultIsNull()
+    {
+        var c = new SingleConverter();
+        Assert.Multiple(() =>
+        {
+            Assert.That(c.Precision, Is.Null);
+            Assert.That(c.ExcelFormat, Is.Null);
+        });
+    }
+
+    [Test]
+    public void Float_ApplyToStyle_SetsDataFormat()
+    {
+        var c = new SingleConverter(1);
+        using var wb = ExcelFactory.CreateWorkBook();
+        var sheet = wb.CreateNewSheet();
+        var style = wb.CreateCellStyle();
+        c.ApplyToStyle(style, sheet);
+        var expectedFormat = wb.GetDataFormat("0.0");
+        Assert.That(style.DataFormat, Is.EqualTo(expectedFormat));
+    }
+
+    [Test]
+    public void Precision_ReuseSameFormat_ReturnsSameIndex()
+    {
+        using var wb = ExcelFactory.CreateWorkBook();
+        // 相同格式字符串应返回相同的 DataFormat 索引
+        var fmt1 = wb.GetDataFormat("0.00");
+        var fmt2 = wb.GetDataFormat("0.00");
+        Assert.That(fmt1, Is.EqualTo(fmt2));
     }
 
     [Test]

@@ -60,7 +60,19 @@ public class ByteConverter : ExcelConverter<byte>
 
 public class DoubleConverter : ExcelConverter<double>
 {
+    /// <summary>小数精度（位数），为 null 时不设置格式。</summary>
+    public uint? Precision { get; }
+
     public DoubleConverter() { }
+
+    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00"</param>
+    public DoubleConverter(uint precision)
+    {
+        Precision = precision;
+        ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+    }
+
+    /// <param name="format">自定义 Excel 数字格式，如 "0.00" 或 "#,##0.00"</param>
     public DoubleConverter(string? format) { ExcelFormat = format; }
 
     public override double Read(ICell cell) => cell.GetDouble() ?? 0d;
@@ -69,21 +81,58 @@ public class DoubleConverter : ExcelConverter<double>
         cell.SetCellValue(value);
         if (style != null) cell.CellStyle = style;
     }
+    public override void ApplyToStyle(ICellStyle style, ISheet sheet)
+    {
+        if (!string.IsNullOrWhiteSpace(ExcelFormat))
+            style.DataFormat = sheet.Workbook.GetDataFormat(ExcelFormat!);
+    }
 }
 
 public class SingleConverter : ExcelConverter<float>
 {
+    /// <summary>小数精度（位数），为 null 时不设置格式。</summary>
+    public uint? Precision { get; }
+
+    public SingleConverter() { }
+
+    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00"</param>
+    public SingleConverter(uint precision)
+    {
+        Precision = precision;
+        ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+    }
+
+    /// <param name="format">自定义 Excel 数字格式，如 "0.00"</param>
+    public SingleConverter(string? format) { ExcelFormat = format; }
+
     public override float Read(ICell cell) => cell.GetFloat() ?? 0f;
     public override void Write(ICell cell, float value, ICellStyle? style = null)
     {
         cell.SetCellValue((double)value);
         if (style != null) cell.CellStyle = style;
     }
+        public override void ApplyToStyle(ICellStyle style, ISheet sheet)
+    {
+        if (!string.IsNullOrWhiteSpace(ExcelFormat))
+            style.DataFormat = sheet.Workbook.GetDataFormat(ExcelFormat!);
+    }
 }
 
 public class DecimalConverter : ExcelConverter<decimal>
 {
+    /// <summary>小数精度（位数），为 null 时不设置格式。</summary>
+    public uint? Precision { get; }
+
     public DecimalConverter() { }
+
+    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00"</param>
+    public DecimalConverter(uint precision)
+    {
+        Precision = precision;
+        ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+    }
+
+    /// <param name="format">自定义 Excel 数字格式，如 "0.00"</param>
     public DecimalConverter(string? format) { ExcelFormat = format; }
 
     public override decimal Read(ICell cell) => cell.GetDecimal() ?? 0m;
@@ -91,6 +140,11 @@ public class DecimalConverter : ExcelConverter<decimal>
     {
         cell.SetCellValue((double)value);
         if (style != null) cell.CellStyle = style;
+    }
+        public override void ApplyToStyle(ICellStyle style, ISheet sheet)
+    {
+        if (!string.IsNullOrWhiteSpace(ExcelFormat))
+            style.DataFormat = sheet.Workbook.GetDataFormat(ExcelFormat!);
     }
 }
 

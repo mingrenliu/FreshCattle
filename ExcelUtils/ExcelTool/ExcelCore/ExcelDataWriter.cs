@@ -60,7 +60,8 @@ public class ExcelDataWriter<T> : ExcelSheetWriter where T : class
         {
             var value = prop.GetValue(item);
             var converter = prop.Converter ?? _defaultConverter;
-            Write(value, converter, Style(prop.ColumnName));
+            // 保证只设置了一次style（如果 converter 重写了 ApplyToStyle），避免性能问题
+            Write(value, converter, Style(prop.ColumnName,(style)=>converter.ApplyToStyle(style, Sheet)));
         }
         return CurrentRow();
     }
