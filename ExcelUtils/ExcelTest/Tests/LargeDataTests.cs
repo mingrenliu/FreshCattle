@@ -1,9 +1,13 @@
-namespace ExcelUtileTest.Tests;
+using ExcelTest.Entities;
+using ExcelTest.Utilities;
+
+namespace ExcelTest.Tests;
 
 [TestFixture]
 internal class LargeDataTests : TestBase
 {
-    [Test] public void Serialize_Deserialize_5000_Rows()
+    [Test]
+    public void Serialize_Deserialize_5000_Rows()
     {
         var count = 5000;
         var data = Enumerable.Range(1, count).Select(i => new Student
@@ -20,7 +24,7 @@ internal class LargeDataTests : TestBase
         LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, count), bytes);
         sw.Stop();
         Console.WriteLine($"序列化 {count} 条: {sw.ElapsedMilliseconds}ms, 文件 {bytes.Length / 1024}KB");
-        Assert.That(bytes.Length, Is.GreaterThan(1024));
+        Assert.That(bytes, Has.Length.GreaterThan(1024));
 
         sw.Restart();
         using var ms = new MemoryStream(bytes);
@@ -28,12 +32,16 @@ internal class LargeDataTests : TestBase
         sw.Stop();
         Console.WriteLine($"反序列化 {count} 条: {sw.ElapsedMilliseconds}ms");
 
-        Assert.That(imported.Count, Is.EqualTo(count));
-        Assert.That(imported[0].Name, Is.EqualTo(data[0].Name));
-        Assert.That(imported[^1].Name, Is.EqualTo(data[^1].Name));
+        Assert.Multiple(() =>
+        {
+            Assert.That(imported, Has.Count.EqualTo(count));
+            Assert.That(imported[0].Name, Is.EqualTo(data[0].Name));
+            Assert.That(imported[^1].Name, Is.EqualTo(data[^1].Name));
+        });
     }
 
-    [Test] public void Serialize_40000_Rows_Smoke()
+    [Test]
+    public void Serialize_40000_Rows_Smoke()
     {
         var data = Enumerable.Range(1, 40000).Select(i => new Student
         {
@@ -49,10 +57,11 @@ internal class LargeDataTests : TestBase
         LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, 40000), bytes);
         sw.Stop();
         Console.WriteLine($"4万行序列化: {sw.ElapsedMilliseconds}ms, 文件 {bytes.Length / 1024}KB");
-        Assert.That(bytes.Length, Is.GreaterThan(10240));
+        Assert.That(bytes, Has.Length.GreaterThan(10240));
     }
 
-    [Test] public void Serialize_AllTypes_10000_Rows()
+    [Test]
+    public void Serialize_AllTypes_10000_Rows()
     {
         var count = 10000;
         var data = Enumerable.Range(1, count).Select(i => new AllTypesEntity
@@ -90,17 +99,21 @@ internal class LargeDataTests : TestBase
         sw.Stop();
         Console.WriteLine($"全类型{count}行反序列化: {sw.ElapsedMilliseconds}ms");
 
-        Assert.That(imported.Count, Is.EqualTo(count));
-        Assert.That(imported[0].StringValue, Is.EqualTo(data[0].StringValue));
-        Assert.That(imported[^1].StringValue, Is.EqualTo(data[^1].StringValue));
+        Assert.Multiple(() =>
+        {
+            Assert.That(imported, Has.Count.EqualTo(count));
+            Assert.That(imported[0].StringValue, Is.EqualTo(data[0].StringValue));
+            Assert.That(imported[^1].StringValue, Is.EqualTo(data[^1].StringValue));
+        });
     }
 
-    [Test] public void Serialize_ManySheets()
+    [Test]
+    public void Serialize_ManySheets()
     {
         var sheets = new Dictionary<string, IEnumerable<Student>>();
         for (int i = 1; i <= 10; i++)
         {
-            sheets[$"班级_{i}"] = new[] { new Student { Name = $"学生_{i}", Age = 15 + i, Score = 70 + i } };
+            sheets[$"班级_{i}"] = [new Student { Name = $"学生_{i}", Age = 15 + i, Score = 70 + i }];
         }
 
         var sw = Stopwatch.StartNew();

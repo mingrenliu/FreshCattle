@@ -1,4 +1,4 @@
-﻿namespace ExcelUtileTest.Utilities;
+namespace ExcelTest.Utilities;
 
 internal static class LocationHelper
 {

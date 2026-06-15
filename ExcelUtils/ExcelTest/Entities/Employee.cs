@@ -1,4 +1,4 @@
-namespace ExcelUtileTest.Entities;
+namespace ExcelTest.Entities;
 
 /// <summary>
 /// opt-out 模式实体（配合 AutoInclude=true）：

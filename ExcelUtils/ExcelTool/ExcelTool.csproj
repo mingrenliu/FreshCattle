@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoWarn>CS8618;IDE0130</NoWarn>
+    <PackageId>YangCode.ExcelTool</PackageId>
+    <PackageTags>Excel</PackageTags>
+    <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Company>YangCode</Company>
+    <Authors>LiuYang</Authors>
+    <Description>package is used to excel import or export </Description>
+    <PackageIcon>L.png</PackageIcon>
+    <RepositoryUrl>https://github.com/mingrenliu/FreshCattle</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\L.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NPOI" Version="2.7.1" />
+  </ItemGroup>
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)ExcelAnalyzer.dll" PackagePath="analyzers/dotnet/cs/" />
+      <TfmSpecificPackageFile Include="$(OutputPath)ExcelTool.dll" PackagePath="lib/net6.0/" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\ExcelAnalyzer\ExcelAnalyzer.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+
+</Project>

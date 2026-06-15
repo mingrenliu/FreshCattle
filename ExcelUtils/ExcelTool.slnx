@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <BuildConfiguration Name="Debug" />
+    <BuildConfiguration Name="Release" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="ExcelTool\ExcelTool.csproj" />
+  <Project Path="ExcelTest\ExcelTest.csproj" />
+  <Project Path="ExcelAnalyzer\ExcelAnalyzer.csproj" />
+  <Project Path="AnalyzerTest\AnalyzerTest.csproj" />
+</Solution>

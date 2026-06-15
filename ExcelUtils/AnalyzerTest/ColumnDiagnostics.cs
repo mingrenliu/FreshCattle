@@ -1,5 +1,5 @@
-using ExcelUtile;
-using ExcelUtile.Converters;
+using ExcelTool;
+using ExcelTool.Converters;
 
 // LY0012-1: 两个 [ExcelColumn] 指定同名
 public class DuplicateColumnExplicit

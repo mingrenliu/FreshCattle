@@ -1,5 +1,5 @@
-// 内联属性定义（不依赖 ExcelUtile.dll）
-namespace ExcelUtile
+// 内联属性定义（不依赖 ExcelTool.dll）
+namespace ExcelTool
 {
     [System.AttributeUsage(System.AttributeTargets.Property, AllowMultiple = false)]
     public class ExcelColumnAttribute : System.Attribute
@@ -21,7 +21,7 @@ namespace ExcelUtile
     }
 }
 
-namespace ExcelUtile.Converters
+namespace ExcelTool.Converters
 {
     public abstract class ExcelConverter
     {

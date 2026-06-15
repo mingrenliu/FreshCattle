@@ -1,4 +1,4 @@
-namespace ExcelUtileTest.Entities;
+namespace ExcelTest.Entities;
 
 /// <summary>
 /// 全类型覆盖实体——测试所有内置转换器的导入导出。

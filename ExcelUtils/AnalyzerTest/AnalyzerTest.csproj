@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AttributeAnalyzer\AttributeAnalyzer.csproj">
+    <ProjectReference Include="..\ExcelAnalyzer\ExcelAnalyzer.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
     </ProjectReference>

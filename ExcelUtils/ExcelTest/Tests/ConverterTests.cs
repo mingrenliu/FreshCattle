@@ -1,6 +1,8 @@
-using ExcelUtile.Converters;
+using ExcelTest.Entities;
+using ExcelTest.Utilities;
+using ExcelTool.Converters;
 
-namespace ExcelUtileTest.Tests;
+namespace ExcelTest.Tests;
 
 [TestFixture]
 internal class ConverterTests : TestBase
@@ -31,27 +33,42 @@ internal class ConverterTests : TestBase
         };
     }
 
-    [Test] public void String_RoundTrip()
+    [Test]
+    public void String_RoundTrip()
     {
         var c = new StringConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
-        c.Write(cell, "Hello"); Assert.That(c.Read(cell), Is.EqualTo("Hello"));
-        c.Write(cell, ""); Assert.That(c.Read(cell), Is.EqualTo(""));
-        c.Write(cell, "  s  "); Assert.That(c.Read(cell), Is.EqualTo("  s  "));
+        c.Write(cell, "Hello"); var r1 = c.Read(cell);
+        c.Write(cell, ""); var r2 = c.Read(cell);
+        c.Write(cell, "  s  "); var r3 = c.Read(cell);
+        Assert.Multiple(() =>
+        {
+            Assert.That(r1, Is.EqualTo("Hello"));
+            Assert.That(r2, Is.EqualTo(""));
+            Assert.That(r3, Is.EqualTo("  s  "));
+        });
     }
 
-    [Test] public void Int_RoundTrip()
+    [Test]
+    public void Int_RoundTrip()
     {
         var c = new Int32Converter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
-        c.Write(cell, 0); Assert.That(c.Read(cell), Is.EqualTo(0));
-        c.Write(cell, int.MaxValue); Assert.That(c.Read(cell), Is.EqualTo(int.MaxValue));
-        c.Write(cell, int.MinValue); Assert.That(c.Read(cell), Is.EqualTo(int.MinValue));
+        c.Write(cell, 0); var r1 = c.Read(cell);
+        c.Write(cell, int.MaxValue); var r2 = c.Read(cell);
+        c.Write(cell, int.MinValue); var r3 = c.Read(cell);
+        Assert.Multiple(() =>
+        {
+            Assert.That(r1, Is.EqualTo(0));
+            Assert.That(r2, Is.EqualTo(int.MaxValue));
+            Assert.That(r3, Is.EqualTo(int.MinValue));
+        });
     }
 
-    [Test] public void Long_RoundTrip()
+    [Test]
+    public void Long_RoundTrip()
     {
         var c = new Int64Converter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -59,7 +76,8 @@ internal class ConverterTests : TestBase
         c.Write(cell, 999888777666L); Assert.That(c.Read(cell), Is.EqualTo(999888777666L));
     }
 
-    [Test] public void Double_RoundTrip()
+    [Test]
+    public void Double_RoundTrip()
     {
         var c = new DoubleConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -68,7 +86,8 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell), Is.EqualTo(3.1415926535).Within(0.0001));
     }
 
-    [Test] public void Decimal_RoundTrip()
+    [Test]
+    public void Decimal_RoundTrip()
     {
         var c = new DecimalConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -76,7 +95,8 @@ internal class ConverterTests : TestBase
         c.Write(cell, 123456.78m); Assert.That(c.Read(cell), Is.EqualTo(123456.78m).Within(0.01));
     }
 
-    [Test] public void Float_RoundTrip()
+    [Test]
+    public void Float_RoundTrip()
     {
         var c = new SingleConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -84,55 +104,79 @@ internal class ConverterTests : TestBase
         c.Write(cell, 3.14f); Assert.That(c.Read(cell), Is.EqualTo(3.14f).Within(0.01));
     }
 
-    [Test] public void Bool_RoundTrip()
+    [Test]
+    public void Bool_RoundTrip()
     {
         var c = new BooleanConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
-        c.Write(cell, true); Assert.That(c.Read(cell), Is.True);
-        c.Write(cell, false); Assert.That(c.Read(cell), Is.False);
+        c.Write(cell, true); var r1 = c.Read(cell);
+        c.Write(cell, false); var r2 = c.Read(cell);
+        Assert.Multiple(() =>
+        {
+            Assert.That(r1, Is.True);
+            Assert.That(r2, Is.False);
+        });
     }
 
-    [Test] public void Bool_CustomText()
+    [Test]
+    public void Bool_CustomText()
     {
         var c = new BooleanConverter("对", "错");
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
-        c.Write(cell, true); Assert.That(c.Read(cell), Is.True);
-        Assert.That(cell.StringCellValue, Is.EqualTo("对"));
+        c.Write(cell, true);
+        Assert.Multiple(() =>
+        {
+            Assert.That(c.Read(cell), Is.True);
+            Assert.That(cell.StringCellValue, Is.EqualTo("对"));
+        });
     }
 
-    [Test] public void DateTime_RoundTrip()
+    [Test]
+    public void DateTime_RoundTrip()
     {
         var c = new DateTimeConverter("yyyy-MM-dd HH:mm:ss");
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         c.Write(cell, new DateTime(2024, 6, 15, 14, 30, 0));
         var r = c.Read(cell);
-        Assert.That(r.Year, Is.EqualTo(2024)); Assert.That(r.Month, Is.EqualTo(6));
+        Assert.Multiple(() =>
+        {
+            Assert.That(r.Year, Is.EqualTo(2024)); Assert.That(r.Month, Is.EqualTo(6));
+        });
     }
 
-    [Test] public void DateOnly_RoundTrip()
+    [Test]
+    public void DateOnly_RoundTrip()
     {
         var c = new DateOnlyConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         c.Write(cell, new DateOnly(2025, 3, 20));
         var r = c.Read(cell);
-        Assert.That(r.Year, Is.EqualTo(2025)); Assert.That(r.Month, Is.EqualTo(3));
+        Assert.Multiple(() =>
+        {
+            Assert.That(r.Year, Is.EqualTo(2025)); Assert.That(r.Month, Is.EqualTo(3));
+        });
     }
 
-    [Test] public void TimeOnly_RoundTrip()
+    [Test]
+    public void TimeOnly_RoundTrip()
     {
         var c = new TimeOnlyConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         c.Write(cell, new TimeOnly(9, 15, 30));
         var r = c.Read(cell);
-        Assert.That(r.Hour, Is.EqualTo(9)); Assert.That(r.Minute, Is.EqualTo(15));
+        Assert.Multiple(() =>
+        {
+            Assert.That(r.Hour, Is.EqualTo(9)); Assert.That(r.Minute, Is.EqualTo(15));
+        });
     }
 
-    [Test] public void TimeSpan_RoundTrip()
+    [Test]
+    public void TimeSpan_RoundTrip()
     {
         var c = new TimeSpanConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -141,7 +185,8 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell).TotalHours, Is.EqualTo(3.5).Within(0.01));
     }
 
-    [Test] public void Guid_RoundTrip()
+    [Test]
+    public void Guid_RoundTrip()
     {
         var c = new GuidConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -149,7 +194,8 @@ internal class ConverterTests : TestBase
         var g = Guid.NewGuid(); c.Write(cell, g); Assert.That(c.Read(cell), Is.EqualTo(g));
     }
 
-    [Test] public void DateTimeOffset_RoundTrip()
+    [Test]
+    public void DateTimeOffset_RoundTrip()
     {
         var c = new DateTimeOffsetConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -158,29 +204,40 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell).Year, Is.EqualTo(2024));
     }
 
-    [Test] public void ShortAndByte()
+    [Test]
+    public void ShortAndByte()
     {
         using var wb = ExcelFactory.CreateWorkBook();
         var s = wb.CreateNewSheet();
         var sc = new Int16Converter(); var bc = new ByteConverter();
         sc.Write(s.GetOrCreateRow(0).GetOrCreateCell(0), (short)12345);
-        Assert.That(sc.Read(s.GetOrCreateRow(0).GetOrCreateCell(0)), Is.EqualTo(12345));
+        var sr = sc.Read(s.GetOrCreateRow(0).GetOrCreateCell(0));
         bc.Write(s.GetOrCreateRow(1).GetOrCreateCell(0), (byte)200);
-        Assert.That(bc.Read(s.GetOrCreateRow(1).GetOrCreateCell(0)), Is.EqualTo(200));
+        var br = bc.Read(s.GetOrCreateRow(1).GetOrCreateCell(0));
+        Assert.Multiple(() =>
+        {
+            Assert.That(sr, Is.EqualTo(12345));
+            Assert.That(br, Is.EqualTo(200));
+        });
     }
 
-    [Test] public void LongDateTime_RoundTrip()
+    [Test]
+    public void LongDateTime_RoundTrip()
     {
         var c = new LongDateTimeConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         var dt = new DateTime(2024, 6, 15, 14, 30, 45);
         c.Write(cell, dt);
-        Assert.That(c.Read(cell), Is.EqualTo(dt));
-        Assert.That(cell.StringCellValue, Is.EqualTo("2024-06-15 14:30:45"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(c.Read(cell), Is.EqualTo(dt));
+            Assert.That(cell.StringCellValue, Is.EqualTo("2024-06-15 14:30:45"));
+        });
     }
 
-    [Test] public void LongDateTime_CustomFormat()
+    [Test]
+    public void LongDateTime_CustomFormat()
     {
         var c = new LongDateTimeConverter("yyyy/MM/dd HH:mm");
         using var wb = ExcelFactory.CreateWorkBook();
@@ -189,7 +246,8 @@ internal class ConverterTests : TestBase
         Assert.That(cell.StringCellValue, Is.EqualTo("2024/12/01 08:00"));
     }
 
-    [Test] public void TimeSpanMinutes_RoundTrip()
+    [Test]
+    public void TimeSpanMinutes_RoundTrip()
     {
         var c = new TimeSpanMinutesConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -198,11 +256,15 @@ internal class ConverterTests : TestBase
         // 3.5小时 = 210分钟
         var ts = TimeSpan.FromHours(3.5);
         c.Write(cell, ts);
-        Assert.That(cell.StringCellValue, Is.EqualTo("210.00"));
-        Assert.That(c.Read(cell).TotalMinutes, Is.EqualTo(210).Within(0.01));
+        Assert.Multiple(() =>
+        {
+            Assert.That(cell.StringCellValue, Is.EqualTo("210.00"));
+            Assert.That(c.Read(cell).TotalMinutes, Is.EqualTo(210).Within(0.01));
+        });
     }
 
-    [Test] public void TimeSpanHours_RoundTrip()
+    [Test]
+    public void TimeSpanHours_RoundTrip()
     {
         var c = new TimeSpanHoursConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -211,11 +273,17 @@ internal class ConverterTests : TestBase
         // 5400秒 = 1.5小时
         var ts = TimeSpan.FromSeconds(5400);
         c.Write(cell, ts);
-        Assert.That(cell.StringCellValue, Is.EqualTo("1.50"));
-        Assert.That(c.Read(cell).TotalHours, Is.EqualTo(1.5).Within(0.01));
+        var cellText = cell.StringCellValue;
+        var readBack = c.Read(cell);
+        Assert.Multiple(() =>
+        {
+            Assert.That(cellText, Is.EqualTo("1.50"));
+            Assert.That(readBack.TotalHours, Is.EqualTo(1.5).Within(0.01));
+        });
     }
 
-    [Test] public void TimeSpanHours_ReadFromString()
+    [Test]
+    public void TimeSpanHours_ReadFromString()
     {
         var c = new TimeSpanHoursConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -224,7 +292,8 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell).TotalHours, Is.EqualTo(2.75).Within(0.01));
     }
 
-    [Test] public void Enum_Int_RoundTrip()
+    [Test]
+    public void Enum_Int_RoundTrip()
     {
         var c = new EnumConverter<DayOfWeek>();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -232,11 +301,17 @@ internal class ConverterTests : TestBase
 
         c.Write(cell, DayOfWeek.Wednesday);
         // 输出整数值 3（Sunday=0）
-        Assert.That(cell.StringCellValue, Is.EqualTo("3"));
-        Assert.That(c.Read(cell), Is.EqualTo(DayOfWeek.Wednesday));
+        var cellText = cell.StringCellValue;
+        var readBack = c.Read(cell);
+        Assert.Multiple(() =>
+        {
+            Assert.That(cellText, Is.EqualTo("3"));
+            Assert.That(readBack, Is.EqualTo(DayOfWeek.Wednesday));
+        });
     }
 
-    [Test] public void Enum_Int_ReadFromString()
+    [Test]
+    public void Enum_Int_ReadFromString()
     {
         var c = new EnumConverter<DayOfWeek>();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -246,7 +321,8 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell), Is.EqualTo(DayOfWeek.Friday));
     }
 
-    [Test] public void Enum_ReadFromNumericString()
+    [Test]
+    public void Enum_ReadFromNumericString()
     {
         var c = new EnumConverter<DayOfWeek>();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -255,17 +331,23 @@ internal class ConverterTests : TestBase
         Assert.That((int)(object)c.Read(cell), Is.EqualTo(3));
     }
 
-    [Test] public void DateTime_ReadFromString()
+    [Test]
+    public void DateTime_ReadFromString()
     {
         var c = new DateTimeConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         cell.SetCellValue("2024-12-25");
         var r = c.Read(cell);
-        Assert.That(r.Year, Is.EqualTo(2024)); Assert.That(r.Month, Is.EqualTo(12));
+        Assert.Multiple(() =>
+        {
+            Assert.That(r.Year, Is.EqualTo(2024));
+            Assert.That(r.Month, Is.EqualTo(12));
+        });
     }
 
-    [Test] public void DateTime_Empty_ReturnsDefault()
+    [Test]
+    public void DateTime_Empty_ReturnsDefault()
     {
         var c = new DateTimeConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -273,26 +355,38 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell), Is.EqualTo(default(DateTime)));
     }
 
-    [Test] public void DateTimeOffset_ReadFromString()
+    [Test]
+    public void DateTimeOffset_ReadFromString()
     {
         var c = new DateTimeOffsetConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         cell.SetCellValue("2024-08-01T00:00:00+08:00");
         var r = c.Read(cell);
-        Assert.That(r.Year, Is.EqualTo(2024)); Assert.That(r.Month, Is.EqualTo(8));
+        Assert.Multiple(() =>
+        {
+            Assert.That(r.Year, Is.EqualTo(2024));
+            Assert.That(r.Month, Is.EqualTo(8));
+        });
     }
 
-    [Test] public void Guid_Empty_And_Default()
+    [Test]
+    public void Guid_Empty_And_Default()
     {
         var c = new GuidConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
-        c.Write(cell, Guid.Empty); Assert.That(c.Read(cell), Is.EqualTo(Guid.Empty));
-        cell.SetCellValue(""); Assert.That(c.Read(cell), Is.EqualTo(default(Guid)));
+        c.Write(cell, Guid.Empty); var r1 = c.Read(cell);
+        cell.SetCellValue(""); var r2 = c.Read(cell);
+        Assert.Multiple(() =>
+        {
+            Assert.That(r1, Is.EqualTo(Guid.Empty));
+            Assert.That(r2, Is.EqualTo(default(Guid)));
+        });
     }
 
-    [Test] public void Bool_ReadNumeric()
+    [Test]
+    public void Bool_ReadNumeric()
     {
         var c = new BooleanConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -303,7 +397,8 @@ internal class ConverterTests : TestBase
         Assert.That(result, Is.True.Or.False); // 接受任意结果，取决于实现
     }
 
-    [Test] public void String_Null_ReturnsEmpty()
+    [Test]
+    public void String_Null_ReturnsEmpty()
     {
         var c = new StringConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -311,7 +406,8 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell), Is.EqualTo(""));
     }
 
-    [Test] public void TimeSpan_ReadFromString()
+    [Test]
+    public void TimeSpan_ReadFromString()
     {
         var c = new TimeSpanConverter();
         using var wb = ExcelFactory.CreateWorkBook();
@@ -320,17 +416,23 @@ internal class ConverterTests : TestBase
         Assert.That(c.Read(cell), Is.EqualTo(TimeSpan.FromHours(2.5)));
     }
 
-    [Test] public void TimeOnly_ReadFromString()
+    [Test]
+    public void TimeOnly_ReadFromString()
     {
         var c = new TimeOnlyConverter();
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
         cell.SetCellValue("14:30:00");
         var r = c.Read(cell);
-        Assert.That(r.Hour, Is.EqualTo(14)); Assert.That(r.Minute, Is.EqualTo(30));
+        Assert.Multiple(() =>
+        {
+            Assert.That(r.Hour, Is.EqualTo(14));
+            Assert.That(r.Minute, Is.EqualTo(30));
+        });
     }
 
-    [Test] public void DateOnly_ReadFromString()
+    [Test]
+    public void DateOnly_ReadFromString()
     {
         var c = new DateOnlyConverter();
         using var wb = ExcelFactory.CreateWorkBook();

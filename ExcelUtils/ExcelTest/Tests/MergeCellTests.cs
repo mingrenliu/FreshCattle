@@ -1,4 +1,6 @@
-namespace ExcelUtileTest.Tests;
+using ExcelTest.Utilities;
+
+namespace ExcelTest.Tests;
 
 /// <summary>
 /// 合并单元格测试：验证合并区域的写入、保存、读取一致性。
@@ -17,21 +19,24 @@ internal class MergeCellTests : TestBase
         var reader = new ExcelSheetReader(wb.GetSheetAt(0));
 
         var mergedRegions = reader.Sheet.MergedRegions;
-        Assert.That(mergedRegions.Count, Is.GreaterThan(0), "模板应包含合并单元格");
+        Assert.That(mergedRegions, Is.Not.Empty, "模板应包含合并单元格");
 
         foreach (var region in mergedRegions)
         {
-            var topLeftContent = reader.GetString(region.FirstRow, region.FirstColumn);
-            Assert.That(topLeftContent, Is.Not.Null.And.Not.Empty,
-                $"({region.FirstRow},{region.FirstColumn}) 左上角应有内容");
-
-            for (var r = region.FirstRow; r <= region.LastRow; r++)
-            for (var c = region.FirstColumn; c <= region.LastColumn; c++)
+            Assert.Multiple(() =>
             {
-                if (r == region.FirstRow && c == region.FirstColumn) continue;
-                Assert.That(reader.GetString(r, c), Is.Null.Or.Empty,
-                    $"({r},{c}) 非左上角内容应为空");
-            }
+                var topLeftContent = reader.GetString(region.FirstRow, region.FirstColumn);
+                Assert.That(topLeftContent, Is.Not.Null.And.Not.Empty,
+                    $"({region.FirstRow},{region.FirstColumn}) 左上角应有内容");
+
+                for (var r = region.FirstRow; r <= region.LastRow; r++)
+                for (var c = region.FirstColumn; c <= region.LastColumn; c++)
+                {
+                    if (r == region.FirstRow && c == region.FirstColumn) continue;
+                    Assert.That(reader.GetString(r, c), Is.Null.Or.Empty,
+                        $"({r},{c}) 非左上角内容应为空");
+                }
+            });
         }
     }
 
@@ -54,10 +59,13 @@ internal class MergeCellTests : TestBase
         using var wb2 = ExcelFactory.CreateWorkBook(ms);
         var reader = new ExcelSheetReader(wb2.GetSheetAt(0));
 
-        Assert.That(reader.GetString(2, 0), Is.EqualTo("合并内容"), "左上角应为合并内容");
-        Assert.That(reader.GetString(2, 1), Is.Null.Or.Empty, "(2,1) 内容应为空");
-        Assert.That(reader.GetString(3, 0), Is.Null.Or.Empty, "(3,0) 内容应为空");
-        Assert.That(reader.GetString(3, 1), Is.Null.Or.Empty, "(3,1) 内容应为空");
+        Assert.Multiple(() =>
+        {
+            Assert.That(reader.GetString(2, 0), Is.EqualTo("合并内容"), "左上角应为合并内容");
+            Assert.That(reader.GetString(2, 1), Is.Null.Or.Empty, "(2,1) 内容应为空");
+            Assert.That(reader.GetString(3, 0), Is.Null.Or.Empty, "(3,0) 内容应为空");
+            Assert.That(reader.GetString(3, 1), Is.Null.Or.Empty, "(3,1) 内容应为空");
+        });
     }
 
     [Test]
@@ -84,8 +92,11 @@ internal class MergeCellTests : TestBase
         var reader = new ExcelSheetReader(wb2.GetSheetAt(0));
 
         var headers = reader.ReadHeaders(0);
-        Assert.That(headers.Values, Contains.Item("跨行标题"));
-        Assert.That(headers.Values, Contains.Item("列1"));
-        Assert.That(headers.Values, Contains.Item("列2"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(headers.Values, Contains.Item("跨行标题"));
+            Assert.That(headers.Values, Contains.Item("列1"));
+            Assert.That(headers.Values, Contains.Item("列2"));
+        });
     }
 }

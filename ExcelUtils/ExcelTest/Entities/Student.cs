@@ -1,4 +1,4 @@
-namespace ExcelUtileTest.Entities;
+namespace ExcelTest.Entities;
 
 /// <summary>
 /// opt-in 模式实体：只导出标注了 [ExcelColumn] 的属性。

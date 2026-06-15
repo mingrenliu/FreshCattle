@@ -1,6 +1,7 @@
-using ExcelUtile.Converters;
+using ExcelTest.Utilities;
+using ExcelTool.Converters;
 
-namespace ExcelUtileTest.Tests;
+namespace ExcelTest.Tests;
 
 [TestFixture]
 internal class SheetWriterTests : TestBase
@@ -11,9 +12,9 @@ internal class SheetWriterTests : TestBase
         using var wb = ExcelFactory.CreateWorkBook();
         var writer = new ExcelSheetWriter(wb.CreateNewSheet("低层测试"));
 
-        writer.Style("h", s => { s.FillForegroundColor = 22; s.FillPattern = FillPattern.SolidForeground; });
+        writer.Style("h", s => s.SetBackgroundColor(22));
         var mergeR = writer.Style("merge");
-        mergeR.FillBackgroundColor = 48;
+        mergeR.SetBackgroundColor(48);
         mergeR.Alignment = HorizontalAlignment.Center;
         mergeR.VerticalAlignment = VerticalAlignment.Center;
         writer.MoveTo(0, 0);
@@ -32,9 +33,12 @@ internal class SheetWriterTests : TestBase
         using var wb2 = ExcelFactory.CreateWorkBook(ms);
         var reader = new ExcelSheetReader(wb2.GetSheetAt(0));
 
-        Assert.That(reader.ReadHeaders(1)[0], Is.EqualTo("列A"));
-        Assert.That(reader.GetString(2, 0), Is.EqualTo("值1"));
-        Assert.That(reader.GetString(3, 1), Is.EqualTo("888"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(reader.ReadHeaders(1)[0], Is.EqualTo("列A"));
+            Assert.That(reader.GetString(2, 0), Is.EqualTo("值1"));
+            Assert.That(reader.GetString(3, 1), Is.EqualTo("888"));
+        });
     }
 
     [Test]
@@ -52,9 +56,12 @@ internal class SheetWriterTests : TestBase
         var reader = new ExcelSheetReader(wb.GetSheetAt(0));
 
         // 表头在第0行，数据从第1行开始
-        Assert.That(reader.ReadHeaders(0)[0], Is.EqualTo("姓名"));
-        Assert.That(reader.GetString(1, 0), Is.EqualTo("张三"));
-        Assert.That(reader.GetString(2, 0), Is.EqualTo("李四"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(reader.ReadHeaders(0)[0], Is.EqualTo("姓名"));
+            Assert.That(reader.GetString(1, 0), Is.EqualTo("张三"));
+            Assert.That(reader.GetString(2, 0), Is.EqualTo("李四"));
+        });
     }
 
     [Test]
@@ -72,8 +79,11 @@ internal class SheetWriterTests : TestBase
         using var wb2 = ExcelFactory.CreateWorkBook(ms);
         var reader = new ExcelSheetReader(wb2.GetSheetAt(0));
 
-        Assert.That(reader.GetString(0, 0), Is.EqualTo("起始"));
-        Assert.That(reader.GetString(5, 3), Is.EqualTo("角落值"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(reader.GetString(0, 0), Is.EqualTo("起始"));
+            Assert.That(reader.GetString(5, 3), Is.EqualTo("角落值"));
+        });
     }
 
     [Test]
@@ -98,9 +108,12 @@ internal class SheetWriterTests : TestBase
         var s1 = writer.Style("h", s => s.BorderBottom = BorderStyle.Double);
         var s2 = writer.Style("h");
 
-        Assert.That(ReferenceEquals(s1, s2), Is.True);
-        Assert.That(writer.HasStyle("h"), Is.True);
-        Assert.That(writer.HasStyle("nonexistent"), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ReferenceEquals(s1, s2), Is.True);
+            Assert.That(writer.HasStyle("h"), Is.True);
+            Assert.That(writer.HasStyle("nonexistent"), Is.False);
+        });
     }
 
     [Test]
@@ -142,10 +155,14 @@ internal class SheetWriterTests : TestBase
         writer.NextRow(); writer.Write("李四"); writer.Write(30);
 
         var reader = new ExcelSheetReader(sheet);
-        Assert.That(reader.ReadHeaders(0)[0], Is.EqualTo("姓名"));
-        var row = reader.ReadRowAsText(1, new[] { 0, 1 });
-        Assert.That(row[0], Is.EqualTo("张三"));
-        Assert.That(row[1], Is.EqualTo("25"));
+        var header = reader.ReadHeaders(0)[0];
+        var row = reader.ReadRowAsText(1, [0, 1]);
+        Assert.Multiple(() =>
+        {
+            Assert.That(header, Is.EqualTo("姓名"));
+            Assert.That(row[0], Is.EqualTo("张三"));
+            Assert.That(row[1], Is.EqualTo("25"));
+        });
     }
 
     [Test]
@@ -155,18 +172,24 @@ internal class SheetWriterTests : TestBase
         var writer = new ExcelSheetWriter(wb.CreateNewSheet());
 
         writer.MoveTo(0, 0);
-        Assert.That(writer.RowIndex, Is.EqualTo(0)); Assert.That(writer.ColIndex, Is.EqualTo(0));
-
+        var r0 = writer.RowIndex; var c0 = writer.ColIndex;
         writer.NextCol();
-        Assert.That(writer.ColIndex, Is.EqualTo(1));
+        var c1 = writer.ColIndex;
         writer.NextCol(3);
-        Assert.That(writer.ColIndex, Is.EqualTo(4));
-
+        var c4 = writer.ColIndex;
         writer.NextRow();
-        Assert.That(writer.RowIndex, Is.EqualTo(1)); Assert.That(writer.ColIndex, Is.EqualTo(0));
-
+        var r1 = writer.RowIndex; var c0b = writer.ColIndex;
         writer.MoveTo(5, 2);
-        Assert.That(writer.RowIndex, Is.EqualTo(5)); Assert.That(writer.ColIndex, Is.EqualTo(2));
+        var r5 = writer.RowIndex; var c2 = writer.ColIndex;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(r0, Is.EqualTo(0)); Assert.That(c0, Is.EqualTo(0));
+            Assert.That(c1, Is.EqualTo(1));
+            Assert.That(c4, Is.EqualTo(4));
+            Assert.That(r1, Is.EqualTo(1)); Assert.That(c0b, Is.EqualTo(0));
+            Assert.That(r5, Is.EqualTo(5)); Assert.That(c2, Is.EqualTo(2));
+        });
     }
 
     [Test]
@@ -180,10 +203,13 @@ internal class SheetWriterTests : TestBase
         writer.Write(new DateTime(2024, 1, 1)); writer.Write(Guid.NewGuid());
 
         var reader = new ExcelSheetReader(wb.GetSheetAt(0));
-        Assert.That(reader.GetString(0, 0), Is.EqualTo("文本"));
-        Assert.That(reader.GetString(0, 1), Is.EqualTo("123"));
-        Assert.That(reader.GetString(0, 2), Does.Contain("45.67"));
-        Assert.That(reader.GetString(0, 3), Is.EqualTo("是")); // bool 默认中文输出
+        Assert.Multiple(() =>
+        {
+            Assert.That(reader.GetString(0, 0), Is.EqualTo("文本"));
+            Assert.That(reader.GetString(0, 1), Is.EqualTo("123"));
+            Assert.That(reader.GetString(0, 2), Does.Contain("45.67"));
+            Assert.That(reader.GetString(0, 3), Is.EqualTo("是")); // bool 默认中文输出
+        });
     }
 
     [Test]
@@ -208,8 +234,11 @@ internal class SheetWriterTests : TestBase
 
         var readerA = new ExcelSheetReader(wb.GetSheet("SheetA"));
         var readerB = new ExcelSheetReader(wb.GetSheet("SheetB"));
-        Assert.That(readerA.GetString(0, 0), Is.EqualTo("A1"));
-        Assert.That(readerB.GetString(0, 0), Is.EqualTo("B1"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(readerA.GetString(0, 0), Is.EqualTo("A1"));
+            Assert.That(readerB.GetString(0, 0), Is.EqualTo("B1"));
+        });
     }
 
     [Test]
@@ -228,9 +257,12 @@ internal class SheetWriterTests : TestBase
         using var wb = ExcelFactory.CreateWorkBook();
         var writer = new ExcelSheetWriter(wb.CreateNewSheet());
         // 不抛异常即可
-        Assert.DoesNotThrow(() => writer.WidthAt(0, 20));
-        Assert.DoesNotThrow(() => writer.WidthAt(1, -1));
-        Assert.DoesNotThrow(() => writer.WidthAt(2, 0));
+        Assert.Multiple(() =>
+        {
+            Assert.DoesNotThrow(() => writer.WidthAt(0, 20));
+            Assert.DoesNotThrow(() => writer.WidthAt(1, -1));
+            Assert.DoesNotThrow(() => writer.WidthAt(2, 0));
+        });
     }
 
     [Test]
@@ -238,7 +270,10 @@ internal class SheetWriterTests : TestBase
     {
         using var wb = ExcelFactory.CreateWorkBook();
         var writer = new ExcelSheetWriter(wb.CreateNewSheet());
-        Assert.DoesNotThrow(() => writer.Merge((IEnumerable<MergeRegion>?)null));
-        Assert.DoesNotThrow(() => writer.Merge(Array.Empty<MergeRegion>()));
+        Assert.Multiple(() =>
+        {
+            Assert.DoesNotThrow(() => writer.Merge((IEnumerable<MergeRegion>?)null));
+            Assert.DoesNotThrow(() => writer.Merge([]));
+        });
     }
 }

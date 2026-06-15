@@ -1,4 +1,4 @@
-﻿namespace ExcelUtileTest.Utilities;
+namespace ExcelTest.Utilities;
 
 [SetUpFixture]
 internal abstract class TestBase
