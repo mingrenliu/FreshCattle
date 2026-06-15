@@ -13,7 +13,7 @@ public class ExcelDataWriter<T> : ExcelSheetWriter where T : class
     public readonly ExcelOptions Options;
     public readonly ExcelWriterTypeInfo TypeInfo;
     private readonly ExcelConverter _defaultConverter = BuiltinConverters.Fallback;
-
+    protected override float DefaultRowHeight => Options.DefaultRowHeight;
     public ExcelDataWriter(ISheet sheet, ExcelWriterTypeInfo typeInfo, ExcelOptions options) : base(sheet)
     {
         TypeInfo = typeInfo;

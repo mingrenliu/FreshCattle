@@ -67,7 +67,7 @@ public static class ExcelExtension
         }
     }
 
-    public static IRow GetOrCreateRow(this ISheet sheet, int rowNum, int height = 20)
+    public static IRow GetOrCreateRow(this ISheet sheet, int rowNum, float height = 20)
     {
         var row = sheet.GetRow(rowNum);
         if (row == null)

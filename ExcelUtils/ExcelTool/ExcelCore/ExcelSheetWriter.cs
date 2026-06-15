@@ -30,7 +30,7 @@ public class ExcelSheetWriter
     private readonly Dictionary<string, ICellStyle> _namedStyles = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>默认行高（磅），子类可重写。</summary>
-    protected virtual int DefaultRowHeight => 20;
+    protected virtual float DefaultRowHeight => 20;
 
     // ==================== 构造 ====================
 
@@ -125,7 +125,7 @@ public class ExcelSheetWriter
 
     // ==================== 行/单元格 ====================
 
-    public IRow RowAt(int rowIndex, int? height = null)
+    public IRow RowAt(int rowIndex, float? height = null)
     {
         return _sheet.GetOrCreateRow(rowIndex, height ?? DefaultRowHeight);
     }
@@ -193,7 +193,7 @@ public class ExcelSheetWriter
     // ==================== 列宽 ====================
 
     /// <summary>设置刚写入列的列宽（字符数），配合 Write 链式使用，操作的是上一列而非当前列。</summary>
-    public ExcelSheetWriter PrevWidth(int chars)
+    public ExcelSheetWriter PrevWidth(double chars)
     {
         var targetCol = Math.Max(0, _colIndex - 1);
         if (chars < 0)
@@ -204,7 +204,7 @@ public class ExcelSheetWriter
     }
 
     /// <summary>设置指定列宽（字符数）。</summary>
-    public ExcelSheetWriter WidthAt(int col, int chars)
+    public ExcelSheetWriter WidthAt(int col, double chars)
     {
         if (chars < 0)
             _sheet.AutoSizeColumn(col);

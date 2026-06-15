@@ -30,7 +30,7 @@ public class ExcelOptions
     // ==================== 列宽 / 行高 ====================
 
     /// <summary>默认列宽（字符数），默认 15。</summary>
-    public int DefaultColumnWidth { get; set; } = 15;
+    public float DefaultColumnWidth { get; set; } = 15;
 
     /// <summary>默认行高（磅），默认 20。</summary>
     public float DefaultRowHeight { get; set; } = 20;
