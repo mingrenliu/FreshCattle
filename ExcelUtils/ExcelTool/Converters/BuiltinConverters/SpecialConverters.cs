@@ -1,4 +1,3 @@
-using NPOI.SS.UserModel;
 using ExcelTool.ExcelCore;
 using System.Globalization;
 
@@ -6,8 +5,14 @@ namespace ExcelTool.Converters;
 
 public class DateTimeConverter : ExcelConverter<DateTime>
 {
-    public DateTimeConverter() => ExcelFormat = "yyyy-MM-dd";
-    public DateTimeConverter(string? format) { if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format; }
+    public DateTimeConverter() : this("yyyy-MM-dd")
+    {
+    }
+
+    public DateTimeConverter(string? format)
+    {
+        if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format;
+    }
 
     public override DateTime Read(ICell cell)
     {
@@ -36,8 +41,14 @@ public class DateTimeConverter : ExcelConverter<DateTime>
 
 public class LongDateTimeConverter : ExcelConverter<DateTime>
 {
-    public LongDateTimeConverter() => ExcelFormat = "yyyy-MM-dd HH:mm:ss";
-    public LongDateTimeConverter(string? format) { if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format; }
+    public LongDateTimeConverter() : this("yyyy-MM-dd HH:mm:ss")
+    {
+    }
+
+    public LongDateTimeConverter(string? format)
+    {
+        if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format;
+    }
 
     public override DateTime Read(ICell cell)
     {
@@ -66,7 +77,14 @@ public class LongDateTimeConverter : ExcelConverter<DateTime>
 
 public class DateTimeOffsetConverter : ExcelConverter<DateTimeOffset>
 {
-    public DateTimeOffsetConverter() => ExcelFormat = "yyyy-MM-dd HH:mm:ss zzz";
+    public DateTimeOffsetConverter() : this("yyyy-MM-dd HH:mm:ss zzz")
+    {
+    }
+
+    public DateTimeOffsetConverter(string? format)
+    {
+        if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format;
+    }
 
     public override DateTimeOffset Read(ICell cell)
     {
@@ -77,14 +95,21 @@ public class DateTimeOffsetConverter : ExcelConverter<DateTimeOffset>
 
     public override void Write(ICell cell, DateTimeOffset value, ICellStyle? style = null)
     {
-        cell.SetCellValue(value.ToString(ExcelFormat ?? "O"));
+        cell.SetCellValue(value.ToString(ExcelFormat ?? "yyyy-MM-dd HH:mm:ss zzz"));
         if (style != null) cell.CellStyle = style;
     }
 }
 
 public class DateOnlyConverter : ExcelConverter<DateOnly>
 {
-    public DateOnlyConverter() => ExcelFormat = "yyyy-MM-dd";
+    public DateOnlyConverter() : this("yyyy-MM-dd")
+    {
+    }
+
+    public DateOnlyConverter(string? format)
+    {
+        if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format;
+    }
 
     public override DateOnly Read(ICell cell)
     {
@@ -104,7 +129,14 @@ public class DateOnlyConverter : ExcelConverter<DateOnly>
 
 public class TimeOnlyConverter : ExcelConverter<TimeOnly>
 {
-    public TimeOnlyConverter() => ExcelFormat = "HH:mm:ss";
+    public TimeOnlyConverter() : this("HH:mm:ss")
+    {
+    }
+
+    public TimeOnlyConverter(string? format)
+    {
+        if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format;
+    }
 
     public override TimeOnly Read(ICell cell)
     {
@@ -124,7 +156,14 @@ public class TimeOnlyConverter : ExcelConverter<TimeOnly>
 
 public class TimeSpanConverter : ExcelConverter<TimeSpan>
 {
-    public TimeSpanConverter() => ExcelFormat = @"hh\:mm\:ss";
+    public TimeSpanConverter() : this(@"hh\:mm\:ss")
+    {
+    }
+
+    public TimeSpanConverter(string? format)
+    {
+        if (!string.IsNullOrWhiteSpace(format)) ExcelFormat = format;
+    }
 
     public override TimeSpan Read(ICell cell)
     {
@@ -144,6 +183,20 @@ public class TimeSpanConverter : ExcelConverter<TimeSpan>
 
 public class TimeSpanMinutesConverter : ExcelConverter<TimeSpan>
 {
+    private readonly int Precision;
+
+    public TimeSpanMinutesConverter()
+    {
+    }
+
+    public TimeSpanMinutesConverter(int precision)
+    {
+        if (precision >= 0)
+        {
+            Precision = precision;
+        }
+    }
+
     public override TimeSpan Read(ICell cell)
     {
         var s = cell.GetString();
@@ -156,13 +209,27 @@ public class TimeSpanMinutesConverter : ExcelConverter<TimeSpan>
 
     public override void Write(ICell cell, TimeSpan value, ICellStyle? style = null)
     {
-        cell.SetCellValue(value.TotalMinutes.ToString("F2"));
+        cell.SetCellValue(Math.Round(value.TotalMinutes, Precision));
         if (style != null) cell.CellStyle = style;
     }
 }
 
 public class TimeSpanHoursConverter : ExcelConverter<TimeSpan>
 {
+    private readonly int Precision;
+
+    public TimeSpanHoursConverter()
+    {
+    }
+
+    public TimeSpanHoursConverter(int precision)
+    {
+        if (precision >= 0)
+        {
+            Precision = precision;
+        }
+    }
+
     public override TimeSpan Read(ICell cell)
     {
         var s = cell.GetString();
@@ -175,7 +242,7 @@ public class TimeSpanHoursConverter : ExcelConverter<TimeSpan>
 
     public override void Write(ICell cell, TimeSpan value, ICellStyle? style = null)
     {
-        cell.SetCellValue(value.TotalHours.ToString("F2"));
+        cell.SetCellValue(Math.Round(value.TotalHours, Precision));
         if (style != null) cell.CellStyle = style;
     }
 }
@@ -208,7 +275,7 @@ public class EnumConverter<T> : ExcelConverter<T> where T : struct, Enum
 
     public override void Write(ICell cell, T value, ICellStyle? style = null)
     {
-        cell.SetCellValue(Convert.ToInt32(value).ToString());
+        cell.SetCellValue(Convert.ToInt32(value));
         if (style != null) cell.CellStyle = style;
     }
 }

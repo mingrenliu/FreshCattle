@@ -33,6 +33,7 @@ public class AllTypesEntity
     public bool BoolValue { get; set; }
 
     [ExcelColumn(Name = "日期时间", Order = 9)]
+    [ExcelConverter(typeof(LongDateTimeConverter))]
     public DateTime DateTimeValue { get; set; }
 
     [ExcelColumn(Name = "日期", Order = 10)]
@@ -42,6 +43,7 @@ public class AllTypesEntity
     public TimeOnly TimeOnlyValue { get; set; }
 
     [ExcelColumn(Name = "时间跨度", Order = 12)]
+    [ExcelConverter(typeof(TimeSpanMinutesConverter))]
     public TimeSpan TimeSpanValue { get; set; }
 
     [ExcelColumn(Name = "时间偏移", Order = 13)]

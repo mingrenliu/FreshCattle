@@ -126,10 +126,11 @@ public static class ExcelTypeInfoResolver
     {
         [typeof(string)] = 25,
         [typeof(DateTime)] = 25,
-        [typeof(DateTimeOffset)] = 20,
-        [typeof(DateOnly)] = 20,
-        [typeof(TimeOnly)] = 20,
-        [typeof(TimeSpan)] = 20,
+        [typeof(DateTimeOffset)] = 30,
+        [typeof(DateOnly)] = 15,
+        [typeof(TimeOnly)] = 15,
+        [typeof(TimeSpan)] = 15,
+        [typeof(Guid)] = 40,
 
     };
 

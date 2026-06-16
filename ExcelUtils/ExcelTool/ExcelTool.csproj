@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -9,7 +9,7 @@
     <PackageId>YangCode.ExcelTool</PackageId>
     <PackageTags>Excel</PackageTags>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.0.1</PackageVersion>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
     <Description>package is used to excel import or export </Description>

@@ -1,38 +1,8 @@
-using ExcelTest.Entities;
-using ExcelTest.Utilities;
-using ExcelTool.Converters;
-
 namespace ExcelTest.Tests;
 
 [TestFixture]
 internal class ConverterTests : TestBase
 {
-    private static AllTypesEntity CreateSample(int seed = 1)
-    {
-        return new AllTypesEntity
-        {
-            StringValue = $"测试文本_{seed}",
-            IntValue = 12345 * seed,
-            LongValue = 9876543210L * seed,
-            ShortValue = (short)(100 * seed),
-            ByteValue = (byte)(200 % (seed + 1) + 1),
-            FloatValue = 3.14f * seed,
-            DoubleValue = 2.718281828 * seed,
-            DecimalValue = 123456.78m * seed,
-            BoolValue = seed % 2 == 1,
-            DateTimeValue = new DateTime(2024, 6, 1, 12, 30, 45).AddDays(seed),
-            DateOnlyValue = new DateOnly(2024, 1, 1).AddDays(seed),
-            TimeOnlyValue = new TimeOnly(8 + seed % 12, 30, 0),
-            TimeSpanValue = TimeSpan.FromHours(1.5 * seed),
-            DateTimeOffsetValue = new DateTimeOffset(2024, 6, 1, 0, 0, 0, TimeSpan.FromHours(8)).AddDays(seed),
-            GuidValue = Guid.NewGuid(),
-            NullableInt = seed % 2 == 0 ? 999 : null,
-            NullableDouble = seed % 2 == 0 ? 3.14159 : null,
-            NullableDateTime = seed % 2 == 0 ? new DateTime(2024, 12, 25) : null,
-            NullableBool = seed % 2 == 0 ? true : null,
-        };
-    }
-
     [Test]
     public void String_RoundTrip()
     {
@@ -420,7 +390,7 @@ internal class ConverterTests : TestBase
         c.Write(cell, ts);
         Assert.Multiple(() =>
         {
-            Assert.That(cell.StringCellValue, Is.EqualTo("210.00"));
+            Assert.That(cell.NumericCellValue, Is.EqualTo(210));
             Assert.That(c.Read(cell).TotalMinutes, Is.EqualTo(210).Within(0.01));
         });
     }
@@ -428,18 +398,18 @@ internal class ConverterTests : TestBase
     [Test]
     public void TimeSpanHours_RoundTrip()
     {
-        var c = new TimeSpanHoursConverter();
+        var c = new TimeSpanHoursConverter(1);
         using var wb = ExcelFactory.CreateWorkBook();
         var cell = wb.CreateNewSheet().GetOrCreateRow(0).GetOrCreateCell(0);
 
         // 5400秒 = 1.5小时
         var ts = TimeSpan.FromSeconds(5400);
         c.Write(cell, ts);
-        var cellText = cell.StringCellValue;
+        var cellText = cell.NumericCellValue;
         var readBack = c.Read(cell);
         Assert.Multiple(() =>
         {
-            Assert.That(cellText, Is.EqualTo("1.50"));
+            Assert.That(cellText, Is.EqualTo(1.5));
             Assert.That(readBack.TotalHours, Is.EqualTo(1.5).Within(0.01));
         });
     }
@@ -463,11 +433,11 @@ internal class ConverterTests : TestBase
 
         c.Write(cell, DayOfWeek.Wednesday);
         // 输出整数值 3（Sunday=0）
-        var cellText = cell.StringCellValue;
+        var cellText = cell.NumericCellValue;
         var readBack = c.Read(cell);
         Assert.Multiple(() =>
         {
-            Assert.That(cellText, Is.EqualTo("3"));
+            Assert.That(cellText, Is.EqualTo(3));
             Assert.That(readBack, Is.EqualTo(DayOfWeek.Wednesday));
         });
     }

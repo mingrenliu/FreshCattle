@@ -1,4 +1,3 @@
-using NPOI.SS.UserModel;
 using ExcelTool.ExcelCore;
 
 namespace ExcelTool.Converters;
@@ -149,8 +148,9 @@ public class BooleanConverter : ExcelConverter<bool>
 {
     private readonly string _trueValue;
     private readonly string _falseValue;
+    public BooleanConverter() : this("是", "否") { }
 
-    public BooleanConverter(string trueValue = "是", string falseValue = "否")
+    public BooleanConverter(string trueValue, string falseValue)
     {
         _trueValue = trueValue;
         _falseValue = falseValue;
