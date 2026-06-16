@@ -11,7 +11,7 @@ public class ExcelDataReader<T> : ExcelSheetReader where T : class, new()
 {
     public readonly ExcelOptions Options;
     public readonly ExcelReaderTypeInfo TypeInfo;
-    private readonly ExcelConverter _defaultConverter = BuiltinConverters.Fallback;
+    private readonly ExcelConverter _defaultConverter = BuiltInConverters.Fallback;
 
     /// <summary>匹配到的列：(列索引, 列名, 列信息)。</summary>
     private List<(int ColIdx, string ColumnName, IExcelColumnReader Reader)>? Columns;
@@ -82,14 +82,14 @@ public class ExcelDataReader<T> : ExcelSheetReader where T : class, new()
     {
         var obj = new T();
 
-        foreach (var (colIdx, columnName, prop) in Columns!)
+        foreach (var (colIdx, columnName, reader) in Columns!)
         {
             var cell = GetMergedCell(rowIndex, colIdx);
             if (cell == null) continue;
 
-            var converter = prop.Converter ?? _defaultConverter;
+            var converter = reader.Converter ?? _defaultConverter;
             var value = converter.ReadObject(cell);
-            prop.SetValue(obj, columnName, value);
+            reader.SetValue(obj, columnName, value);
         }
 
         return obj;

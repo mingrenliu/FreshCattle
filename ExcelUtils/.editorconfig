@@ -1,0 +1,8 @@
+root = true
+
+# C# files
+[*.cs]
+dotnet_diagnostic.NU1900.severity = none
+# Spelling
+spelling_checkable_types = identifiers,comments
+spelling_exclusion_path = .\exclusion.dic

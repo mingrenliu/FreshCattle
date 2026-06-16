@@ -16,6 +16,7 @@ public class StringConverter : ExcelConverter<string>
 public class Int32Converter : ExcelConverter<int>
 {
     public override int Read(ICell cell) => cell.GetInt() ?? 0;
+
     public override void Write(ICell cell, int value, ICellStyle? style = null)
     {
         cell.SetCellValue((double)value);
@@ -26,6 +27,7 @@ public class Int32Converter : ExcelConverter<int>
 public class Int64Converter : ExcelConverter<long>
 {
     public override long Read(ICell cell) => cell.GetLong() ?? 0L;
+
     public override void Write(ICell cell, long value, ICellStyle? style = null)
     {
         cell.SetCellValue(value);
@@ -36,6 +38,7 @@ public class Int64Converter : ExcelConverter<long>
 public class Int16Converter : ExcelConverter<short>
 {
     public override short Read(ICell cell) => cell.GetShort() ?? 0;
+
     public override void Write(ICell cell, short value, ICellStyle? style = null)
     {
         cell.SetCellValue((double)value);
@@ -50,6 +53,7 @@ public class ByteConverter : ExcelConverter<byte>
         var v = cell.GetInt();
         return (v.HasValue && v >= 0 && v <= 255) ? (byte)v.Value : (byte)0;
     }
+
     public override void Write(ICell cell, byte value, ICellStyle? style = null)
     {
         cell.SetCellValue((double)value);
@@ -59,12 +63,14 @@ public class ByteConverter : ExcelConverter<byte>
 
 public class DoubleConverter : ExcelConverter<double>
 {
-    public DoubleConverter() { }
+    public DoubleConverter()
+    {
+    }
 
     /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00",uint容易类型不匹配,导致异常(int->uint)</param>
     public DoubleConverter(int precision)
     {
-        if(precision >= 0)
+        if (precision >= 0)
         {
             ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
         }
@@ -74,11 +80,13 @@ public class DoubleConverter : ExcelConverter<double>
     public DoubleConverter(string? format) { ExcelFormat = format; }
 
     public override double Read(ICell cell) => cell.GetDouble() ?? 0d;
+
     public override void Write(ICell cell, double value, ICellStyle? style = null)
     {
         cell.SetCellValue(value);
         if (style != null) cell.CellStyle = style;
     }
+
     public override void ApplyToStyle(ICellStyle style, ISheet sheet)
     {
         if (!string.IsNullOrWhiteSpace(ExcelFormat))
@@ -88,12 +96,14 @@ public class DoubleConverter : ExcelConverter<double>
 
 public class SingleConverter : ExcelConverter<float>
 {
-    public SingleConverter() { }
+    public SingleConverter()
+    {
+    }
 
     /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00",uint容易类型不匹配,导致异常(int->uint)</param>
     public SingleConverter(int precision)
     {
-        if(precision >= 0)
+        if (precision >= 0)
         {
             ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
         }
@@ -103,12 +113,14 @@ public class SingleConverter : ExcelConverter<float>
     public SingleConverter(string? format) { ExcelFormat = format; }
 
     public override float Read(ICell cell) => cell.GetFloat() ?? 0f;
+
     public override void Write(ICell cell, float value, ICellStyle? style = null)
     {
         cell.SetCellValue((double)value);
         if (style != null) cell.CellStyle = style;
     }
-        public override void ApplyToStyle(ICellStyle style, ISheet sheet)
+
+    public override void ApplyToStyle(ICellStyle style, ISheet sheet)
     {
         if (!string.IsNullOrWhiteSpace(ExcelFormat))
             style.DataFormat = sheet.Workbook.GetDataFormat(ExcelFormat!);
@@ -117,12 +129,14 @@ public class SingleConverter : ExcelConverter<float>
 
 public class DecimalConverter : ExcelConverter<decimal>
 {
-    public DecimalConverter() { }
-    
+    public DecimalConverter()
+    {
+    }
+
     /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00",uint容易类型不匹配,导致异常(int->uint)</param>
     public DecimalConverter(int precision)
     {
-        if(precision >= 0)
+        if (precision >= 0)
         {
             ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
         }
@@ -132,12 +146,14 @@ public class DecimalConverter : ExcelConverter<decimal>
     public DecimalConverter(string? format) { ExcelFormat = format; }
 
     public override decimal Read(ICell cell) => cell.GetDecimal() ?? 0m;
+
     public override void Write(ICell cell, decimal value, ICellStyle? style = null)
     {
         cell.SetCellValue((double)value);
         if (style != null) cell.CellStyle = style;
     }
-        public override void ApplyToStyle(ICellStyle style, ISheet sheet)
+
+    public override void ApplyToStyle(ICellStyle style, ISheet sheet)
     {
         if (!string.IsNullOrWhiteSpace(ExcelFormat))
             style.DataFormat = sheet.Workbook.GetDataFormat(ExcelFormat!);
@@ -148,7 +164,10 @@ public class BooleanConverter : ExcelConverter<bool>
 {
     private readonly string _trueValue;
     private readonly string _falseValue;
-    public BooleanConverter() : this("是", "否") { }
+
+    public BooleanConverter() : this("是", "否")
+    {
+    }
 
     public BooleanConverter(string trueValue, string falseValue)
     {
@@ -195,9 +214,9 @@ public class ObjectConverter : ExcelConverter<object>
         {
             cell.SetCellValue(value.ToString());
         }
-        else if (BuiltinConverters.TryGetConverter(type, out var builtin))
+        else if (BuiltInConverters.TryGetConverter(type, out var builtIn))
         {
-            builtin.WriteObject(cell, value, style);
+            builtIn.WriteObject(cell, value, style);
         }
         else
         {

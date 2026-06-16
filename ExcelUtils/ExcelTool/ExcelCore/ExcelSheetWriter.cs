@@ -1,6 +1,5 @@
-using NPOI.SS.UserModel;
-using NPOI.SS.Util;
 using ExcelTool.Converters;
+using NPOI.SS.Util;
 
 namespace ExcelTool.ExcelCore;
 
@@ -152,16 +151,23 @@ public class ExcelSheetWriter
     // ==================== 写入 ====================
 
     /// <summary>在当前位置写入值（自动选转换器），列号+1。</summary>
-    /// 提前获取,避免每次查找导致的性能开销</param>
-    /// <see cref="ExcelSheetWriter.Write(object?, ExcelConverter, ICellStyle?)">建议使用这个方法,提前获取ExcelConverter,避免每次查找导致的性能开销</see>
-    public ICell Write<T>(T value, ICellStyle? style = null)
+    /// <param name="converter">提前获取Converter,避免每次查找导致的性能开销</param>
+
+    public ICell Write<T>(T? value, ICellStyle? style = null)
+    {
+        return Write(value, null, style);
+    }
+
+    /// <summary>在当前位置写入值（自动选转换器），列号+1。</summary>
+    /// <param name="converter">提前获取Converter,避免每次查找导致的性能开销</param>
+    public ICell Write<T>(T? value, ExcelConverter<T>? converter, ICellStyle? style = null)
     {
         var cell = CurrentCell(style);
         if (value != null)
         {
-            var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
-            if (BuiltinConverters.TryGetConverter(type, out var builtin))
-                builtin.WriteObject(cell, value, style);
+            var temp = converter ?? BuiltInConverters.GetConverter(typeof(T));
+            if (temp != null)
+                temp.WriteObject(cell, value, style);
             else
                 cell.SetCellValue(value.ToString());
         }
@@ -170,26 +176,53 @@ public class ExcelSheetWriter
     }
 
     /// <summary>在当前位置写入值（指定转换器），列号+1。</summary>
-    public ICell Write(object? value, ExcelConverter converter, ICellStyle? style = null)
+    public ICell WriteObject(object? value, ICellStyle? style = null)
     {
+        return WriteObject(value, null, style);
+    }
+
+    /// <summary>在当前位置写入值（指定转换器），列号+1。</summary>
+    /// <param name="converter">提前获取Converter,避免每次查找导致的性能开销</param>
+    public ICell WriteObject(object? value, ExcelConverter? converter, ICellStyle? style = null)
+    {
+        // style在这里已经设置了
         var cell = CurrentCell(style);
-        converter.WriteObject(cell, value, style);
+        if (value != null)
+        {
+            converter ??= BuiltInConverters.GetConverter(value.GetType());
+            if (converter != null)
+                converter.WriteObject(cell, value, style);
+            else
+                cell.SetCellValue(value.ToString());
+        }
         _colIndex++;
         return cell;
     }
 
     /// <summary>在绝对位置写入值（不移动游标）。</summary>
-    /// <param name="converter">提前获取ExcelConverter,避免每次查找导致的性能开销</param>
-    public ICell WriteAt(int row, int col, object? value, ExcelConverter? converter = null, ICellStyle? style = null)
+    /// <param name="converter">提前获取Converter,避免每次查找导致的性能开销</param>
+    public ICell WriteAt<T>(int row, int col, T? value, ExcelConverter<T>? converter = null, ICellStyle? style = null)
     {
         var cell = CellAt(row, col, style);
         if (value != null)
         {
-            if(converter == null)
-            {
-                var type = Nullable.GetUnderlyingType(value.GetType()) ?? value.GetType();
-                converter = BuiltinConverters.GetConverter(type);
-            }
+            var temp = converter ?? BuiltInConverters.GetConverter(typeof(T));
+            if (temp != null)
+                temp.WriteObject(cell, value, style);
+            else
+                cell.SetCellValue(value.ToString());
+        }
+        return cell;
+    }
+
+    /// <summary>在绝对位置写入值（不移动游标）。</summary>
+    /// <param name="converter">提前获取Converter,避免每次查找导致的性能开销</param>
+    public ICell WriteObjectAt(int row, int col, object? value, ExcelConverter? converter = null, ICellStyle? style = null)
+    {
+        var cell = CellAt(row, col, style);
+        if (value != null)
+        {
+            converter ??= BuiltInConverters.GetConverter(value.GetType());
             if (converter != null)
                 converter.WriteObject(cell, value, style);
             else
@@ -228,12 +261,12 @@ public class ExcelSheetWriter
     {
         if (region.FirstRow != region.LastRow || region.FirstCol != region.LastCol)
         {
-            var addr = new CellRangeAddress(region.FirstRow, region.LastRow, region.FirstCol, region.LastCol);
-            RegionUtil.SetBorderBottom(BorderStyle.Thin, addr, _sheet);
-            RegionUtil.SetBorderRight(BorderStyle.Thin, addr, _sheet);
-            RegionUtil.SetBorderLeft(BorderStyle.Thin, addr, _sheet);
-            RegionUtil.SetBorderTop(BorderStyle.Thin, addr, _sheet);
-            _sheet.AddMergedRegion(addr);
+            var address = new CellRangeAddress(region.FirstRow, region.LastRow, region.FirstCol, region.LastCol);
+            RegionUtil.SetBorderBottom(BorderStyle.Thin, address, _sheet);
+            RegionUtil.SetBorderRight(BorderStyle.Thin, address, _sheet);
+            RegionUtil.SetBorderLeft(BorderStyle.Thin, address, _sheet);
+            RegionUtil.SetBorderTop(BorderStyle.Thin, address, _sheet);
+            _sheet.AddMergedRegion(address);
 
             // 清除非左上角单元格内容，确保合并后其余位置为空
             for (var r = region.FirstRow; r <= region.LastRow; r++)

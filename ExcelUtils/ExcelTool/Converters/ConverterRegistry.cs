@@ -7,7 +7,7 @@ namespace ExcelTool.Converters;
 public class ConverterRegistry
 {
     private readonly Dictionary<Type, ExcelConverter> _converters = new();
-    private readonly Dictionary<Type, ExcelConverter> _builtInCache = new();
+
     public void AddConverter<T>(ExcelConverter<T> converter)
     {
         _converters[typeof(T)] = converter;
@@ -18,23 +18,25 @@ public class ConverterRegistry
         _converters[type] = converter;
     }
 
-    public ExcelConverter GetConverter(Type type)
+    public ExcelConverter GetConverter(Type origin)
     {
-        type = Nullable.GetUnderlyingType(type) ?? type;
-
-        if (_converters.TryGetValue(type, out var custom))
-            return custom;
-
-        if (_builtInCache.TryGetValue(type, out var cached))
-            return cached;
-
-        if (BuiltinConverters.TryGetConverter(type, out var builtIn))
+        if (_converters.TryGetValue(origin, out var custom))
         {
-            _builtInCache[type] = builtIn;
+            return custom;
+        }
+        var type = Nullable.GetUnderlyingType(origin) ?? origin;
+        if (_converters.TryGetValue(type, out custom))
+        {
+            _converters[origin] = custom; // 缓存 Nullable<T> 的转换器
+            return custom;
+        }
+
+        if (BuiltInConverters.TryGetConverter(type, out var builtIn))
+        {
             return builtIn;
         }
 
-        return BuiltinConverters.Fallback;
+        return BuiltInConverters.Fallback;
     }
 
     /// <summary>

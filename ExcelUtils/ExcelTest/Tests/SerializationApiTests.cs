@@ -475,7 +475,7 @@ internal class SerializationApiTests : TestBase
     {
         var registry = new ConverterRegistry();
         registry.AddConverter<string>(new StringConverter());
-        var c = registry.GetConverter(typeof(string));
+        ExcelConverter? c = registry.GetConverter(typeof(string));
         Assert.Multiple(() =>
         {
             Assert.That(c, Is.Not.Null);
@@ -487,7 +487,7 @@ internal class SerializationApiTests : TestBase
     public void ConverterRegistry_FallbackForUnknown()
     {
         var registry = new ConverterRegistry();
-        var c = registry.GetConverter(typeof(SerializationApiTests));
+        ExcelConverter? c = registry.GetConverter(typeof(SerializationApiTests));
         Assert.That(c, Is.Not.Null);
     }
 

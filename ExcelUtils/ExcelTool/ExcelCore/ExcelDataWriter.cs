@@ -1,5 +1,4 @@
 using ExcelTool.Converters;
-using NPOI.SS.UserModel;
 
 namespace ExcelTool.ExcelCore;
 
@@ -12,7 +11,7 @@ public class ExcelDataWriter<T> : ExcelSheetWriter where T : class
 {
     public readonly ExcelOptions Options;
     public readonly ExcelWriterTypeInfo TypeInfo;
-    private readonly ExcelConverter _defaultConverter = BuiltinConverters.Fallback;
+    private readonly ExcelConverter _defaultConverter = BuiltInConverters.Fallback;
     protected override float DefaultRowHeight => Options.DefaultRowHeight;
     public ExcelDataWriter(ISheet sheet, ExcelWriterTypeInfo typeInfo, ExcelOptions options) : base(sheet)
     {
@@ -38,7 +37,7 @@ public class ExcelDataWriter<T> : ExcelSheetWriter where T : class
         MoveTo(Options.HeaderRow, 0);
         foreach (var prop in TypeInfo.Columns)
         {
-            Write(prop.ColumnName, _defaultConverter, Style("__ExcelHeader__"));
+            WriteObject(prop.ColumnName, null, Style("__ExcelHeader__"));
             PrevWidth(prop.Width != 0 ? prop.Width : Options.DefaultColumnWidth);
         }
         return CurrentRow();
@@ -56,12 +55,12 @@ public class ExcelDataWriter<T> : ExcelSheetWriter where T : class
 
     public IRow WriteRow(T item)
     {
-        foreach (var prop in TypeInfo.Columns)
+        foreach (var writer in TypeInfo.Columns)
         {
-            var value = prop.GetValue(item);
-            var converter = prop.Converter ?? _defaultConverter;
+            var value = writer.GetValue(item);
+            var converter = writer.Converter ?? _defaultConverter;
             // 保证只设置了一次style（如果 converter 重写了 ApplyToStyle），避免性能问题
-            Write(value, converter, Style(prop.ColumnName,(style)=>converter.ApplyToStyle(style, Sheet)));
+            WriteObject(value, converter, Style(writer.ColumnName,(style)=>converter.ApplyToStyle(style, Sheet)));
         }
         return CurrentRow();
     }
