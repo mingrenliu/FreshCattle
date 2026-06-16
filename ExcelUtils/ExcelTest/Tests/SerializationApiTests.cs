@@ -154,7 +154,7 @@ internal class SerializationApiTests : TestBase
                 Assert.That(r.IntValue, Is.EqualTo(o.IntValue));
                 Assert.That(r.LongValue, Is.EqualTo(o.LongValue));
                 Assert.That(r.DoubleValue, Is.EqualTo(o.DoubleValue).Within(0.01));
-                Assert.That(r.DecimalValue, Is.EqualTo(o.DecimalValue).Within(0.1));
+                Assert.That(r.DecimalValue, Is.EqualTo(o.DecimalValue).Within(0.1m));
                 Assert.That(r.BoolValue, Is.EqualTo(o.BoolValue));
                 Assert.That(r.GuidValue, Is.EqualTo(o.GuidValue));
                 Assert.That(r.DateTimeValue.Year, Is.EqualTo(o.DateTimeValue.Year));
