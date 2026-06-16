@@ -61,6 +61,11 @@ public abstract class ExcelConverter<T> : ExcelConverter
     public override void WriteObject(ICell cell, object? value, ICellStyle? style = null)
     {
         if (value is T t)
+        {
             Write(cell, t, style);
+        } else if (style != null)
+        {
+            cell.CellStyle = style;
+        }
     }
 }
