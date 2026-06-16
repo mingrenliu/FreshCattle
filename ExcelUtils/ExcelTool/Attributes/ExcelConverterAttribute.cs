@@ -18,8 +18,10 @@ public class ExcelConverterAttribute : Attribute
     public object?[]? Args { get; init; }
 
     /// <param name="converterType">转换器类型，如 <c>typeof(MyDateTimeConverter)</c></param>
-    public ExcelConverterAttribute(Type converterType)
+    /// <param name="args">可选：传递给转换器构造函数的参数。</param>
+    public ExcelConverterAttribute(Type converterType, params object?[] args)
     {
         ConverterType = converterType;
+        Args = args;
     }
 }

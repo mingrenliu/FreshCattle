@@ -97,9 +97,6 @@ internal class ConverterTests : TestBase
             Assert.That(c0.ExcelFormat, Is.EqualTo("0"));
             Assert.That(c2.ExcelFormat, Is.EqualTo("0.00"));
             Assert.That(c5.ExcelFormat, Is.EqualTo("0.00000"));
-            Assert.That(c0.Precision, Is.EqualTo(0));
-            Assert.That(c2.Precision, Is.EqualTo(2));
-            Assert.That(c5.Precision, Is.EqualTo(5));
         });
     }
 
@@ -109,7 +106,6 @@ internal class ConverterTests : TestBase
         var c = new DoubleConverter();
         Assert.Multiple(() =>
         {
-            Assert.That(c.Precision, Is.Null);
             Assert.That(c.ExcelFormat, Is.Null);
         });
     }
@@ -190,8 +186,6 @@ internal class ConverterTests : TestBase
             Assert.That(c0.ExcelFormat, Is.EqualTo("0"));
             Assert.That(c2.ExcelFormat, Is.EqualTo("0.00"));
             Assert.That(c4.ExcelFormat, Is.EqualTo("0.0000"));
-            Assert.That(c0.Precision, Is.EqualTo(0));
-            Assert.That(c4.Precision, Is.EqualTo(4));
         });
     }
 
@@ -201,7 +195,6 @@ internal class ConverterTests : TestBase
         var c = new DecimalConverter();
         Assert.Multiple(() =>
         {
-            Assert.That(c.Precision, Is.Null);
             Assert.That(c.ExcelFormat, Is.Null);
         });
     }
@@ -238,8 +231,6 @@ internal class ConverterTests : TestBase
             Assert.That(c0.ExcelFormat, Is.EqualTo("0"));
             Assert.That(c2.ExcelFormat, Is.EqualTo("0.00"));
             Assert.That(c3.ExcelFormat, Is.EqualTo("0.000"));
-            Assert.That(c0.Precision, Is.EqualTo(0));
-            Assert.That(c2.Precision, Is.EqualTo(2));
         });
     }
 
@@ -249,7 +240,6 @@ internal class ConverterTests : TestBase
         var c = new SingleConverter();
         Assert.Multiple(() =>
         {
-            Assert.That(c.Precision, Is.Null);
             Assert.That(c.ExcelFormat, Is.Null);
         });
     }

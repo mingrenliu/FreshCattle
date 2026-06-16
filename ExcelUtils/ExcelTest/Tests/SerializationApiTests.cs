@@ -501,7 +501,7 @@ internal class SerializationApiTests : TestBase
         var sheets = new Dictionary<string, IEnumerable<Student>>
         {
             ["一班"] = [new Student { Name = "A1", Age = 15, Score = 80 }],
-            ["二班"] = [new Student { Name = "B1", Age = 16, Score = 90 }],
+            ["二班"] = [new Student { Name = "B1", Age = 16, Score = 90.4514243 }],
         };
         var bytes = Excel.Serialize(sheets);
         LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, 2), bytes);

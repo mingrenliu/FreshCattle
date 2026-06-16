@@ -13,6 +13,7 @@ public class Student
     public int Age { get; set; }
 
     [ExcelColumn(Name = "成绩", Order = 2)]
+    [ExcelConverter(typeof(DoubleConverter),"0.00")] 
     public double Score { get; set; }
 
     [ExcelColumn(Name = "是否毕业", Order = 3)]

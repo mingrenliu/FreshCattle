@@ -60,16 +60,15 @@ public class ByteConverter : ExcelConverter<byte>
 
 public class DoubleConverter : ExcelConverter<double>
 {
-    /// <summary>小数精度（位数），为 null 时不设置格式。</summary>
-    public uint? Precision { get; }
-
     public DoubleConverter() { }
 
-    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00"</param>
-    public DoubleConverter(uint precision)
+    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00",uint容易类型不匹配,导致异常(int->uint)</param>
+    public DoubleConverter(int precision)
     {
-        Precision = precision;
-        ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+        if(precision >= 0)
+        {
+            ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+        }
     }
 
     /// <param name="format">自定义 Excel 数字格式，如 "0.00" 或 "#,##0.00"</param>
@@ -90,16 +89,15 @@ public class DoubleConverter : ExcelConverter<double>
 
 public class SingleConverter : ExcelConverter<float>
 {
-    /// <summary>小数精度（位数），为 null 时不设置格式。</summary>
-    public uint? Precision { get; }
-
     public SingleConverter() { }
 
-    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00"</param>
-    public SingleConverter(uint precision)
+    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00",uint容易类型不匹配,导致异常(int->uint)</param>
+    public SingleConverter(int precision)
     {
-        Precision = precision;
-        ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+        if(precision >= 0)
+        {
+            ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+        }
     }
 
     /// <param name="format">自定义 Excel 数字格式，如 "0.00"</param>
@@ -120,16 +118,15 @@ public class SingleConverter : ExcelConverter<float>
 
 public class DecimalConverter : ExcelConverter<decimal>
 {
-    /// <summary>小数精度（位数），为 null 时不设置格式。</summary>
-    public uint? Precision { get; }
-
     public DecimalConverter() { }
-
-    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00"</param>
-    public DecimalConverter(uint precision)
+    
+    /// <param name="precision">小数位数，0 则格式为 "0"，2 则格式为 "0.00",uint容易类型不匹配,导致异常(int->uint)</param>
+    public DecimalConverter(int precision)
     {
-        Precision = precision;
-        ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+        if(precision >= 0)
+        {
+            ExcelFormat = precision == 0 ? "0" : "0." + new string('0', (int)precision);
+        }
     }
 
     /// <param name="format">自定义 Excel 数字格式，如 "0.00"</param>

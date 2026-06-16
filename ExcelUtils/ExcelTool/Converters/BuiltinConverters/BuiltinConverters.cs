@@ -1,11 +1,10 @@
-using NPOI.SS.UserModel;
 using System.Diagnostics.CodeAnalysis;
 namespace ExcelTool.Converters;
 
 /// <summary>
 /// 内置转换器工厂，维护类型到转换器的映射。
 /// </summary>
-internal static class BuiltinConverters
+public static class BuiltinConverters
 {
     private static readonly Dictionary<Type, ExcelConverter> _cache = new();
 
@@ -58,5 +57,11 @@ internal static class BuiltinConverters
 
         converter = null;
         return false;
+    }
+    public static ExcelConverter? GetConverter(Type type)
+    {
+        if (TryGetConverter(type, out var converter))
+            return converter;
+        return null;
     }
 }

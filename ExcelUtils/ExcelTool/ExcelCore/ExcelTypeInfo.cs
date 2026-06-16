@@ -46,8 +46,9 @@ public static class ExcelTypeInfoResolver
     public static ExcelReaderTypeInfo ResolveRead(Type type, ExcelOptions? options)
     {
         options ??= ExcelOptions.Default;
-        var columns = ResolveColumns(type, options, false);
-        var readColumns = columns.Select(c => (IExcelColumnReader)new ExcelColumnReader(c.Property, c.ColumnName, c.Required) { Converter = c.Converter } ).ToList();
+        // reader 需要字段读写，将从Excel读取的内容写入对象,并且对象字段可被应用读取,因此 canWrite=true
+        var columns = ResolveColumns(type, options, true);
+        var readColumns = columns.Select(c => (IExcelColumnReader)new ExcelColumnReader(c.Property, c.ColumnName, c.Required) { Converter = c.Converter }).ToList();
 
         // 追加自定义 Reader
         if (options.Readers != null)
@@ -60,7 +61,8 @@ public static class ExcelTypeInfoResolver
     public static ExcelWriterTypeInfo ResolveWrite(Type type, ExcelOptions? options)
     {
         options ??= ExcelOptions.Default;
-        var columns = ResolveColumns(type, options, true);
+        // writer 只需要字段可读即可，将读取内容写入Excel,因此 canWrite=false
+        var columns = ResolveColumns(type, options, false);
         var writeColumns = columns.Select(c => (IExcelColumnWriter)new ExcelColumnWriter(c.Property, c.ColumnName, c.Order, c.Width) { Converter = c.Converter }).ToList();
 
         // 追加自定义 Writer
@@ -71,13 +73,13 @@ public static class ExcelTypeInfoResolver
     }
 
     /// <summary>核心解析：反射遍历属性。</summary>
-    public static List<RawColumnInfo> ResolveColumns(Type type, ExcelOptions options,bool forWrite = true)
+    public static List<RawColumnInfo> ResolveColumns(Type type, ExcelOptions options, bool canWrite = true)
     {
         var list = new List<RawColumnInfo>();
         var bindingFlags = BindingFlags.Public | BindingFlags.Instance;
-        Func<PropertyInfo, bool> w = forWrite ? p => p.CanRead && p.CanWrite : p => p.CanRead;
+        Func<PropertyInfo, bool> w = canWrite ? p => p.CanRead && p.CanWrite : p => p.CanRead;
         var props = type.GetProperties(bindingFlags).Where(w);
-        var scope= options.FieldScope?.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var scope = options.FieldScope?.ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var prop in props)
         {
             var columnAttr = prop.GetCustomAttribute<ExcelColumnAttribute>();
@@ -136,25 +138,25 @@ public static class ExcelTypeInfoResolver
         type = Nullable.GetUnderlyingType(type) ?? type;
         return TypeDefaultWidths.TryGetValue(type, out var w) ? w : 0;
     }
+}
 
-    public sealed class RawColumnInfo
+public class RawColumnInfo
+{
+    public PropertyInfo Property;
+    public string ColumnName;
+    public int Order;
+    public int Width;
+    public bool Required;
+    public ExcelConverter? Converter;
+
+    public RawColumnInfo(PropertyInfo property, string columnName,
+        int order, int width, bool required, ExcelConverter? converter)
     {
-        public PropertyInfo Property;
-        public string ColumnName;
-        public int Order;
-        public int Width;
-        public bool Required;
-        public ExcelConverter? Converter;
-
-        public RawColumnInfo(PropertyInfo property, string columnName,
-            int order, int width, bool required, ExcelConverter? converter)
-        {
-            Property = property;
-            ColumnName = columnName;
-            Order = order;
-            Width = width;
-            Required = required;
-            Converter = converter;
-        }
+        Property = property;
+        ColumnName = columnName;
+        Order = order;
+        Width = width;
+        Required = required;
+        Converter = converter;
     }
 }

@@ -152,6 +152,8 @@ public class ExcelSheetWriter
     // ==================== 写入 ====================
 
     /// <summary>在当前位置写入值（自动选转换器），列号+1。</summary>
+    /// 提前获取,避免每次查找导致的性能开销</param>
+    /// <see cref="ExcelSheetWriter.Write(object?, ExcelConverter, ICellStyle?)">建议使用这个方法,提前获取ExcelConverter,避免每次查找导致的性能开销</see>
     public ICell Write<T>(T value, ICellStyle? style = null)
     {
         var cell = CurrentCell(style);
@@ -177,11 +179,17 @@ public class ExcelSheetWriter
     }
 
     /// <summary>在绝对位置写入值（不移动游标）。</summary>
+    /// <param name="converter">提前获取ExcelConverter,避免每次查找导致的性能开销</param>
     public ICell WriteAt(int row, int col, object? value, ExcelConverter? converter = null, ICellStyle? style = null)
     {
         var cell = CellAt(row, col, style);
         if (value != null)
         {
+            if(converter == null)
+            {
+                var type = Nullable.GetUnderlyingType(value.GetType()) ?? value.GetType();
+                converter = BuiltinConverters.GetConverter(type);
+            }
             if (converter != null)
                 converter.WriteObject(cell, value, style);
             else
