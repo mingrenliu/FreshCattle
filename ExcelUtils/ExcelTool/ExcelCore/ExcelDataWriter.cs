@@ -38,7 +38,9 @@ public class ExcelDataWriter<T> : ExcelSheetWriter where T : class
             WriteObject(prop.ColumnName, null, Style("__ExcelHeader__"));
             PrevWidth(prop.Width != 0 ? prop.Width : Options.DefaultColumnWidth);
         }
-        return CurrentRow();
+        var row = CurrentRow();
+        row.HeightInPoints = Options.DefaultRowHeight;
+        return row;
     }
 
     public void WriteRows(IEnumerable<T> data)
@@ -60,6 +62,8 @@ public class ExcelDataWriter<T> : ExcelSheetWriter where T : class
             // 保证只设置了一次style（如果 converter 重写了 ApplyToStyle），避免性能问题
             WriteObject(value, converter, Style(writer.ColumnName,(style)=>converter.ApplyToStyle(style, Sheet)));
         }
-        return CurrentRow();
+        var row = CurrentRow();
+        row.HeightInPoints = Options.DefaultRowHeight;
+        return row;
     }
 }

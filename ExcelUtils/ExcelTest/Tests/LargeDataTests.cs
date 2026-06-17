@@ -17,7 +17,9 @@ internal class LargeDataTests : TestBase
         }).ToList();
 
         var sw = Stopwatch.StartNew();
-        var bytes = Excel.Serialize(data);
+        var option = ExcelOptions.Default;
+        option.DefaultRowHeight = 30;
+        var bytes = Excel.Serialize(data, option);
         LocationHelper.SaveToFile(LocationHelper.ExportFileName(5, count), bytes);
         sw.Stop();
         Console.WriteLine($"序列化 {count} 条: {sw.ElapsedMilliseconds}ms, 文件 {bytes.Length / 1024}KB");
