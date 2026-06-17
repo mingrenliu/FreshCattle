@@ -1,5 +1,3 @@
-using ExcelTest.Utilities;
-
 namespace ExcelTest.Tests;
 
 /// <summary>
@@ -82,11 +80,14 @@ internal class MergeCellTests : TestBase
     {
         using var wb = ExcelFactory.CreateWorkBook();
         var writer = new ExcelSheetWriter(wb.CreateNewSheet());
-        writer.Merge(new MergeRegion(0, 1, 0, 0) { Value = "跨行标题" });
-        writer.MoveTo(0, 1).Write("列1");
-        writer.MoveTo(0, 2).Write("列2");
+        var style=writer.Style();
+        writer.Merge(new MergeRegion(0, 1, 0, 0));
+        writer.MoveTo(0, 0).Write("列0",style);
+        writer.MoveTo(0, 1).Write("列1",style);
+        writer.MoveTo(0, 2).Write("列2",style);
 
         var bytes = wb.ToBytes();
+        LocationHelper.SaveToFile(LocationHelper.ExportFileName(3, 2), bytes);
         using var ms = new MemoryStream(bytes);
         using var wb2 = ExcelFactory.CreateWorkBook(ms);
         var reader = new ExcelSheetReader(wb2.GetSheetAt(0));
@@ -94,7 +95,7 @@ internal class MergeCellTests : TestBase
         var headers = reader.ReadHeaders(0);
         Assert.Multiple(() =>
         {
-            Assert.That(headers.Values, Contains.Item("跨行标题"));
+            Assert.That(headers.Values, Contains.Item("列0"));
             Assert.That(headers.Values, Contains.Item("列1"));
             Assert.That(headers.Values, Contains.Item("列2"));
         });

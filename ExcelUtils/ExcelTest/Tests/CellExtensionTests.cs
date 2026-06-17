@@ -1,5 +1,3 @@
-global using ExcelTool;
-using ExcelTest.Utilities;
 namespace ExcelTest.Tests;
 
 [TestFixture]

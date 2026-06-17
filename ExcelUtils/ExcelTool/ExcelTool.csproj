@@ -9,7 +9,7 @@
     <PackageId>YangCode.ExcelTool</PackageId>
     <PackageTags>Excel</PackageTags>
     <PackageProjectUrl>https://github.com/mingrenliu/FreshCattle</PackageProjectUrl>
-    <PackageVersion>1.0.1</PackageVersion>
+    <PackageVersion>1.0.2</PackageVersion>
     <Company>YangCode</Company>
     <Authors>LiuYang</Authors>
     <Description>package is used to excel import or export </Description>

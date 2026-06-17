@@ -5,3 +5,4 @@ global using ExcelTest.Entities;
 global using NPOI.SS.UserModel;
 global using ExcelTest.Utilities;
 global using ExcelTool.Converters;
+global using ExcelTool;

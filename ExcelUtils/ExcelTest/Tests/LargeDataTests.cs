@@ -1,6 +1,3 @@
-using ExcelTest.Entities;
-using ExcelTest.Utilities;
-
 namespace ExcelTest.Tests;
 
 [TestFixture]

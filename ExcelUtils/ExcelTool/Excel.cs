@@ -1,5 +1,3 @@
-using ExcelTool.ExcelCore;
-
 namespace ExcelTool;
 
 /// <summary>

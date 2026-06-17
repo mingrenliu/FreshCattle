@@ -1,6 +1,4 @@
-using ExcelTool;
-using ExcelTool.Converters;
-
+namespace AnalyzerTest;
 // LY0012-1: 两个 [ExcelColumn] 指定同名
 public class DuplicateColumnExplicit
 {

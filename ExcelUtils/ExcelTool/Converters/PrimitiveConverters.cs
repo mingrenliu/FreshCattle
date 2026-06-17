@@ -1,5 +1,3 @@
-using ExcelTool.ExcelCore;
-
 namespace ExcelTool.Converters;
 
 public class StringConverter : ExcelConverter<string>
